@@ -6,11 +6,17 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import Navbar from '@/components/Navbar';
 import SideDrawer from '@/components/SideDrawer';
+import {CSSObject} from '@emotion/react';
 
 
 const inter = Inter({ subsets: ['latin'] })
+
+const frameStyle:CSSObject={
+        marginTop:"2.5rem",
+        width:"100vw",
+        padding:"3rem",
+    }
 
 export const metadata: Metadata = {
   title: 'Romscent Warehouse',
@@ -24,9 +30,12 @@ export default function RootLayout({
 }) {
   return (
       <html lang="en">
-          <body className={inter.className}>
-          <SideDrawer />
-                  {children}
+          <body style={{display:"flex"}} className={inter.className}>
+              <SideDrawer />
+
+              <div style={frameStyle}>
+                {children}
+              </div>
           </body>
       </html>
   )

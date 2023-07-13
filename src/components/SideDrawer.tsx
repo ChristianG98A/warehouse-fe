@@ -22,6 +22,8 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import AdbIcon from '@mui/icons-material/Adb';
 import {Avatar, Button, ListSubheader, Menu, MenuItem, Tooltip} from '@mui/material';
+import SidebarListItem from './common/SidebarListItem';
+import SidebarListDropdown from './common/SidebarListDropdown';
 
 const drawerWidth = 280;
 
@@ -50,17 +52,18 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
+    shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({theme, open}) => ({
-    transition: theme.transitions.create(['margin', 'width'], {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(["width", "margin"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
     ...(open && {
+        marginLeft: drawerWidth,
         width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
-        transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.easeOut,
+        transition: theme.transitions.create(["width", "margin"], {
+            easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
     }),
@@ -85,6 +88,7 @@ export default function SideDrawer() {
     const [open, setOpen] = React.useState(true);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const [openSubMenu, setOpenSubMenu] = React.useState(false);
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
@@ -110,21 +114,21 @@ export default function SideDrawer() {
     };
 
     return (
-        <Box sx={{display: 'flex'}}>
+        <Box sx={{ display: 'flex'}}>
             <CssBaseline />
             <AppBar position="fixed" open={open}>
                 <Toolbar>
 
-                    <IconButton
+                    {/*<IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
-                        sx={{mr: 2, ...(open && {display: 'none'})}}
+                        sx={{marginRight:5, ...(open && {display: 'none'})}}
                     >
 
                         <MenuIcon />
-                    </IconButton>
+                    </IconButton> */}
 
                     <Typography
                         variant="h6"
@@ -189,14 +193,16 @@ export default function SideDrawer() {
                         boxSizing: 'border-box',
                     },
                 }}
-                variant="persistent"
+                variant="permanent"
                 anchor="left"
                 open={open}
             >
                 <DrawerHeader>
+                    {/*
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                     </IconButton>
+*/}
                 </DrawerHeader>
 
                 <Divider />
@@ -214,18 +220,30 @@ export default function SideDrawer() {
 
                 <List>
                     <ListSubheader children={"DEPOZIT"} />
-                    {['Receptie marfa', 'Comenzi in asteptare', 'Produse in asteptare', 'Borderouri', 'Wholesale', 'Inventare', 'Achizitii'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                {/*/ buuuuuuullshiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiit*/}
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
 
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+                    <SidebarListItem item='Receptie marfa' link='#' index={1}/>
+                    <SidebarListItem item='Comenzi in astepare' link='#' index={2}/>
+                    <SidebarListItem item='Produse in asteptare' link='#' index={3}/>
+                    <SidebarListItem item='Borderouri' link='#' index={4}/>
+
+                    <SidebarListDropdown item="Wholesale" index={9}
+                            menuItems={[
+                            {name:'Comenzi', link:'/wholesale/comenzi'},
+                            {name:'Export produse', link:'/wholesale/export_produse'},
+                            {name: 'Clienti', link:"/wholesale/clienti"}]}/>
+
+                    <SidebarListDropdown item="Inventare"  index={8}
+                            menuItems={[
+                            {
+                                name:'Inventar general',
+                                link:'/inventar/inventar_general'
+                            },
+                            {
+                                name:'Inventar producator',
+                            link:'/inventar/inventar_producator'}
+                            ]}/>
+
+                    <SidebarListItem item='Achizitii' link='#' index={7}/>
                 </List>
 
                 <Divider />
@@ -261,7 +279,6 @@ export default function SideDrawer() {
                 </List>
             </Drawer>
 
-            <Divider />
         </Box>
     );
 }
