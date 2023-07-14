@@ -7,14 +7,19 @@ import {DataGrid, GridColDef, GridRowsProp} from "@mui/x-data-grid";
 import {useEffect, useState} from "react";
 
 const rows: GridRowsProp = [
-  { id: 1, col1: 'Hello', col2: 'World' },
-  { id: 2, col1: 'DataGridPro', col2: 'is Awesome' },
-  { id: 3, col1: 'MUI', col2: 'is Amazing' },
+  { crt:1, id:1, status:"merge", status_deposit:"si asta merge", produse_alocate:"aha", total_fara_tva:"adevarat", total_cu_tva:"nebunie", nr_comanda_client:"69", note:"da"},
 ];
 
 const columns: GridColDef[] = [
-  { field: 'col1', headerName: 'Column 1', width: 150 },
-  { field: 'col2', headerName: 'Column 2', width: 150 },
+  { field: 'crt', headerName: 'Crt', width: 50 },
+  { field: 'id', headerName: 'ID Comanda', width: 150 },
+  { field: 'status', headerName: 'Status', width: 150 },
+  { field: 'status_deposit', headerName: 'Status depozit', width: 150 },
+  { field: 'produse_alocate', headerName: 'Produse / Alocate', width: 150 },
+  { field: 'total_fara_tva', headerName: 'Total fara TVA', width: 150 },
+  { field: 'total_cu_tva', headerName: 'Total cu TVA', width: 150 },
+  { field: 'nr_comanda_client', headerName: 'Nr. comanda client', width: 150 },
+  { field: 'note', headerName: 'Note', width: 150 },
 ];
 
 
@@ -29,7 +34,7 @@ const Orders = ()=>{
         <>
           <DataGrid rows={rows} columns={columns} />
           <Button onClick={async()=>{
-                  setOrders(await getOrders().catch((e)=>console.log("Error caught in fetching orders!")))
+                  setOrders(await getOrders(20, 1).catch((e)=>console.log("Error caught in fetching orders!")))
               }}>Click Me!!</Button>
         </>
         );
