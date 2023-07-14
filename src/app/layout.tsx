@@ -13,7 +13,7 @@ import {CSSObject} from '@emotion/react';
 const inter = Inter({ subsets: ['latin'] })
 
 const frameStyle:CSSObject={
-        marginTop:"2.5rem",
+        marginTop:"3.5rem",
         width:"100vw",
         padding:"3rem",
     }

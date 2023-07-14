@@ -4,14 +4,15 @@ export const getOrders= async (limit:number, offset:number)=>{
 
     const body:string = JSON.stringify({
         limit:limit,
-        offset:offset,
+        offset:offset
     })
     try {
         const response = await fetch("https://whx.ybomedia.ro/Api/Orders/getAll", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "YBO-Token": "Token123123" //jwt != null ? "Bearer " + jwt : ""
+                "YBO-Token": "Token123123" ,//jwt != null ? "Bearer " + jwt : ""
+                "Access-Control-Allow-Origin": "http://localhost:3000"
             },
             body:body
         });
