@@ -7,12 +7,11 @@ export const getOrders= async (limit:number, offset:number)=>{
         offset:offset
     })
     try {
-        const response = await fetch("https://whx.ybomedia.ro/Api/Orders/getAll", {
+        const response = await fetch("http:localhost:3000/Api/Orders/getAll", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "YBO-Token": "Token123123" ,//jwt != null ? "Bearer " + jwt : ""
-                "Access-Control-Allow-Origin": "http://localhost:3000"
             },
             body:body
         });

@@ -1,7 +1,8 @@
 "use client"
 
-import {getOrders} from "@/api/orders";
+//import {getOrders} from "@/api/orders";
 import GridColumns from "@/components/common/GridColumns";
+import {callNextApi, testApi} from "@/helpers/apiMethods";
 import {Button} from "@mui/material";
 import {DataGrid, GridColDef, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useEffect, useState} from "react";
@@ -66,8 +67,8 @@ const Orders = ()=>{
 
 
           <Button onClick={async()=>{
-                  setOrders(await getOrders(20, 1)
-                  .catch((e)=>console.log("Error caught in fetching orders!"))
+                  setOrders(await callNextApi("POST", "orders", {limit:20, offset:1},)
+                  .catch((e)=>console.log("Error caught in fetching orders!\n", e))
                   .then((r)=>{console.log(r)}))
               }}>Click Me!!</Button>
         </>
