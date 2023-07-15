@@ -1,12 +1,11 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import {CounterContextProvider} from '@/context/counter.context'
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import SideDrawer from '@/components/SideDrawer';
+import SideDrawer from '@/components/features/SideDrawer';
 import {CSSObject} from '@emotion/react';
 
 

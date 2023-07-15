@@ -4,7 +4,7 @@ import GridColumns from "@/components/common/GridColumns";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Button} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 const rows: GridRowsProp = [
   { crt:1, id:1, status:"merge", status_deposit:"si asta merge", produse_alocate:"aha", total_fara_tva:"adevarat", total_cu_tva:"nebunie", nr_comanda_client:"69", note:"da"},
@@ -37,11 +37,15 @@ const Orders = ()=>{
             page:0
         })
 
-    {/*useEffect(()=>{
+    useEffect(()=>{
           setLoading(true);
-          fetchOrders(0, pageSize).then(()=>setLoading(false));
+          callNextApi("POST", "orders", {limit:20, offset:1})
+          .then((r)=>{
+              setOrders(r)
+              setLoading(false)
+          });
         },[])
-    */}
+
 
         return (
         <>
