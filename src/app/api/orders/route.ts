@@ -1,10 +1,15 @@
 import axios from "axios";
-import {NextResponse} from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 require('dotenv').config();
 
-//export async function GET(limit:number, offset:number) {
-export async function POST(request:Request) {
-    const data =  request//.json
+export async function GET (){
+    console.log("mergeeeeeeee")
+    return NextResponse.json({status:"ok"})
+}
+
+export async function POST(request:NextRequest) {
+    const data =  await request.json();
+    //console.log("this reaches the next api:\n", data)
 
     const url = 'https://whx.ybomedia.ro/Api/Orders/getAll';
     const token = process.env.API_TOKEN;
@@ -12,10 +17,10 @@ export async function POST(request:Request) {
             headers: {
               //"Authorization": jwt != null ? "Bearer " + jwt : '',
                 "Content-Type": "application/json",
-                "YBO-Token": "Token123123"
+                "YBO-Token": token
             },
     };
-    const orders = axios.post(url, {limit:20, offset:1}, options)
+    const orders = axios.post(url, data, options)
         .catch((error) => {
             //errorLogger.error(error);
             console.log("Error in fetching order data:", error);
@@ -30,4 +35,5 @@ export async function POST(request:Request) {
 
     return NextResponse.json(await orders);
 };
+
 

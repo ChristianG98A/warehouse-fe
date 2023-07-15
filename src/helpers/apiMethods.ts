@@ -7,6 +7,7 @@ const token:any = process.env.API_TOKEN;
 export const callNextApi = async (method:"GET"|"POST"|"PATCH"|"UPDATE"|"DELETE", endpoint:string, body:any) => {
     //const jwt = getLocalAuthToken()?.jwtToken;
     const url = "/api/" + endpoint;
+    console.log("This is the body that gets in nextApiCaller:\n", body)
 
     try {
         const response = await fetch(url, {
