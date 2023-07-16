@@ -51,11 +51,11 @@ export default function GridColumns() { // implement type here................
 
 
     const columns: GridColDef[] = [
-        {field: 'crt', headerName: 'Crt', width: 50},
-        {field: 'id', headerName: 'ID Comanda', width: 100},
-        {field: 'status', headerName: 'Status', width: 100},
-        {field: 'whStatus', headerName: 'Status depozit', width: 150},
-        {field: 'produse_alocate', headerName: 'Produse / Alocate', width: 150},
+        {field: 'crt', headerName: 'Crt', width: 70},
+        {field: 'id', headerName: 'ID Comanda', width: 200},
+        {field: 'status', headerName: 'Status', width: 200},
+        {field: 'whStatus', headerName: 'Status depozit', width: 200},
+        {field: 'produse_alocate', headerName: 'Produse / Alocate', width: 250},
         {field: 'totalNoVat', headerName: 'Total fara TVA', width: 150},
         {field: 'totalWithVat', headerName: 'Total cu TVA', width: 150},
         {field: 'nr_comanda_client', headerName: 'Nr. comanda client', width: 150},

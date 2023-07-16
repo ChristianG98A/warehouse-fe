@@ -14,6 +14,9 @@ export const reducer = (state: State|any, action: Action|any) => {
             //console.log("set orders!!")
             return {...state, orders: action.payload}
 
+        case 'SET_LOADING':
+            return {...state, loading:action.payload}
+
         default:
             return state
     }

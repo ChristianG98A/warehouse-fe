@@ -1,9 +1,7 @@
 "use client"
 
-import {Action} from "@reduxjs/toolkit"
 import {createContext, useReducer} from "react"
 import {reducer} from "./reducers"
-import {State} from "./stateTypes"
 
 
 export const StateContext = createContext<any>([null, null])

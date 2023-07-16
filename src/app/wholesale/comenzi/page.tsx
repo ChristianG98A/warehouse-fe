@@ -53,42 +53,43 @@ const Orders = ()=>{
 
 
         return (
-        <>
-          <DataGrid
-            rows={useMemo(()=>{return state.orders},[state.orders])} //aici va veni Orders
-            columns={useMemo(()=>{return GridColumns()},[])}
-            checkboxSelection={true}
-            paginationModel={paginationModel}
-                        initialState={{pagination: {paginationModel:{pageSize:pageSize}}}}
+            <>
+                <div style={{minHeight: 610, width: "100%"}}>
+                    <DataGrid
+                        rows={useMemo(() => {return state.orders}, [state.orders])} //aici va veni Orders
+                        columns={useMemo(() => {return GridColumns()}, [])}
+                        paginationModel={paginationModel}
+                        initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
                         onPaginationModelChange={setPaginationModel}
-                        pageSizeOptions={[10,25,50]}
+                        pageSizeOptions={[10, 25, 50]}
 
-            onRowSelectionModelChange={(newRowSelectionModel)=>{
-                   dispatch({type:"SET_SELECTION_MODEL", payload:newRowSelectionModel})
-                }}
-            rowSelectionModel={state.selectionModel}
-            autoPageSize={false}
-            loading={loading}
-            slots={{toolbar:GridToolbar}}
-            />
-            {/*rowCount={10}
+                        onRowSelectionModelChange={(newRowSelectionModel) => {
+                            dispatch({type: "SET_SELECTION_MODEL", payload: newRowSelectionModel})
+                        }}
+                        rowSelectionModel={state.selectionModel}
+                        autoPageSize={false}
+                        loading={loading}
+                        slots={{toolbar: GridToolbar}}
+                    />
+                    {/*rowCount={10}
             paginationMode={"server"}
             *rowsPerPageOptions
             */}
 
 
-            <Button onClick={async()=>{
-                  console.log(state)
-              }}>Log the State!</Button>
+                    <Button onClick={async () => {
+                        console.log(state)
+                    }}>Log the State!</Button>
 
-          {/*
+                    {/*
                <Button onClick={async()=>{
                   setOrders(await callNextApi("POST", "orders", {limit:20, offset:1},)
                   .catch((e)=>console.log("Error caught in fetching orders!\n", e))
                   .then((r)=>{console.log(r)}))
               }}>Click Me!!</Button>
           */}
-        </>
+                </div>
+            </>
         );
     }
 export default Orders;
