@@ -10,6 +10,7 @@ const token:any = process.env.API_TOKEN;
 export const callNextApi = async (method:"GET"|"POST"|"PATCH"|"UPDATE"|"DELETE", endpoint:string, body:any) => {
     //const jwt = getLocalAuthToken()?.jwtToken;
     const url = "/api/" + endpoint;
+
 //    console.log("This is the body that gets in nextApiCaller:\n", body)
 
     try {
@@ -22,10 +23,10 @@ export const callNextApi = async (method:"GET"|"POST"|"PATCH"|"UPDATE"|"DELETE",
             body: JSON.stringify(body),
         });
         const responseData = await response.json()
-        .catch(e=>console.log("Error caught in next api call :25! \n", e))
+        .catch(e=>console.log("Error caught in next api call! \n", e))
         .then(
             (r:allOrdersApiResponse)=>{
-                return addCrtNumberToRows(r)
+                return(r)
             }
         );
         return responseData //as UserAdd;

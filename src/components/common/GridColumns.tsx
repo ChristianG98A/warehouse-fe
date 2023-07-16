@@ -8,11 +8,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import {GridCellParams, GridColDef} from "@mui/x-data-grid";
 import {MouseEventHandler, useState} from "react";
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
+import {callNextApi} from "@/helpers/apiMethods";
 
 
 //type buttonId = "export_pdf_proforma_button" | "export_xls_proforma_button" | "export_pregatire_produse_button" | "order_edit_button" | "delete_order_button"
 
-const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
   const buttonId = event.currentTarget.id;
 
   switch (buttonId) {
@@ -34,6 +35,11 @@ const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 
     case 'delete_order_button':
       console.log('delete_order_button clicked');
+
+
+    const deleteResponse:any = await callNextApi("DELETE", "orders/deleteOrder", {id:123123123}).catch(e=>console.log("Error caught in calling proxy api!\n", e))
+        .then(r=> console.log(r))
+
       break;
 
     default:
