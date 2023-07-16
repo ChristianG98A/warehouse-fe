@@ -28,10 +28,13 @@ export async function POST(request:NextRequest) {
         .then(
             (r: any) => {
                 //console.log(JSON.parse(r.data))
+                console.log(r)
+                console.log(r.data)
 
                 return r.data
             }
         )
+        .catch(e=>console.log("Error in caught in returning api payload :36!\n", e))
 
     return NextResponse.json(await orders);
 };

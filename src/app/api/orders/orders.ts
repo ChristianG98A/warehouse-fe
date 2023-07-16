@@ -14,8 +14,11 @@ export const getOrders= async (limit:number, offset:number)=>{
                 "YBO-Token": "Token123123" ,//jwt != null ? "Bearer " + jwt : ""
             },
             body:body
-        });
-        const responseData = await response.json();
+        })
+
+        const responseData = await response.json()
+            .catch(e=>console.log("Error caught in calling warehouse endpoint!\n", e));
+
         return responseData //as Group[];
     } catch (e) {
         return undefined;

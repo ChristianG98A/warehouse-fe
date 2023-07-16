@@ -7,6 +7,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import SideDrawer from '@/components/features/SideDrawer';
 import {CSSObject} from '@emotion/react';
+import ContextProvider from './state/context';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
   description: 'Smells good',
 }
 
+
 export default function RootLayout({
   children,
 }: {
@@ -29,13 +31,14 @@ export default function RootLayout({
 }) {
   return (
       <html lang="en">
-          <body style={{display:"flex"}} className={inter.className}>
-              <SideDrawer />
-
-              <div style={frameStyle}>
-                {children}
-              </div>
-          </body>
+          <ContextProvider>
+              <body style={{display: "flex"}} className={inter.className}>
+                  <SideDrawer />
+                  <div style={frameStyle}>
+                      {children}
+                  </div>
+              </body>
+          </ContextProvider>
       </html>
   )
 }

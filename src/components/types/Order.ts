@@ -1,3 +1,9 @@
+export interface allOrdersApiResponse {
+    status:number;
+    code:string;
+    response:Order[]
+}
+
 export default interface Order{
   id:number;
   invoice_company:string;

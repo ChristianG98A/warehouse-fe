@@ -1,4 +1,4 @@
-import {ToggleButtonGroup, ToggleButton, IconButton} from "@mui/material";
+import {ToggleButtonGroup, ToggleButton, IconButton, Tooltip} from "@mui/material";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DescriptionIcon from '@mui/icons-material/Description';
 import WidgetsIcon from '@mui/icons-material/Widgets';
@@ -6,9 +6,40 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import CreateIcon from '@mui/icons-material/Create';
 import CloseIcon from '@mui/icons-material/Close';
 import {GridCellParams, GridColDef} from "@mui/x-data-grid";
-import {useState} from "react";
+import {MouseEventHandler, useState} from "react";
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 
+
+//type buttonId = "export_pdf_proforma_button" | "export_xls_proforma_button" | "export_pregatire_produse_button" | "order_edit_button" | "delete_order_button"
+
+const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const buttonId = event.currentTarget.id;
+
+  switch (buttonId) {
+    case 'export_pdf_proforma_button':
+      console.log("export_pdf_proforma_button clicked")
+      break;
+
+    case 'export_xls_produse_proforma_button':
+      console.log('export_xls_proforma_button clicked');
+      break;
+
+    case 'export_pregatire_produse_button':
+      console.log('export_pregatire_produse_button clicked');
+      break;
+
+    case 'order_edit_button':
+      console.log('order_edit_button clicked');
+      break;
+
+    case 'delete_order_button':
+      console.log('delete_order_button clicked');
+      break;
+
+    default:
+      console.log('Unknown button clicked!');
+  }
+};
 
 export default function GridColumns() { // implement type here................
 
@@ -17,56 +48,56 @@ export default function GridColumns() { // implement type here................
         {field: 'crt', headerName: 'Crt', width: 50},
         {field: 'id', headerName: 'ID Comanda', width: 100},
         {field: 'status', headerName: 'Status', width: 100},
-        {field: 'status_deposit', headerName: 'Status depozit', width: 150},
+        {field: 'whStatus', headerName: 'Status depozit', width: 150},
         {field: 'produse_alocate', headerName: 'Produse / Alocate', width: 150},
-        {field: 'total_fara_tva', headerName: 'Total fara TVA', width: 150},
-        {field: 'total_cu_tva', headerName: 'Total cu TVA', width: 150},
+        {field: 'totalNoVat', headerName: 'Total fara TVA', width: 150},
+        {field: 'totalWithVat', headerName: 'Total cu TVA', width: 150},
         {field: 'nr_comanda_client', headerName: 'Nr. comanda client', width: 150},
-        {field: 'note', headerName: 'Note', width: 150},
+        {field: 'order_notes', headerName: 'Note', width: 150},
         {
             field: 'actions',
             headerName: 'Actions',
             align:"center",
             headerAlign:"center",
             width: 330,
-            renderCell:(params)=>{
-                    const handleClick = ()=>{
-                            console.log('Buzz')
-                        }
+            renderCell: (params) => {
 
-                    return(
+//type buttonId = "export_pdf_proforma_button" | "export_xls_proforma_button" | "export_pregatire_produse_button" | "order_edit_button" | "delete_order_button"
+                return (
                     <>
-                      <IconButton aria-label="Test Me!" onClick={handleClick}>
-                        <PictureAsPdfIcon color="primary" />
-                      </IconButton>
+                        <Tooltip title="Export pdf proforma">
+                          <IconButton id='export_pdf_proforma_button' aria-label="Test Me!" onClick={handleClick}>
+                              <PictureAsPdfIcon color="primary" />
+                          </IconButton>
+                        </Tooltip>
 
-                      <IconButton aria-label="Test Me!" onClick={handleClick}>
-                        <DescriptionIcon color="primary" />
-                      </IconButton>
+                        <Tooltip title="Export xls proforma">
+                          <IconButton id='export_xls_produse_proforma_button' aria-label="Test Me!" onClick={handleClick}>
+                              <DescriptionIcon color="primary" />
+                          </IconButton>
+                        </Tooltip>
 
-                      <IconButton aria-label="Test Me!" onClick={handleClick}>
-                        <FormatListBulletedIcon color="success" />
-                      </IconButton>
 
-                      <IconButton aria-label="Test Me!" onClick={handleClick}>
-                        <WidgetsIcon  color="success" />
-                      </IconButton>
+                        <Tooltip title="Export pregatire produse">
+                          <IconButton id='export_pregatire_produse_button' aria-label="Test Me!" onClick={handleClick}>
+                              <WidgetsIcon color="success" />
+                          </IconButton>
+                        </Tooltip>
 
-                      <IconButton aria-label="Test Me!" onClick={handleClick}>
-                        <DescriptionIcon color="secondary" />
-                      </IconButton>
+                        <Tooltip title="Editare comanda">
+                          <IconButton id='order_edit_button' aria-label="Test Me!" onClick={handleClick}>
+                              <CreateIcon color="primary" />
+                          </IconButton>
+                        </Tooltip>
 
-                      <IconButton aria-label="Test Me!" onClick={handleClick}>
-                        <CreateIcon color="primary" />
-                      </IconButton>
-
-                      <IconButton aria-label="Test Me!" onClick={handleClick}>
-                        <CloseIcon color="error" />
-                      </IconButton>
-
+                        <Tooltip title="Stergere comanda">
+                          <IconButton id='delete_order_button' aria-label="Test Me!" onClick={handleClick}>
+                              <CloseIcon color="error" />
+                          </IconButton>
+                        </Tooltip>
                     </>
-                    )
-                }
+                )
+            }
         },
     ];
 
