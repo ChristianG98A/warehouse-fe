@@ -39,8 +39,9 @@ const Orders = ()=>{
     useEffect(()=>{
           //console.log("this is the context api state:\n", state);
           setLoading(true);
-          callNextApi("POST", "orders", {limit:50, offset:1}).catch(e=>console.log("Error caught in calling proxy api!\n", e))
+          callNextApi("POST", "orders", {limit:50, offset:0}).catch(e=>console.log("Error caught in calling proxy api!\n", e))
           .then((r)=>{
+              console.log(r)
               dispatch({type:"SET_ORDERS", payload:r})
               setLoading(false)
           });
@@ -54,7 +55,7 @@ const Orders = ()=>{
         return (
         <>
           <DataGrid
-            rows={rows} //aici va veni Orders
+            rows={state.orders} //aici va veni Orders
             columns={GridColumns()}
 
             paginationModel={paginationModel}
