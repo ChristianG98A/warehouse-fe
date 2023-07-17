@@ -1,3 +1,4 @@
+"use client"
 import {ToggleButtonGroup, ToggleButton, IconButton, Tooltip} from "@mui/material";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -6,9 +7,10 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import CreateIcon from '@mui/icons-material/Create';
 import CloseIcon from '@mui/icons-material/Close';
 import {GridCellParams, GridColDef} from "@mui/x-data-grid";
-import {MouseEventHandler, useState} from "react";
+import {MouseEventHandler, useContext, useState} from "react";
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 import {callNextApi} from "@/helpers/apiMethods";
+import {StateContext} from "@/app/state/context";
 
 
 //type buttonId = "export_pdf_proforma_button" | "export_xls_proforma_button" | "export_pregatire_produse_button" | "order_edit_button" | "delete_order_button"
@@ -34,12 +36,6 @@ const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
       break;
 
     case 'delete_order_button':
-      console.log('delete_order_button clicked');
-
-
-    const deleteResponse:any = await callNextApi("DELETE", "orders/deleteOrder", {id:123123123}).catch(e=>console.log("Error caught in calling proxy api!\n", e))
-        .then(r=> console.log(r))
-
       break;
 
     default:
@@ -48,18 +44,22 @@ const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
 };
 
 export default function GridColumns() { // implement type here................
+    const [state, dispatch] = useContext(StateContext)
+
+
+
 
 
     const columns: GridColDef[] = [
         {field: 'crt', headerName: 'Crt', width: 70},
-        {field: 'id', headerName: 'ID Comanda', width: 200},
-        {field: 'status', headerName: 'Status', width: 200},
-        {field: 'whStatus', headerName: 'Status depozit', width: 200},
-        {field: 'produse_alocate', headerName: 'Produse / Alocate', width: 250},
+        {field: 'id', headerName: 'ID Comanda', width: 150},
+        {field: 'status', headerName: 'Status', width: 150},
+        {field: 'whStatus', headerName: 'Status depozit', width: 150},
+        {field: 'produse_alocate', headerName: 'Produse / Alocate', width: 150},
         {field: 'totalNoVat', headerName: 'Total fara TVA', width: 150},
         {field: 'totalWithVat', headerName: 'Total cu TVA', width: 150},
-        {field: 'nr_comanda_client', headerName: 'Nr. comanda client', width: 150},
-        {field: 'order_notes', headerName: 'Note', width: 150},
+        {field: 'nr_comanda_client', headerName: 'Nr. comanda client', width: 100},
+        {field: 'order_notes', headerName: 'Note', width: 100},
         {
             field: 'actions',
             headerName: 'Actions',
@@ -97,7 +97,9 @@ export default function GridColumns() { // implement type here................
                         </Tooltip>
 
                         <Tooltip title="Stergere comanda">
-                          <IconButton id='delete_order_button' aria-label="Test Me!" onClick={handleClick}>
+                            <IconButton id='delete_order_button' aria-label="Test Me!" onClick={ async () => {
+                                    dispatch({type:"SET_DELETE_PROMPT", payload:true})
+                            }}>
                               <CloseIcon color="error" />
                           </IconButton>
                         </Tooltip>

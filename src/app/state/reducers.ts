@@ -17,6 +17,15 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_LOADING':
             return {...state, loading:action.payload}
 
+        case 'SET_TRIGGER':
+            return {...state, loading:action.payload}
+
+        case 'SET_DELETE_PROMPT':
+            return {...state, deletePrompt:action.payload}
+
+        case 'SET_OPEN_ERROR_SNACK':
+            return {...state, errorSnack:action.payload}
+
         default:
             return state
     }

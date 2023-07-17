@@ -6,6 +6,7 @@ export interface State {
     orders?: Order[];
     selectionModel?: GridRowSelectionModel;
     loading?:boolean;
+    trigger?:boolean;
 }
 
 export type Action =
@@ -20,6 +21,18 @@ export type Action =
     {
         type: "SET_SELECTION_MODEL";
         payload: GridRowSelectionModel;
+    } |
+    {
+        type: "SET_DELETE_PROMPT";
+        payload: boolean;
+    } |
+    {
+        type: "SET_TRIGGER";
+        payload: boolean;
+    } |
+    {
+        type: "SET_OPEN_ERROR_SNACK";
+        payload: boolean;
     } |
     {
         type:"test";
