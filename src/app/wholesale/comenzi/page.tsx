@@ -2,12 +2,10 @@
 
 import {StateContext} from "@/app/state/context";
 import GridColumns from "@/components/common/GridColumns";
-import {PDFFile} from "@/exports/PDFFile";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Button, Container, Dialog, DialogActions, DialogTitle, Snackbar} from "@mui/material";
+import {Alert, Button, Dialog, DialogActions, DialogTitle, Snackbar} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
-import {PDFDownloadLink} from "@react-pdf/renderer";
-import {useContext, useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 
 const rows: GridRowsProp = [
     {crt: 1, id: 1, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
@@ -113,6 +111,9 @@ const Orders = () => {
         <>
             <div style={{minHeight: 610, width: "100%"}}>
                 <DataGrid
+                sx={{
+
+                    }}
                     //rows={useMemo(() => {return state.orders}, [state.orders])} //aici va veni Orders
                     rows={state.orders}
                     columns={GridColumns()}

@@ -8,6 +8,7 @@ import '@fontsource/roboto/700.css';
 import SideDrawer from '@/components/features/SideDrawer';
 import {CSSObject} from '@emotion/react';
 import ContextProvider from './state/context';
+import PersistentDrawerLeft from '@/components/features/PersistentDrawer';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -33,7 +34,7 @@ export default function RootLayout({
       <html lang="en">
           <ContextProvider>
               <body style={{display: "flex"}} className={inter.className}>
-                  <SideDrawer />
+                  <PersistentDrawerLeft/>
                   <div style={frameStyle}>
                       {children}
                   </div>
