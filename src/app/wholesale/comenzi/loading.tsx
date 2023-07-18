@@ -7,12 +7,12 @@ import React from "react";
 export default function LoadingWholesaleProducts(){
         return(
             <div style={{paddingTop:"4rem"}}>
-                <Skeleton variant="rounded" width={210} height={60} />
-                <Skeleton variant="text" sx={{fontSize: '4rem'}} />
-                <Skeleton variant="rounded" width={210} height={60} />
-                <Skeleton variant="text" sx={{fontSize: '4rem'}} />
-                <Skeleton variant="rounded" width={210} height={60} />
-                <Skeleton variant="text" sx={{fontSize: '4rem'}} />
+                <Skeleton variant="rounded" width={210} height={30} />
+                <Skeleton variant="text" sx={{fontSize: '2rem'}} />
+                <Skeleton variant="rounded" width={210} height={30} />
+                <Skeleton variant="text" sx={{fontSize: '2rem'}} />
+                <Skeleton variant="rounded" width={210} height={30} />
+                <Skeleton variant="text" sx={{fontSize: '2rem'}} />
                 {/* For other variants, adjust the size with `width` and `height` */}
             </ div>
         )

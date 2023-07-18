@@ -2,8 +2,9 @@
 
 import {StateContext} from "@/app/state/context";
 import GridColumns from "@/components/common/GridColumns";
+import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Button, Dialog, DialogActions, DialogTitle, Snackbar} from "@mui/material";
+import {Alert, Button, Dialog, DialogActions, DialogTitle, Grid, Paper, Snackbar, Typography} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
 
@@ -20,7 +21,7 @@ const rows: GridRowsProp = [
 
 const row = {crt: 1, id: 1, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: 10, note: "da"}
 
-    const data = {
+const data = {
     status: 200,
     code: "success",
     response: {
@@ -103,86 +104,74 @@ const Orders = () => {
         if (reason === 'clickaway') {
             return;
         }
-        dispatch({type:"SET_OPEN_ERROR_SNACK", payload: false})
+        dispatch({type: "SET_OPEN_ERROR_SNACK", payload: false})
     };
 
 
     return (
         <>
-            <div style={{minHeight: 610, width: "100%"}}>
-                <DataGrid
-                sx={{
-
-                    }}
-                    //rows={useMemo(() => {return state.orders}, [state.orders])} //aici va veni Orders
-                    rows={state.orders}
-                    columns={GridColumns()}
-                    paginationModel={paginationModel}
-                    initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
-                    onPaginationModelChange={setPaginationModel}
-                    pageSizeOptions={[10, 25, 50]}
-                    onRowSelectionModelChange={(newRowSelectionModel) => {
-                        dispatch({type: "SET_SELECTION_MODEL", payload: newRowSelectionModel})
-                    }}
-                    rowSelectionModel={state.selectionModel}
-                    autoPageSize={false}
-                    loading={loading}
-                    slots={{toolbar: GridToolbar}}
-                />
-                {/* User delete pop-up */}
-                <Dialog
-                    open={state.deletePrompt}
-                    onClose={() => dispatch({type: "SET_DELETE_PROMPT", payload: false})}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete order with id: " + state.selectionModel + "?"}</DialogTitle>
-
-                    <DialogActions sx={{justifyContent: "center"}}>
-                        <Button onClick={() => dispatch({type: "SET_DELETE_PROMPT", payload: false})}>Cancel</Button>
-                        <Button onClick={handleDelete} autoFocus>
-                            Delete
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-                {/*rowCount={10}
-            paginationMode={"server"}
-            *rowsPerPageOptions
-            */}
+        <Typography variant={"h6"} sx={{mb:2}} gutterBottom >Comenzi Wholesale</Typography>
+            <PageBreadcrumbs
+                items={[
+                    {
+                        name: "Wholesale",
+                        path: "/wholesale",
+                    },
+                    {
+                        name: "Comenzi",
+                        path: "/comenzi",
+                    },
+                ]}
+            />
 
 
-                <Button onClick={async () => {
-                    console.log(state)
-                    dispatch({type: "SET_DELETE_PROMPT", payload: true})
-                }}>Log the State!</Button>
+            <Grid component={Paper} container direction="column" justifySelf={"center"} justifyItems={"center"} style={{width: '100%', height: "70vh"}} >
+                    <DataGrid
+                        columnHeaderHeight={60}
+                        //rows={useMemo(() => {return state.orders}, [state.orders])} //aici va veni Orders
+                        rows={state.orders}
+                        columns={GridColumns()}
+                        paginationModel={paginationModel}
+                        initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
+                        onPaginationModelChange={setPaginationModel}
+                        pageSizeOptions={[10, 25, 50]}
+                        onRowSelectionModelChange={(newRowSelectionModel) => {
+                            dispatch({type: "SET_SELECTION_MODEL", payload: newRowSelectionModel})
+                        }}
+                        rowSelectionModel={state.selectionModel}
+                        autoPageSize={false}
+                        loading={loading}
+                        slots={{toolbar: GridToolbar}}
+                    />
 
-                {/*
-               <Button onClick={async()=>{
-                  setOrders(await callNextApi("POST", "orders", {limit:20, offset:1},)
-                  .catch((e)=>console.log("Error caught in fetching orders!\n", e))
-                  .then((r)=>{console.log(r)}))
-              }}>Click Me!!</Button>
-          */}
-{/*                <Container maxWidth={'xl'}>
-                    <PDFDownloadLink document={<PDFFile pListApiResponse={{data:data}}/>}>
-                        <Button
-                                  disabled={loading}
-                                  variant="contained">
-                            Download
-                        </Button>
-                    </PDFDownloadLink>
-                    <hr />
-                </Container>*/}
+                    <Button onClick={async () => {
+                        console.log(state)
+                        dispatch({type: "SET_DELETE_PROMPT", payload: true})
+                    }}>Log the State!</Button>
+            </Grid>
+            <Dialog
+                open={state.deletePrompt}
+                onClose={() => dispatch({type: "SET_DELETE_PROMPT", payload: false})}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete order with id: " + state.selectionModel + "?"}</DialogTitle>
 
-                <Snackbar
-                    anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
-                    open={state.errorSnack}
-                    autoHideDuration={3000}
-                    onClose={handleSnackClose}
-                >
-                    <Alert onClose={handleSnackClose} severity="success">Order deleted!</Alert>
-                </Snackbar>
-            </div>
+                <DialogActions sx={{justifyContent: "center"}}>
+                    <Button onClick={() => dispatch({type: "SET_DELETE_PROMPT", payload: false})}>Cancel</Button>
+                    <Button onClick={handleDelete} autoFocus>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
+                open={state.errorSnack}
+                autoHideDuration={3000}
+                onClose={handleSnackClose}
+            >
+                <Alert onClose={handleSnackClose} severity="success">Order deleted!</Alert>
+            </Snackbar>
         </>
     );
 }

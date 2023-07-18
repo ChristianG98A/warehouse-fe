@@ -218,7 +218,10 @@ export default function SideDrawer() {
                 <List>
                     <ListSubheader children={"DEPOZIT"} />
 
-                    <SidebarListItem item='Receptie marfa' link='#' index={1}/>
+                    <SidebarListDropdown item="Receptie marfa" index={1}
+                            menuItems={[
+                            {name: 'Comenzi furnizori', link:"/receptie_marfa/comenzi_furnizori"}]
+                            }/>
                     <SidebarListItem item='Comenzi in astepare' link='#' index={2}/>
                     <SidebarListItem item='Produse in asteptare' link='#' index={3}/>
                     <SidebarListItem item='Borderouri' link='#' index={4}/>
