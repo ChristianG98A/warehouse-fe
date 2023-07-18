@@ -15,3 +15,22 @@ export default interface Order{
   totalNoVat:number;
   totalWithVat:number;
 }
+
+export type invoiceOrder = {
+    name: string;
+    sku: string;
+    ean: string;
+    quantity: string | number;
+    price_brutto: string | number;
+}
+
+export interface pListApiResponse{
+    "status":200,
+    "code":string,
+    "response": invoice;
+}
+
+export type invoice = {
+    currency : "RON" | "EUR" | "USD";
+    orderProducts: invoiceOrder[]
+}

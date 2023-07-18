@@ -2,9 +2,11 @@
 
 import {StateContext} from "@/app/state/context";
 import GridColumns from "@/components/common/GridColumns";
+import {PDFFile} from "@/exports/PDFFile";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Button, Dialog, DialogActions, DialogTitle, Snackbar} from "@mui/material";
+import {Alert, Button, Container, Dialog, DialogActions, DialogTitle, Snackbar} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
+import {PDFDownloadLink} from "@react-pdf/renderer";
 import {useContext, useEffect, useMemo, useState} from "react";
 
 const rows: GridRowsProp = [
@@ -19,6 +21,30 @@ const rows: GridRowsProp = [
 ];
 
 const row = {crt: 1, id: 1, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: 10, note: "da"}
+
+    const data = {
+    status: 200,
+    code: "success",
+    response: {
+        currency: "EUR",
+        orderProducts: [
+            {
+                name: "Aparat de ras scamele, Esperanza Cuddly",
+                sku: "ESPERANZAECS003T",
+                ean: "7890004772037",
+                quantity: "2",
+                price_brutto: "100"
+            },
+            {
+                name: "Aparat de ras scamele, Esperanza Cuddly",
+                sku: "ESPERANZAECS003T",
+                ean: "7890004772037",
+                quantity: "2",
+                price_brutto: "100"
+            }
+        ]
+    }
+}
 
 function generateRows(rowsNr: number, row: any) {
     let localrows = []
@@ -136,6 +162,16 @@ const Orders = () => {
                   .then((r)=>{console.log(r)}))
               }}>Click Me!!</Button>
           */}
+{/*                <Container maxWidth={'xl'}>
+                    <PDFDownloadLink document={<PDFFile pListApiResponse={{data:data}}/>}>
+                        <Button
+                                  disabled={loading}
+                                  variant="contained">
+                            Download
+                        </Button>
+                    </PDFDownloadLink>
+                    <hr />
+                </Container>*/}
 
                 <Snackbar
                     anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
