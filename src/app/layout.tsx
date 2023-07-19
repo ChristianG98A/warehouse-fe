@@ -9,6 +9,7 @@ import SideDrawer from '@/components/features/SideDrawer';
 import {CSSObject} from '@emotion/react';
 import ContextProvider from './state/context';
 import PersistentDrawerLeft from '@/components/features/PersistentDrawer';
+import MiniDrawer from '@/components/features/MiniDrawer';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -34,7 +35,7 @@ export default function RootLayout({
       <html lang="en">
           <ContextProvider>
               <body style={{display: "flex"}} className={inter.className}>
-                  <PersistentDrawerLeft/>
+                  <MiniDrawer />
                   <div style={frameStyle}>
                       {children}
                   </div>
