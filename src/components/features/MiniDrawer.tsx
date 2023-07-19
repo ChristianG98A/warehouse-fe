@@ -20,11 +20,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import {ListSubheader} from '@mui/material';
+import {Avatar, Fade, ListSubheader, Menu, MenuItem, Tooltip} from '@mui/material';
 import SidebarListDropdown from '../common/SidebarListDropdown';
 import SidebarListItem from '../common/SidebarListItem';
 
 const drawerWidth = 240;
+const settings = ['Profile', 'Logout'];
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -98,6 +99,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -106,28 +109,87 @@ export default function MiniDrawer() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  const handleCloseUserMenu = () => {
+      setAnchorElUser(null);
+  };
+
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorElUser(event.currentTarget);
+  };
+
 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(open && { display: 'none' }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
-          </Typography>
-        </Toolbar>
+                <Toolbar>
+
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        edge="start"
+                        sx={{marginRight:5, ...(open && {display: 'none'})}}
+                    >
+
+                        <MenuIcon />
+                    </IconButton>
+
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="a"
+                        href="/"
+                        sx={{
+                            mr: 2,
+                            ml: 6,
+                            display: {xs: 'none', md: 'flex'},
+                            fontFamily: 'monospace',
+                            fontWeight: 800,
+                            letterSpacing: '.3rem',
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        ROMSCENT
+                    </Typography>
+
+                    {/*USER AVATAR (ON THE RIGHT)*/}
+                    <Box display={"flex"} alignItems={"center"} flexDirection={"row"} sx={{flexGrow: 0, marginLeft: "auto", paddingRight: "10%"}}>
+                        <Tooltip title="Open settings">
+                            <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
+                                <Avatar alt="CurrentUser" src="/static/images/avatar/2.jpg" />
+                            </IconButton>
+                        </Tooltip>
+                        <Typography noWrap variant='h6' sx={{ml:3}}>{"Silvia"}</Typography>
+                        <Menu
+                            sx={{mt: '45px'}}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
+                        >
+                            {settings.map((setting) => (
+                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                    <Typography textAlign="center">{setting}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
+                    </Box>
+
+                </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
@@ -149,8 +211,9 @@ export default function MiniDrawer() {
                 <Divider />
 
                 <List>
-                    <ListSubheader style={open? {opacity:1} : {opacity:0}} children={"DEPOZIT"} />
-
+                <Fade in={open}>
+                    <ListSubheader children={"DEPOZIT"} />
+                </Fade>
                     <SidebarListDropdown item="Receptie marfa" index={1}
                             menuItems={[
                             {name: 'Comenzi furnizori', link:"/receptie_marfa/comenzi_furnizori"}]
@@ -182,7 +245,10 @@ export default function MiniDrawer() {
                 <Divider />
 
                 <List>
-                    <ListSubheader style={open? {opacity:1} : {opacity:0}} children={"PARTENERI"} />
+
+                <Fade in={open}>
+                    <ListSubheader children={"PARTENERI"} />
+                </ Fade>
                     {['Amazon', 'eMag'].map((text, index) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton>
@@ -198,7 +264,9 @@ export default function MiniDrawer() {
                 <Divider />
 
                 <List>
-                    <ListSubheader style={open? {opacity:1} : {opacity:0}} children={"MAGAZIN"} />
+                <Fade in={open}>
+                    <ListSubheader children={"MAGAZIN"} />
+                </ Fade>
                     {['Produse', 'Promotii'].map((text, index) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton>

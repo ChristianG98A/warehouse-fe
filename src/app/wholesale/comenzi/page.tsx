@@ -80,11 +80,8 @@ const Orders = () => {
                 dispatch({type: "SET_ORDERS", payload: r})
                 setLoading(false)
             });
-    }, [paginationModel, trigger])
+    }, [paginationModel])
 
-    useEffect(() => {
-        console.log("State change:\n", state);
-    }, [state])
 
 
 

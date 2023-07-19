@@ -10,7 +10,7 @@ const CustomToolbar = () => {
                 onClick={() => (null)}
                 style={{marginLeft: "1rem"}}
             >
-                Edit
+                New Order
             </Button>
 
             <Button

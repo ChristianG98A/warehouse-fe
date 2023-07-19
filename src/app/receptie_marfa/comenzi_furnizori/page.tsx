@@ -1,5 +1,6 @@
 "use client"
 import {StateContext} from "@/app/state/context";
+import CustomToolbar from "@/components/common/CustomToolbar";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {Grid, Paper, Typography} from "@mui/material";
 import {DataGrid, GridRowsProp} from "@mui/x-data-grid";
@@ -7,8 +8,12 @@ import {useContext, useState} from "react";
 import SellerInvoiceRow from "./SellerInvoiceRow";
 
 
-const rows: GridRowsProp = [
+const rowsPlaceholder: GridRowsProp = [
     {id:1, crt: 1, Furnizor: "sc cacamaca", Serie_Factura: 12312313, invoiceNumber: 123132, date: "12.07.2023", product: "eau du saq", EAN: 523526, TVA: "19", discount: "0%", buy_price:909.9, nrceva:1324, deposit:"barbu v", sofer:"cutare"},
+];
+
+const rows: GridRowsProp = [
+    {id:1, number: "SMTH123", order: "12636734", buyer: "SC Smecher SRL", gross_amount: 123.132, date: "12.07.2023", correction: "???", action: "Aici vin butoane"},
 ];
 
 
@@ -33,17 +38,20 @@ const ProviderOrders = ()=>{
             />
                         <Grid component={Paper} container direction="column" justifySelf={"center"} justifyItems={"center"} style={{width: '100%', height: "50vh"}} >
                         <DataGrid
-                        columnHeaderHeight={60}
+                            rowSelection={false}
+                            columnHeaderHeight={60}
                             //rows={useMemo(() => {return state.orders}, [state.orders])} //aici va veni Orders
                             rows={rows}
                             columns={SellerInvoiceRow()}
                             pageSizeOptions={[10, 25, 50]}
-                            onRowSelectionModelChange={(newRowSelectionModel) => {
-                                dispatch({type: "SET_SELECTION_MODEL", payload: newRowSelectionModel})
-                            }}
-                            rowSelectionModel={state.selectionModel}
+                            //onRowSelectionModelChange={(newRowSelectionModel) => {
+                            //    dispatch({type: "SET_SELECTION_MODEL", payload: newRowSelectionModel})
+                            //}}
+                            //rowSelectionModel={state.selectionModel}
                             autoPageSize={false}
                             loading={loading}
+                            paginationMode={'server'}
+                            slots={{toolbar:CustomToolbar}}
                         //    slots={{toolbar: GridToolbar}}
                         />
                 </Grid>
