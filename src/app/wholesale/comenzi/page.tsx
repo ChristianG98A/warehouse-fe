@@ -122,7 +122,7 @@ const Orders = () => {
             />
 
 
-            <Grid component={Paper} container direction="column" justifySelf={"center"} justifyItems={"center"} style={{width: '100%', height: "70vh"}} >
+            <Grid component={Paper} container direction="column" justifySelf={"center"} justifyItems={"center"} style={{width: '100%', height: "60vh"}} >
                     <DataGrid
                         columnHeaderHeight={60}
                         //rows={useMemo(() => {return state.orders}, [state.orders])} //aici va veni Orders

@@ -48,15 +48,15 @@ export default function GridColumns() { // implement type here................
 
 
     const columns: GridColDef[] = [
-        {field: 'crt', headerName: 'Crt', width: 50},
-        {field: 'id', headerName: 'ID Comanda', width: 100},
-        {field: 'status', headerName: 'Status', width: 100},
-        {field: 'whStatus', headerName: 'Status depozit', width: 110},
-        {field: 'produse_alocate', headerName: 'Produse / Alocate', width: 100},
-        {field: 'totalNoVat', headerName: 'Total fara TVA', width: 130},
-        {field: 'totalWithVat', headerName: 'Total cu TVA', width: 110},
-        {field: 'nr_comanda_client', headerName: 'Nr. comanda client', width: 130},
-        {field: 'order_notes', headerName: 'Note', width: 130},
+        {field: 'crt', headerName: 'Crt', flex: 1},
+        {field: 'id', headerName: 'ID Comanda', flex: 2},
+        {field: 'status', headerName: 'Status', flex: 2},
+        {field: 'whStatus', headerName: 'Status depozit', flex: 2},
+        {field: 'produse_alocate', headerName: 'Produse / Alocate', flex: 2},
+        {field: 'totalNoVat', headerName: 'Total fara TVA', flex: 2},
+        {field: 'totalWithVat', headerName: 'Total cu TVA', flex: 2},
+        {field: 'nr_comanda_client', headerName: 'Nr. comanda client', flex: 2},
+        {field: 'order_notes', headerName: 'Note', flex: 2},
         {
             field: 'actions',
             headerName: 'Actions',
