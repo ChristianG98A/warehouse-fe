@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Box, FormControl, Grid, InputLabel, MenuItem, Modal, Paper, Select, SelectChangeEvent, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
+import {Box, Button, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Paper, Select, SelectChangeEvent, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
 import SellerInvoiceRow from "./SellerInvoiceRow";
@@ -89,21 +89,30 @@ const ProviderOrders = () => {
    //     dispatch({type: "SET_OPEN_ERROR_SNACK", payload: false})
     };
 
-    //const addUser = handleSubmit(
-    //    async (data) => {
-    //        //setLoading(true);
-    //        const addInvoice: AddInvoice = {
-    //            username: username,
-    //            password: data.password,
-    //            firstName: data.firstName,
-    //            lastName: data.lastName,
-    //            role: data.role,
-    //            phoneNumber: data.phoneNumber,
-    //            email: emailAddress,
-    //            status: data.status,
-    //            groupId: role === 'MASTER' ? data.group : (await group).id
-    //        };
-
+    const addInvoice = handleSubmit(
+        async (data) => {
+            console.log(data)
+            //const userAdd: UserAdd = {
+            //    username: username,
+            //    password: data.password,
+            //    firstName: data.firstName,
+            //    lastName: data.lastName,
+            //    role: data.role,
+            //    phoneNumber: data.phoneNumber,
+            //    email: emailAddress,
+            //    status: data.status,
+            //    groupId: role === 'MASTER' ? data.group : (await group).id
+            //};
+            //saveUser(userAdd).then(
+            //    r => {
+            //        console.log(userAdd);
+            //        setLoading(false);
+            //        navigate("/users")
+            //    },
+            //    e => console.log(e)
+            //);
+        }
+    );
 
     return (
         <>
@@ -141,19 +150,20 @@ const ProviderOrders = () => {
                 />
             </Grid>
 
-            {newInvoiceModal ?
-                <div>
+            <div
+            >
                     <Modal
+                        component={"form"}
+                        onSubmit={addInvoice}
                         open={newInvoiceModal}
-                        onClose={handleClose}
                         aria-labelledby="New Invoice Modal"
                         aria-describedby="new-invoice-modal"
                     >
-                        <Box sx={style}>
+                        <Box  sx={style}>
                             <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
                                 Creeaza N.I.R.
                             </Typography>
-                            <Grid alignItems={"center"} container spacing={3} flex={3}>
+                            <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flex={3}>
                                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                                     <TextField
                                         {...register("invoiceNumber")}
@@ -191,6 +201,7 @@ const ProviderOrders = () => {
                                         </Select>
                                     </FormControl>
                                 </ Grid>
+
                                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6} sx={{mt:5}} >
                                     <FormControl variant='standard' sx={{width: "100%", }}>
                                         <InputLabel id="supplier" >Furnizor</InputLabel>
@@ -200,11 +211,21 @@ const ProviderOrders = () => {
                                         </Select>
                                     </FormControl>
                                 </ Grid>
+
                             </Grid>
+                            <Divider sx={{mt:10}}/>
+                            <Box sx={{display:"flex", justifyContent:"right", gap:"5rem", pt:2}} >
+                                <Button variant="contained" type={"submit"}>
+                                    Save
+                                </Button>
+                                <Button variant="contained" type={"submit"} onClick={handleClose}  >
+                                    Cancel
+                                </Button>
+                            </Box>
+
                         </Box>
                     </Modal>
                 </div>
-            :null}
 
             <SpeedDial
                 ariaLabel="Invoice Actions"

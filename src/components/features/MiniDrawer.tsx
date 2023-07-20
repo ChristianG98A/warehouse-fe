@@ -18,11 +18,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import {Avatar, Fade, ListSubheader, Menu, MenuItem, Tooltip} from '@mui/material';
 import SidebarListDropdown from '../common/SidebarListDropdown';
-import SidebarListItem from '../common/SidebarListItem';
+import {useRouter} from "next/navigation";
 
 const drawerWidth = 280;
 const settings = ['Profile', 'Logout'];
@@ -98,6 +97,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function MiniDrawer() {
   const theme = useTheme();
+  const router = useRouter();
   const [open, setOpen] = React.useState(true);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -200,7 +200,7 @@ export default function MiniDrawer() {
         <Divider />
                 <List>
                     <ListItem key={"Dashboard"} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={()=>router.push("/")}>
                             <ListItemIcon>
                                 <MailIcon />
                             </ListItemIcon>
@@ -218,9 +218,6 @@ export default function MiniDrawer() {
                             menuItems={[
                             {name: 'Comenzi Furnizori', link:"/receptie_marfa/comenzi_furnizori"}]
                             }/>
-                    <SidebarListItem item='Comenzi in astepare' link='#' index={2}/>
-                    <SidebarListItem item='Produse in asteptare' link='#' index={3}/>
-                    <SidebarListItem item='Borderouri' link='#' index={4}/>
 
                     <SidebarListDropdown item="Wholesale" index={9}
                             menuItems={[
@@ -228,56 +225,8 @@ export default function MiniDrawer() {
                             {name:'Export produse', link:'/wholesale/export_produse'},
                             {name: 'Clienti', link:"/wholesale/clienti"}]}/>
 
-                    <SidebarListDropdown item="Inventare"  index={8}
-                            menuItems={[
-                            {
-                                name:'Inventar general',
-                                link:'/inventar/inventar_general'
-                            },
-                            {
-                                name:'Inventar producator',
-                            link:'/inventar/inventar_producator'}
-                            ]}/>
-
-                    <SidebarListItem item='Achizitii' link='#' index={7}/>
                 </List>
 
-                <Divider />
-
-                <List>
-
-                <Fade in={open}>
-                    <ListSubheader children={"PARTENERI"} />
-                </ Fade>
-                    {['Amazon', 'eMag'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-
-                <Divider />
-
-                <List>
-                <Fade in={open}>
-                    <ListSubheader children={"MAGAZIN"} />
-                </ Fade>
-                    {['Produse', 'Promotii'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
       </Drawer>
     </Box>
   );
