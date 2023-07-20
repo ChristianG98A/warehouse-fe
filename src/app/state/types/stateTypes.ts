@@ -31,6 +31,10 @@ export type Action =
         payload: boolean;
     } |
     {
+        type: "SET_INVOICES";
+        payload: ;
+    } |
+    {
         type: "SET_OPEN_ERROR_SNACK";
         payload: boolean;
     } |

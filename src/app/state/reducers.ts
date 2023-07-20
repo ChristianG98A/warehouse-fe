@@ -26,6 +26,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_OPEN_ERROR_SNACK':
             return {...state, errorSnack:action.payload}
 
+        case 'SET_INVOICES':
+            return {...state, invoices:action.payload}
+
         default:
             return state
     }

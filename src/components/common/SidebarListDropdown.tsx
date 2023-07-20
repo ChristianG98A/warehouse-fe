@@ -37,7 +37,9 @@ export default function SidebarListDropdown(props: {index: number, item: string,
                 <Collapse in={openSubMenu} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {props.menuItems.map((item, index) => (
-                                <ListItemButton onClick={() => router.push(item.link)} key={"KeyY2" + item.name}>
+                            <ListItemButton onClick={() => {
+                                router.push(item.link)
+                            }} key={"KeyY2" + item.name}>
                                     <ListItem sx={{pl: 9}} key={"Key" + item.name}>
                                         <ListItemText primary={item.name} />
                                     </ListItem>

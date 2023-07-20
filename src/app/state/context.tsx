@@ -7,7 +7,7 @@ import {reducer} from "./reducers"
 export const StateContext = createContext<any>([null, null])
 
 export default function ContextProvider({children}:{children:React.ReactNode}) {
-const [state, dispatch] = useReducer(reducer, {deletePrompt: false, orders:[]})
+const [state, dispatch] = useReducer(reducer, {deletePrompt: false, orders:[], invoices: []})
 
 
   return (

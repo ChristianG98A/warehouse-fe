@@ -24,7 +24,7 @@ import {Avatar, Fade, ListSubheader, Menu, MenuItem, Tooltip} from '@mui/materia
 import SidebarListDropdown from '../common/SidebarListDropdown';
 import SidebarListItem from '../common/SidebarListItem';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 const settings = ['Profile', 'Logout'];
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -216,7 +216,7 @@ export default function MiniDrawer() {
                 </Fade>
                     <SidebarListDropdown item="Receptie marfa" index={1}
                             menuItems={[
-                            {name: 'Comenzi furnizori', link:"/receptie_marfa/comenzi_furnizori"}]
+                            {name: 'Comenzi Furnizori', link:"/receptie_marfa/comenzi_furnizori"}]
                             }/>
                     <SidebarListItem item='Comenzi in astepare' link='#' index={2}/>
                     <SidebarListItem item='Produse in asteptare' link='#' index={3}/>
