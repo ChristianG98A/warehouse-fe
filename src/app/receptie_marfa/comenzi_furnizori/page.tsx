@@ -15,7 +15,9 @@ import PrintIcon from '@mui/icons-material/Print';
 import ShareIcon from '@mui/icons-material/Share';
 import {useForm} from "react-hook-form";
 import {DateField} from "@mui/x-date-pickers";
-import dayjs, {Dayjs} from "dayjs";
+import dayjs from "dayjs";
+import {PersonPinCircleSharp} from "@mui/icons-material";
+import {useRouter} from "next/navigation";
 
 const rowsPlaceholder: GridRowsProp = [
     {id: 1, crt: 1, Furnizor: "sc cacamaca", Serie_Factura: 12312313, invoiceNumber: 123132, date: "12.07.2023", product: "eau du saq", EAN: 523526, TVA: "19", discount: "0%", buy_price: 909.9, nrceva: 1324, deposit: "barbu v", sofer: "cutare"},
@@ -50,6 +52,7 @@ const ProviderOrders = () => {
         pageSize: 10,
         page: 0
     })
+    const router = useRouter();
 
     // Initial Data Fetch
 
@@ -119,18 +122,17 @@ const ProviderOrders = () => {
             />
             <Grid component={Paper} container direction="column" justifySelf={"center"} justifyItems={"center"} style={{width: '100%', height: "60vh"}} >
                 <DataGrid
-                    rowSelection={false}
+                    rowSelection={true}
                     columnHeaderHeight={60}
-                    //rows={useMemo(() => {return state.orders}, [state.orders])} //aici va veni Orders
                     rows={state.invoices}
                     columns={SellerInvoiceRow()}
                     initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
                     onPaginationModelChange={setPaginationModel}
                     pageSizeOptions={[10, 25, 50]}
-                    //onRowSelectionModelChange={(newRowSelectionModel) => {
-                    //    dispatch({type: "SET_SELECTION_MODEL", payload: newRowSelectionModel})
-                    //}}
-                    //rowSelectionModel={state.selectionModel}
+                    onRowSelectionModelChange={(newRowSelectionModel) => {
+                        dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
+                    }}
+                    rowSelectionModel={state.selectionModel}
                     autoPageSize={false}
                     loading={loading}
                     // slots={{toolbar: CustomToolbar}}
@@ -255,7 +257,7 @@ const ProviderOrders = () => {
                 icon={<SpeedDialIcon />}
             >
                 <SpeedDialAction
-                    key={"adauga_nir"}
+                    key={"new_invoice"}
                     icon={<SaveIcon />}
                     tooltipTitle={"Creeaza N.I.R."}
                     onClick={() => {
@@ -265,6 +267,16 @@ const ProviderOrders = () => {
                         })
                         setNewInvoiceModal(true)
                     }}
+                />
+
+                <SpeedDialAction
+                    key={"edit_invoice"}
+                    icon={<PersonPinCircleSharp />}
+                    tooltipTitle={"Editare N.I.R."}
+                    onClick={() => {
+                            router.push("/receptie_marfa/comenzi_furnizori/editare_nir")
+                        }
+                    }
                 />
             </SpeedDial>
         </>
