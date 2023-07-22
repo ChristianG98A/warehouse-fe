@@ -19,6 +19,10 @@ export type Action =
         payload: boolean;
     } |
     {
+        type: "SET_CURRENT_INVOICE";
+        payload: number;
+    } |
+    {
         type: "SET_SELECTION_MODEL";
         payload: GridRowSelectionModel;
     } |
