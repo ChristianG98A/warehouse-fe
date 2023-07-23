@@ -8,6 +8,7 @@ import {useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import {callNextApi} from "@/helpers/apiMethods";
 import {DataGrid, GridColDef, GridToolbar} from "@mui/x-data-grid";
+import CustomToolbar from "@/components/common/CustomToolbar";
 
 const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -54,6 +55,7 @@ const InvoiceEdit = () => {
     }, [])
 
     useEffect(()=>console.log("Checkbox Selected: ", selectionModel), [selectionModel])
+    useEffect(()=>console.log("Product basket: ", state?.productBasket), [state.productBasket])
 
 
   return (
@@ -89,44 +91,50 @@ const InvoiceEdit = () => {
                         <TextField
                         sx={{width:'30rem'}}
                             onChange={handleSearch}
-                            label={'Denumire / EAN / ID'}
-                        />
-                    </ Grid>
+                            label={'Denumire / SKU / ID'}
+                      />
+                  </ Grid>
 
-                    <Grid item xs={10} sm={10} md={10} lg={10} xl={10}  sx={{width:"80%"}}>
-                        <DataGrid
-                            rowSelection={true}
-                            columnHeaderHeight={60}
-                            checkboxSelection
-                            rows={state.productResult}
-                            pageSizeOptions={[10, 25, 50]}
-                            initialState={{pagination: {paginationModel: paginationModel}}}
-                            onPaginationModelChange={setPaginationModel}
-                            onRowSelectionModelChange={(newRowSelectionModel) => {
-                                setSelectionModel(newRowSelectionModel)
-                            }}
-                            columns={[
-                                {field: 'crt', headerName: 'Crt', flex: 1},
-                                {field: 'id', headerName: 'ID Produs', flex: 1},
-                                {field: 'name', headerName: 'Denumire Produs', flex: 4},
-                                {field: 'model', headerName: 'Model', flex: 4},
-                            ]}
-                            rowSelectionModel={state.selectionModel}
-                            autoPageSize={false}
-                            loading={loading}
-                        />
-                    </ Grid>
-                </Grid>
+                  <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{width: "80%"}}>
+                      <DataGrid
+                          rowSelection={true}
+                          columnHeaderHeight={60}
+                          checkboxSelection
+                          rows={state.productResult}
+                          pageSizeOptions={[10, 25, 50]}
+                          initialState={{pagination: {paginationModel: paginationModel}}}
+                          onPaginationModelChange={setPaginationModel}
+                          onRowSelectionModelChange={(newRowSelectionModel) => {
+                              setSelectionModel(newRowSelectionModel)
+                          }}
+                          columns={[
+                              {field: 'crt', headerName: 'Crt', flex: 1},
+                              {field: 'id', headerName: 'ID Produs', flex: 1},
+                              {field: 'name', headerName: 'Denumire Produs', flex: 4},
+                              {field: 'model', headerName: 'Model', flex: 4},
+                          ]}
+                          rowSelectionModel={state.selectionModel}
+                          autoPageSize={false}
+                          loading={loading}
+                      />
+                  </ Grid>
 
-                <Divider sx={{mt: 10}} />
-                <Box sx={{display: "flex", justifyContent: "right", gap: "5rem", pt: 2}} >
-                    <Button variant="contained" type={"submit"}>
-                        Save
-                    </Button>
-                    <Button variant="contained" type={"submit"} onClick={handleClose}  >
-                        Cancel
-                    </Button>
-                </Box>
+
+                  <Grid item xs={10} sm={10} md={10} lg={10} xl={10} alignItems={"center"} justifyItems={"center"} justifyContent={"center"} >
+                      <Divider sx={{mt: 3, mb: 3}} />
+                      <Button disabled={selectionModel?.length==0} variant="contained" onClick={()=>{
+                            selectionModel?.forEach((itemSelected:any)=>{
+                                try {
+                                    dispatch({type: "SET_PRODUCT_BASKET", payload: state.productResult.find((productObject:any)=>productObject.id==itemSelected
+                                        )})
+                                }catch(error){console.log("Error in adding products to invoice!", error)}
+                                })
+                          }} sx={{width:"10rem"}}>
+                          Add
+                      </Button>
+                  </Grid>
+              </Grid>
+
 
             </Box>
         </>

@@ -10,17 +10,9 @@ const CustomToolbar = () => {
                 onClick={() => (null)}
                 style={{marginLeft: "1rem"}}
             >
-                New Order
+                Adauga
             </Button>
 
-            <Button
-                color="error"
-                size="large"
-                onClick={() => (null)}
-                style={{marginLeft: "1rem"}}
-            >
-                Delete
-            </Button>
         </div>
     );
 }

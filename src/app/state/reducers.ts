@@ -35,6 +35,14 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_INVOICES':
             return {...state, invoices:action.payload}
 
+        case 'SET_PRODUCT_BASKET':
+            return {
+                ...state,
+                productBasket: [...state.productBasket, action.payload],
+            };
+        case 'RESET_PRODUCT_Basket':
+            return {...state, productBasket:[]}
+
         default:
             return state
     }
