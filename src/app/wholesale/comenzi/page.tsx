@@ -19,40 +19,6 @@ const rows: GridRowsProp = [
     {crt: 8, id: 8, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
 ];
 
-const row = {crt: 1, id: 1, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: 10, note: "da"}
-
-const data = {
-    status: 200,
-    code: "success",
-    response: {
-        currency: "EUR",
-        orderProducts: [
-            {
-                name: "Aparat de ras scamele, Esperanza Cuddly",
-                sku: "ESPERANZAECS003T",
-                ean: "7890004772037",
-                quantity: "2",
-                price_brutto: "100"
-            },
-            {
-                name: "Aparat de ras scamele, Esperanza Cuddly",
-                sku: "ESPERANZAECS003T",
-                ean: "7890004772037",
-                quantity: "2",
-                price_brutto: "100"
-            }
-        ]
-    }
-}
-
-function generateRows(rowsNr: number, row: any) {
-    let localrows = []
-    for (var i = 0; i < rowsNr; i++) {
-        localrows.push(row);
-    }
-    return localrows;
-}
-
 
 const rowsPerPageOptions = [10, 20, 100];
 
