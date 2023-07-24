@@ -40,7 +40,7 @@ export const reducer = (state: State|any, action: Action|any) => {
                 ...state,
                 productBasket: [...state.productBasket, action.payload],
             };
-        case 'RESET_PRODUCT_Basket':
+        case 'RESET_PRODUCT_BASKET':
             return {...state, productBasket:[]}
 
         default:

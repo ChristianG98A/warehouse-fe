@@ -1,6 +1,6 @@
 import axios from "axios";
 import {NextRequest, NextResponse} from "next/server";
-import {AddProduct} from "./types";
+import {AddProduct} from "../types/types";
 require('dotenv').config();
 
 
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const token = process.env.API_TOKEN
     //console.log("this reaches the next api:\n", data)
 
-    const url = 'https://whx.ybomedia.ro/Api/Products/addProducts';
+    const url = 'https://whx.ybomedia.ro/Api/Purchase/addProduct';
     const options = {
         method: "POST",
         headers: {
