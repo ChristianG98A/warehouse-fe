@@ -13,6 +13,7 @@ const [state, dispatch] = useReducer(reducer, {
     invoices: [],
     productResult:[],
     productBasket:[],
+    productBasketModal:false,
     })
 
 

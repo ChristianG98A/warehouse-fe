@@ -1,16 +1,20 @@
+"use client"
+
+import {StateContext} from "@/app/state/context";
 import {Button} from "@mui/material";
-import React from "react";
+import React, {useContext} from "react";
 
 const CustomToolbar = () => {
+    const [state, dispatch] = useContext(StateContext);
     return (
         <div>
             <Button
                 color="primary"
                 size="large"
-                onClick={() => (null)}
+                onClick={() => dispatch({type:"SET_PRODUCT_BASKET_MODAL", payload:true})}
                 style={{marginLeft: "1rem"}}
             >
-                Adauga
+                Adauga Produse
             </Button>
 
         </div>

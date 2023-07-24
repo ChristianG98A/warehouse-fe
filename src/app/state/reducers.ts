@@ -10,6 +10,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_SELECTION_MODEL':
             return {...state, selectionModel:action.payload}
 
+        case 'SET_PRODUCT_BASKET_MODAL':
+            return {...state, productBasketModal:action.payload}
+
         case 'SET_PRODUCT_RESULT':
             return {...state, productResult:action.payload}
 
