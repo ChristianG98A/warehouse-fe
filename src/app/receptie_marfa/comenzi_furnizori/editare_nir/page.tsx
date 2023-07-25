@@ -2,18 +2,19 @@
 
 import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
-import {Alert, Box, Button, Divider, Grid, Modal, Snackbar, TextField, Typography} from "@mui/material";
-import {useContext, useEffect, useState} from "react";
+import {Alert, Box, Button, colors, Divider, Grid, Modal, Snackbar, TextField, Typography} from "@mui/material";
+import {useContext, useEffect, useMemo, useState} from "react";
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import {callNextApi} from "@/helpers/apiMethods";
-import {DataGrid, GridActionsCellItem, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel} from "@mui/x-data-grid";
+import {DataGrid, GridActionsCellItem, gridClasses, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel} from "@mui/x-data-grid";
 import CustomToolbar from "@/components/common/CustomToolbar";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
+import {grey} from "@mui/material/colors";
 
 
 
@@ -32,18 +33,6 @@ const InvoiceEdit = () => {
         pageSize: 10,
         page: 0
     })
-    const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
-
-    const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
-        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-            event.defaultMuiPrevented = true;
-        }
-    };
-
-    const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-        setRowModesModel(newRowModesModel);
-    };
-
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -52,26 +41,41 @@ const InvoiceEdit = () => {
         setSnackBar({...snackBar, state: false})
     };
 
-    //!!!!!!!10
-    const handleEditClick = (id: GridRowId) => () => {
-        setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.Edit}});
-    };
+    const handleRowUpdate = (data:any) => {
+        const index = state.productBasket.findIndex((item:any)=>item.id === data.id);
+        console.log("New row data: ", data, index)
 
-    const handleSaveClick = (id: GridRowId) => () => {
-        setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
-    };
-
-    const handleDeleteClick = (id: GridRowId) => () => {
-        return null;
-    };
-
-    const handleCancelClick = (id: GridRowId) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: {mode: GridRowModes.View, ignoreModifications: true},
-        });
     }
-    //
+
+
+    const handleSubmitProducts = async () => {
+        await callNextApi("POST", "purchase/addProduct", {
+            invoice_id: parseInt(state?.currentInvoice[0]),
+            products: state.productBasket.map((product: any) => {
+                return ({
+                    "product_id": parseInt(product.id),
+                    "product_name": product.name,
+                    "acquisition_price": "125.99",
+                    "quantity": 222,
+                    "tax": "1.19"
+                })
+            }),
+        })
+            .catch(e => {
+                console.log("Error in submitting products: \n", e)
+                setSnackBar({message: "Eroare!", type: "error", state: true})
+            })
+            .then(
+                r => {
+                    dispatch({
+                        type: "RESET_PRODUCT_BASKET"
+                    })
+                    setProductCart(false)
+                    setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
+                }
+
+            )
+    }
 
     const handleSearch = debounce(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
@@ -131,9 +135,8 @@ const InvoiceEdit = () => {
                     </Grid>
                     <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{width: "80%"}}>
                         <DataGrid
-                            rowSelection={true}
+                            rowSelection={false}
                             columnHeaderHeight={60}
-                            checkboxSelection
                             rows={state.productBasket}
                             pageSizeOptions={[10, 25, 50]}
                             initialState={{pagination: {paginationModel: paginationModel}}}
@@ -141,96 +144,42 @@ const InvoiceEdit = () => {
                             onRowSelectionModelChange={(newRowSelectionModel) => {
                                 setSelectionModel(newRowSelectionModel)
                             }}
-                            columns={[
-                                {field: 'crt', headerName: 'Crt', flex: 1},
-                                {field: 'id', headerName: 'ID Produs', flex: 1},
+                            columns={useMemo(()=>([
+                                {field: 'id', headerName: 'ID Produs', flex: 2},
                                 {field: 'name', headerName: 'Denumire Produs', flex: 4},
                                 {field: 'model', headerName: 'Model', flex: 4},
-                                {
-                                    field: 'actions',
-                                    type: 'actions',
-                                    headerName: 'Actions',
-                                    width: 100,
-                                    cellClassName: 'actions',
-                                    getActions: ({id}) => {
-                                        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+                                {field: 'acquisition_price', headerName: 'Pret de Achizitie', flex: 2, editable:true, type:"string"},
+                                {field: 'quantity', headerName: 'Cantitate', flex: 2, editable:true, type:"number"},
+                                {field: 'tax', headerName: 'TVA', flex: 2, editable:true, type:"number"},
 
-                                        if (isInEditMode) {
-                                            return [
-                                                <GridActionsCellItem
-                                                    icon={<SaveIcon />}
-                                                    label="Save"
-                                                    sx={{
-                                                        color: 'primary.main',
-                                                    }}
-                                                    onClick={handleSaveClick(id)}
-                                                />,
-                                                <GridActionsCellItem
-                                                    icon={<CancelIcon />}
-                                                    label="Cancel"
-                                                    className="textPrimary"
-                                                    onClick={handleCancelClick(id)}
-                                                    color="inherit"
-                                                />,
-                                            ];
-                                        }
+                            ]),[])}
 
-                                        return [
-                                            <GridActionsCellItem
-                                                icon={<EditIcon />}
-                                                label="Edit"
-                                                className="textPrimary"
-                                                onClick={handleEditClick(id)}
-                                                color="inherit"
-                                            />,
-                                            <GridActionsCellItem
-                                                icon={<DeleteIcon />}
-                                                label="Delete"
-                                                onClick={handleDeleteClick(id)}
-                                                color="inherit"
-                                            />,
-                                        ];
-                                    },
+                            getRowSpacing={params=>({
+                                    top: params.isFirstVisible? 0 : 5,
+                                    bottom: params.isLastVisible? 0 : 5
+                                })}
+                            sx={{
+                                '& .MuiDataGrid-row': {
+                                    backgroundColor: grey[200],
                                 },
-                            ]}
-                            rowSelectionModel={selectionModel}
+                                }}
+
                             autoPageSize={false}
                             loading={loading}
                             slots={{toolbar: CustomToolbar}}
+                            onRowEditCommit={(ceva:any)=>console.log("bum ", ceva)}
+                            processRowUpdate={handleRowUpdate}
+                            onProcessRowUpdateError={e=>console.log('Error encountered when editing rows: \n', e)}
+
+                            editMode="row"
                         />
                     </ Grid>
 
                     <Grid item xs={10} sm={10} md={10} lg={10} xl={10} >
-                        <Button disabled={state.productBasket.length == 0} variant="contained" sx={{mt: 2}} onClick={async () => {
-                            await callNextApi("POST", "purchase/addProduct", {
-                                invoice_id: parseInt(state?.currentInvoice[0]),
-                                products: state.productBasket.map((product: any) => {
-                                    return ({
-                                        "product_id": parseInt(product.id),
-                                        "product_name": product.name,
-                                        "acquisition_price": "125.99",
-                                        "quantity": 222,
-                                        "tax": "1.19"
-                                    })
-                                }),
-                            })
-                                .catch(e => {
-                                    console.log("Error in submitting products: \n", e)
-                                    setSnackBar({message: "Eroare!", type: "error", state: true})
-                                })
-                                .then(
-                                    r => {
-                                        dispatch({
-                                            type: "RESET_PRODUCT_BASKET"
-                                        })
-                                        setProductCart(false)
-                                        setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
-                                    }
-
-                                )
-                        }}>
+                        <Button disabled={state.productBasket.length == 0} variant="contained" sx={{mt: 2}} onClick={handleSubmitProducts}>
                             Salveaza
                         </Button>
+                        <Button onClick={()=>console.log()} >Get the Rows</Button>
                     </Grid>
                 </Grid>
 
@@ -268,12 +217,6 @@ const InvoiceEdit = () => {
 
                             <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{width: "80%"}}>
                                 <DataGrid
-                                    editMode="row"
-
-                                    rowModesModel={rowModesModel}
-                                    onRowModesModelChange={handleRowModesModelChange}
-                                    onRowEditStop={handleRowEditStop}
-
                                     rowSelection={true}
                                     columnHeaderHeight={60}
                                     checkboxSelection
@@ -304,11 +247,16 @@ const InvoiceEdit = () => {
                                 <Button disabled={selectionModel?.length == 0} variant="contained" onClick={() => {
                                     setSnackBar({message: "Produse adaugate in cos!", type: 'success', state: true})
                                     selectionModel?.forEach((itemSelected: any) => {
+                                        const checkIfProductIsInBasket = (id:any)=>{
+                                                return state.productBasket.some((productInBasket:any) => productInBasket.id == id)
+                                            }
                                         try {
-                                            dispatch({
-                                                type: "SET_PRODUCT_BASKET", payload: state.productResult.find((productObject: any) => productObject.id == itemSelected
-                                                )
-                                            })
+                                            if (!checkIfProductIsInBasket(itemSelected)) {
+                                                dispatch({
+                                                    type: "SET_PRODUCT_BASKET",
+                                                    payload: state.productResult.find((productObject: any) => productObject.id == itemSelected)
+                                                })
+                                            }
                                         } catch (error) {console.log("Error in adding products to invoice!", error)}
                                     })
                                     setSelectionModel([])
