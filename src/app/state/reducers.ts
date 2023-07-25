@@ -44,7 +44,6 @@ export const reducer = (state: State|any, action: Action|any) => {
 
         case 'SET_PRODUCT_BASKET':
             const index = findIndexByObjectId(state.productBasket, action.payload.id)
-            console.log("Index found at:", index)
 
             if (index !==-1) {
                 return {...state, productBasket: state.productBasket.map((item:any, i:any)=> i === index ? action.payload : item)}

@@ -45,7 +45,6 @@ const InvoiceEdit = () => {
         const index = state.productBasket.findIndex((item:any)=>item.id === data.id);
         console.log("New row data: ", data, index)
         dispatch({type:"SET_PRODUCT_BASKET", payload:data})
-
     }
 
 
@@ -56,9 +55,9 @@ const InvoiceEdit = () => {
                 return ({
                     "product_id": parseInt(product.id),
                     "product_name": product.name,
-                    "acquisition_price": "125.99",
-                    "quantity": 222,
-                    "tax": "1.19"
+                    "acquisition_price": product.acquisition_price ?? "0",
+                    "quantity": product.quantity ?? 0,
+                    "tax": product.tax?? "1.19",
                 })
             }),
         })
@@ -151,7 +150,7 @@ const InvoiceEdit = () => {
                                 {field: 'model', headerName: 'Model', flex: 4},
                                 {field: 'acquisition_price', headerName: 'Pret de Achizitie', flex: 2, editable:true, type:"string"},
                                 {field: 'quantity', headerName: 'Cantitate', flex: 2, editable:true, type:"number"},
-                                {field: 'tax', headerName: 'TVA', flex: 2, editable:true, type:"number"},
+                                {field: 'tax', headerName: 'TVA', flex: 2, editable:true, type:"number" },
 
                             ]),[])}
 
