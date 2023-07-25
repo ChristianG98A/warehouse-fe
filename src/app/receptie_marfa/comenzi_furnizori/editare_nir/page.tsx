@@ -44,6 +44,7 @@ const InvoiceEdit = () => {
     const handleRowUpdate = (data:any) => {
         const index = state.productBasket.findIndex((item:any)=>item.id === data.id);
         console.log("New row data: ", data, index)
+        dispatch({type:"SET_PRODUCT_BASKET", payload:data})
 
     }
 

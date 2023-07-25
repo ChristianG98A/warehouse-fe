@@ -1,5 +1,9 @@
 import {Action, State} from "./types/stateTypes";
 
+const findIndexByObjectId = (dataArray:any, targetId:number) => {
+  const index = dataArray.findIndex((item:any) => item.id === targetId);
+  return index;
+};
 
 export const reducer = (state: State|any, action: Action|any) => {
     switch (action.type) {
@@ -39,10 +43,19 @@ export const reducer = (state: State|any, action: Action|any) => {
             return {...state, invoices:action.payload}
 
         case 'SET_PRODUCT_BASKET':
-            return {
-                ...state,
-                productBasket: [...state.productBasket, action.payload],
-            };
+            const index = findIndexByObjectId(state.productBasket, action.payload.id)
+            console.log("Index found at:", index)
+
+            if (index !==-1) {
+                return {...state, productBasket: state.productBasket.map((item:any, i:any)=> i === index ? action.payload : item)}
+            }
+
+            else {
+                return {
+                    ...state,
+                    productBasket: [...state.productBasket, action.payload],
+                };
+        }
         case 'RESET_PRODUCT_BASKET':
             return {...state, productBasket:[]}
 
