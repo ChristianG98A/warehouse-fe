@@ -1,26 +1,26 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
-import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
-import {Alert, Box, Button, Collapse, Divider, Grid, Modal, Slide, Snackbar, Tab, Tabs, TextField, Typography} from "@mui/material";
-import {useContext, useEffect, useMemo, useState} from "react";
-import {useForm} from "react-hook-form";
-import {useRouter} from "next/navigation";
-import {callNextApi} from "@/helpers/apiMethods";
-import {DataGrid} from "@mui/x-data-grid";
 import CustomToolbar from "@/components/common/CustomToolbar";
-import {grey} from "@mui/material/colors";
+import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
+import {callNextApi} from "@/helpers/apiMethods";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
+import {Alert, Box, Button, Divider, Grid, Modal, Snackbar, Tab, TextField, Typography} from "@mui/material";
+import {grey} from "@mui/material/colors";
+import {DataGrid} from "@mui/x-data-grid";
 import {DateField, LocalizationProvider} from "@mui/x-date-pickers";
-import dayjs from "dayjs";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import {useRouter} from "next/navigation";
+import {useContext, useEffect, useMemo, useReducer, useState} from "react";
+import {useForm} from "react-hook-form";
+import {editInvoiceReducer} from "./editInvoiceState";
 
 
 
 const InvoiceEdit = () => {
     const [state, dispatch] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
-    const [invoiceDate, setInvoiceDate] = useState<any>("");
     const {register, handleSubmit} = useForm();
     const [productCart, setProductCart] = useState(false);
     const router = useRouter();
@@ -28,6 +28,7 @@ const InvoiceEdit = () => {
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const debounce = require('lodash.debounce');
     const [selectionModel, setSelectionModel] = useState<any>([0])
+    const [editInvoiceState, editInvoiceDispatch] = useReducer(editInvoiceReducer, {})
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
@@ -45,7 +46,29 @@ const InvoiceEdit = () => {
         console.log("New row data: ", data, index)
         dispatch({type: "SET_PRODUCT_BASKET", payload: data})
     }
-    const handleSubmitInvoiceDetails = ()=>null;
+    const handleSubmitInvoiceDetails = async ()=>{
+
+        setLoading(true)
+        await callNextApi("POST", "purchase/setInvoiceValues", {
+            invoice_id: parseInt(state?.currentInvoice[0]),
+            invoice_series: editInvoiceState.invoiceSeries,
+            invoice_number: editInvoiceState.invoiceNumber,
+            invoice_date: editInvoiceState.date
+        })
+            .catch(e => {
+                console.log("Error in submitting invoice details: \n", e)
+                setSnackBar({message: "Eroare!", type: "error", state: true})
+            })
+            .then(
+                r => {
+                    setLoading(false)
+                    getInvoiceDetails(state.currentInvoice)
+                    setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
+                }
+
+            )
+
+        }
 
 
     const handleSubmitProducts = async () => {
@@ -98,7 +121,6 @@ const InvoiceEdit = () => {
     }, 1000)
 
     const getInvoiceProducts = async (invoiceId: number) => {
-        setLoading(true)
         dispatch({type: "RESET_PRODUCT_BASKET"})
         await callNextApi("POST", "purchase/getInvoicePList", {invoice_id: invoiceId})
             .catch(e => console.log("Error in fetching invoice products: ", e))
@@ -119,6 +141,20 @@ const InvoiceEdit = () => {
                 })
             })
     }
+
+    const getInvoiceDetails = async (invoiceId: number) => {
+
+        await callNextApi("POST", "purchase/getPurchase", {invoice_id: invoiceId})
+            .catch(e => console.log("Error in fetching invoice details: ", e))
+            .then((r: any) => {
+                console.log("invoice details: \n", r)
+                dispatch({type:"SET_CURRENT_INVOICE_DETAILS", payload:r})
+                editInvoiceDispatch({type:"SET_DATE", payload:dayjs(r?.response[0]?.invoice_date, "YYYY-MM-DD")})
+                editInvoiceDispatch({type:"SET_INVOICE_SERIES", payload:r?.response[0]?.invoice_series})
+                editInvoiceDispatch({type:"SET_INVOICE_NUMBER", payload:r?.response[0]?.invoice_number})
+            })
+    }
+
     useEffect(() => {
         setLoading(true)
         if (!state.currentInvoice) {
@@ -126,6 +162,7 @@ const InvoiceEdit = () => {
         } else {
             setLoading(false);
             getInvoiceProducts(state.currentInvoice).then(r => setLoading(false))
+            getInvoiceDetails(state.currentInvoice)
         }
     }, [])
 
@@ -235,22 +272,23 @@ const InvoiceEdit = () => {
                             </Grid>
 
                             <Grid item xs={4} sx={center}>
-                                <TextField id="standard-basic" label="Serie Factura" variant="standard" />
+                                <TextField contentEditable={false} id="invoiceSeries" focused={true} label="Serie Factura" variant="standard" value={editInvoiceState.invoiceSeries} />
                             </ Grid>
 
                             <Grid item xs={4} sx={center}>
-                                <TextField id="standard-basic" label="Numar Factura" variant="standard" />
+                                <TextField id="invoiceNummber" focused={true} label="Numar Factura" variant="standard" value={editInvoiceState.invoiceNumber} />
                             </ Grid>
 
                             <Grid item xs={4} sx={center}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DateField
+                                        focused={true}
                                         required
                                         format={"YYYY-MM-DD"}
                                         label="Data Factura"
-                                        value={invoiceDate}
+                                        value={editInvoiceState.date}
                                         onChange={(newDate) => {
-                                            setInvoiceDate(dayjs(newDate).format("YYYY-MM-DD"));
+                                            editInvoiceDispatch({type:"SET_DATE", payload:dayjs(newDate).format("YYYY-MM-DD")})
                                         }}
                                     />
                                 </LocalizationProvider>
@@ -265,15 +303,14 @@ const InvoiceEdit = () => {
                     </Box>
                 </TabPanel>
             </TabContext>
-
-            <Modal
-                autoFocus={true}
-                open={state.productBasketModal}
-                aria-labelledby="Product Cart"
-                aria-describedby="Product-Cart-Modal"
-                sx={{
-                    position: "absolute",
-                    width: "80vw",
+                <Modal
+                    autoFocus={true}
+                    open={state.productBasketModal}
+                    aria-labelledby="Product Cart"
+                    aria-describedby="Product-Cart-Modal"
+                    sx={{
+                        position: "absolute",
+                        width: "80vw",
                         height: "max-content",
                         left: "50%",
                         top: "55%",
@@ -355,7 +392,6 @@ const InvoiceEdit = () => {
                         </Grid>
                     </Box>
                 </Modal>
-
             <Snackbar
                 anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
                 open={snackBar.state}

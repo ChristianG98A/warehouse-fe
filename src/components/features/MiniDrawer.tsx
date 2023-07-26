@@ -214,7 +214,7 @@ export default function MiniDrawer() {
                 <Fade in={open}>
                     <ListSubheader children={"DEPOZIT"} />
                 </Fade>
-                    <SidebarListDropdown item="Receptie marfa" index={1}
+                    <SidebarListDropdown item="Achizitii" index={1}
                             menuItems={[
                             {name: 'Comenzi Furnizori', link:"/receptie_marfa/comenzi_furnizori"}]
                             }/>
