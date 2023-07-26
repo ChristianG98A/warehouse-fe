@@ -5,6 +5,7 @@ import GridColumns from "@/components/common/GridColumns";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Alert, Button, Dialog, DialogActions, DialogTitle, Grid, Paper, Snackbar, Typography} from "@mui/material";
+import {grey} from "@mui/material/colors";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
 
@@ -105,6 +106,15 @@ const Orders = () => {
                         autoPageSize={false}
                         loading={loading}
                         slots={{toolbar: GridToolbar}}
+                        getRowSpacing={params => ({
+                            top: params.isFirstVisible ? 0 : 5,
+                            bottom: params.isLastVisible ? 0 : 5
+                        })}
+                        sx={{
+                            '& .MuiDataGrid-row': {
+                                backgroundColor: grey[200],
+                            },
+                        }}
                     />
 
                     <Button onClick={async () => {

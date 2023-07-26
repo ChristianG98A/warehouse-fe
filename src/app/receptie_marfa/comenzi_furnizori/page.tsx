@@ -18,6 +18,7 @@ import {DateField} from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import {PersonPinCircleSharp} from "@mui/icons-material";
 import {useRouter} from "next/navigation";
+import {grey} from "@mui/material/colors";
 
 const rowsPlaceholder: GridRowsProp = [
     {id: 1, crt: 1, Furnizor: "sc cacamaca", Serie_Factura: 12312313, invoiceNumber: 123132, date: "12.07.2023", product: "eau du saq", EAN: 523526, TVA: "19", discount: "0%", buy_price: 909.9, nrceva: 1324, deposit: "barbu v", sofer: "cutare"},
@@ -56,16 +57,21 @@ const ProviderOrders = () => {
 
     // Initial Data Fetch
 
-    useEffect(() => {
-        //console.log("this is the context api state:\n", state);
-        console.log('initial datafetch')
-        setLoading(true);
-        callNextApi("POST", "purchase/purchaseList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
+    const getInvoices = async () => {
+        await callNextApi("POST", "purchase/purchaseList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
             .then((r: any) => {
                 console.log(r)
                 dispatch({type: "SET_INVOICES", payload: r?.response})
                 setLoading(false)
             });
+        return null;
+    }
+
+    useEffect(() => {
+        //console.log("this is the context api state:\n", state);
+        console.log('initial datafetch')
+        getInvoices();
+        setLoading(true);
     }, [paginationModel])
 
 
@@ -93,9 +99,10 @@ const ProviderOrders = () => {
                 currency: data.currency,
             }
 
-            console.log("Payload:", payload)
+            // console.log("Payload:", payload)
             callNextApi("POST", "/purchase/createPurchase", payload).then(
                 (r: any) => {
+                    getInvoices();
                     setLoading(false);
                     setNewInvoiceModal(false);
                     dispatch({type: "SET_CURRENT_INVOICE", payload: r?.response.id_nir})
@@ -137,6 +144,15 @@ const ProviderOrders = () => {
                     loading={loading}
                     // slots={{toolbar: CustomToolbar}}
                     slots={{toolbar: GridToolbar}}
+                    getRowSpacing={params => ({
+                        top: params.isFirstVisible ? 0 : 5,
+                        bottom: params.isLastVisible ? 0 : 5
+                    })}
+                    sx={{
+                        '& .MuiDataGrid-row': {
+                            backgroundColor: grey[200],
+                        },
+                    }}
                 />
             </Grid>
             <div

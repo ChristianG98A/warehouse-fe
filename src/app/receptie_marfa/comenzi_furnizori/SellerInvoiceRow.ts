@@ -19,8 +19,8 @@ export default function ProductsToInvoice() {
         {field: 'nr_auto', headerName: 'Numar Auto', flex: 2},
         {field: 'invoice_value', headerName: 'Valoare Factura', flex: 2},
         {field: 'reception_date', headerName: 'Data Receptie', flex: 2},
-        {field: 'totalNoVat', headerName: 'Total Fara TVA', flex: 2},
-        {field: 'totalWithVat', headerName: 'Total Plus TVA', flex: 2},
+        {field: 'totalNoVat', headerName: 'Total Fara TVA - RON', flex: 2.5},
+        {field: 'totalWithVat', headerName: 'Total Plus TVA - RON', flex: 2.5},
         // si un X probabil
     ];
 

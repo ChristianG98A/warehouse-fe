@@ -49,6 +49,7 @@ const InvoiceEdit = () => {
 
 
     const handleSubmitProducts = async () => {
+        setLoading(true)
         await callNextApi("POST", "purchase/addProduct", {
             invoice_id: parseInt(state?.currentInvoice[0]),
             products: state.productBasket.map((product: any) => {
@@ -67,9 +68,8 @@ const InvoiceEdit = () => {
             })
             .then(
                 r => {
-                    dispatch({
-                        type: "RESET_PRODUCT_BASKET"
-                    })
+                    setLoading(false)
+                    getInvoiceProducts(state.currentInvoice).then(r=>setLoading(false))
                     setProductCart(false)
                     setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
                 }
@@ -94,9 +94,32 @@ const InvoiceEdit = () => {
         }
     }, 1000)
 
+    const getInvoiceProducts = async (invoiceId: number) => {
+        setLoading(true)
+        dispatch({type:"RESET_PRODUCT_BASKET"})
+        await callNextApi("POST", "purchase/getInvoicePList", {invoice_id: invoiceId})
+            .catch(e => console.log("Error in fetching invoice products: ", e))
+            .then((r: any) => {
+                console.log('products in invoice: \n', r?.response)
+                r.response.forEach((productResult: any) => {
 
+                    dispatch({type: "SET_PRODUCT_BASKET", payload: {
+                        id: parseInt(productResult.product_id),
+                        name: productResult.product_name,
+                        acquisition_price: productResult.acquisition_price,
+                        quantity: productResult.quantity,
+                        tax: productResult.tax,
+                        row_id:productResult.row_id,
+                    }})
+                })
+            })
+    }
     useEffect(() => {
-        state.currentInvoice ?? router.push('/receptie_marfa/comenzi_furnizori')
+        if (!state.currentInvoice) {
+            router.push('/receptie_marfa/comenzi_furnizori')
+        }else{
+                getInvoiceProducts(state.currentInvoice).then(r=>setLoading(false))
+            }
     }, [])
 
     useEffect(() => console.log("Checkbox Selected: ", selectionModel), [selectionModel])
@@ -147,7 +170,6 @@ const InvoiceEdit = () => {
                             columns={useMemo(()=>([
                                 {field: 'id', headerName: 'ID Produs', flex: 2},
                                 {field: 'name', headerName: 'Denumire Produs', flex: 4},
-                                {field: 'model', headerName: 'Model', flex: 4},
                                 {field: 'acquisition_price', headerName: 'Pret de Achizitie', flex: 2, editable:true, type:"string"},
                                 {field: 'quantity', headerName: 'Cantitate', flex: 2, editable:true, type:"number"},
                                 {field: 'tax', headerName: 'TVA', flex: 2, editable:true, type:"number" },
@@ -170,7 +192,7 @@ const InvoiceEdit = () => {
                             onRowEditCommit={(ceva:any)=>console.log("bum ", ceva)}
                             processRowUpdate={handleRowUpdate}
                             onProcessRowUpdateError={e=>console.log('Error encountered when editing rows: \n', e)}
-
+                            getRowId={(row)=>row.id}
                             editMode="row"
                         />
                     </ Grid>
@@ -179,7 +201,6 @@ const InvoiceEdit = () => {
                         <Button disabled={state.productBasket.length == 0} variant="contained" sx={{mt: 2}} onClick={handleSubmitProducts}>
                             Salveaza
                         </Button>
-                        <Button onClick={()=>console.log()} >Get the Rows</Button>
                     </Grid>
                 </Grid>
 
@@ -217,6 +238,7 @@ const InvoiceEdit = () => {
 
                             <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{width: "80%"}}>
                                 <DataGrid
+                                    getRowId={(row)=>row.id}
                                     rowSelection={true}
                                     columnHeaderHeight={60}
                                     checkboxSelection
