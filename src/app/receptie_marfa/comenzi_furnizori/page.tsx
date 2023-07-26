@@ -159,6 +159,7 @@ const ProviderOrders = () => {
             >
 
                 <Modal
+                    autoFocus={true}
                     component={"form"}
                     onSubmit={addInvoice}
                     open={newInvoiceModal}
@@ -220,8 +221,9 @@ const ProviderOrders = () => {
                             <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DateField
+                                        required
                                         format={"YYYY-MM-DD"}
-                                        label="Controlled field"
+                                        label="Data Factura"
                                         value={selectedDate}
                                         onChange={(newDate) => {
                                             const formattedDate = dayjs(newDate).format("YYYY-MM-DD");
