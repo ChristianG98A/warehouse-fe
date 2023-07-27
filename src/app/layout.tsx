@@ -1,15 +1,13 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import './globals.css';
+import type {Metadata} from 'next';
+import {Inter} from 'next/font/google';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import SideDrawer from '@/components/features/SideDrawer';
 import {CSSObject} from '@emotion/react';
 import ContextProvider from './state/context';
-import PersistentDrawerLeft from '@/components/features/PersistentDrawer';
-import MiniDrawer from '@/components/features/MiniDrawer';
+import SideDrawer from '@/components/features/SideDrawer';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -35,7 +33,7 @@ export default function RootLayout({
       <html lang="en">
           <ContextProvider>
               <body style={{display: "flex"}} className={inter.className}>
-                  <MiniDrawer />
+                  <SideDrawer />
                   <div style={frameStyle}>
                       {children}
                   </div>

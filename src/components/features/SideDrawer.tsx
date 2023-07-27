@@ -1,129 +1,99 @@
 "use client"
 
 import * as React from 'react';
-import {styled, useTheme} from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
-import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import {Avatar, ListSubheader, Menu, MenuItem, Tooltip} from '@mui/material';
-import SidebarListItem from '../common/SidebarListItem';
-import SidebarListDropdown from '../common/SidebarListDropdown';
 import MenuIcon from '@mui/icons-material/Menu';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import {Avatar, Fade, ListSubheader, Menu, MenuItem, Tooltip} from '@mui/material';
+import SidebarListDropdown from '../common/SidebarListDropdown';
 
-const drawerWidth = 280;
+const drawerWidth = 260;
 
-
-const Main = styled('main', {shouldForwardProp: (prop) => prop !== 'open'})<{
-    open?: boolean;
-}>(({theme, open}) => ({
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: `-${drawerWidth}px`,
-    ...(open && {
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        marginLeft: 0,
-    }),
-}));
-
-interface AppBarProps extends MuiAppBarProps {
-    open?: boolean;
-}
-
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({theme, open}) => ({
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(["width", "margin"], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    }),
-}));
-
-const DrawerHeader = styled('div')(({theme}) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-}));
-
-
-const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Logout'];
 
+interface Props {
+    /**
+     * Injected by the documentation to work in an iframe.
+     * You won't need it on your project.
+     */
+    window?: () => Window;
+}
 
-export default function SideDrawer() {
-    const theme = useTheme();
+export default function SideDrawer(props: Props) {
+    const {window} = props;
     const [open, setOpen] = React.useState(true);
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+    const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const [openSubMenu, setOpenSubMenu] = React.useState(false);
+    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
     };
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
-    };
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
+    const drawer = (
+        <div>
+            <Toolbar />
+            <Divider />
+            <List>
+                <Fade in={open}>
+                    <ListSubheader children={"DEPOZIT"} />
+                </Fade>
+                <SidebarListDropdown item="Achizitii" index={1}
+                    menuItems={[
+                        {name: 'Comenzi Furnizori', link: "/receptie_marfa/comenzi_furnizori"}]
+                    } />
 
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
+                <SidebarListDropdown item="Wholesale" index={9}
+                    menuItems={[
+                        {name: 'Comenzi', link: '/wholesale/comenzi'},
+                        {name: 'Export produse', link: '/wholesale/export_produse'},
+                        {name: 'Clienti', link: "/wholesale/clienti"}]} />
+
+            </List>
+        </div>
+    );
+
+    const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
-        <Box sx={{ display: 'flex'}}>
+        <Box sx={{display: 'flex'}}>
             <CssBaseline />
-            <AppBar position="fixed" open={open}>
+            <AppBar
+                position="fixed"
+                sx={{
+                    width: {sm: `calc(100% - ${drawerWidth}px)`},
+                    ml: {sm: `${drawerWidth}px`},
+                }}
+            >
                 <Toolbar>
-
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
-                        onClick={handleDrawerOpen}
                         edge="start"
-                        sx={{marginRight:5, ...(open && {display: 'none'})}}
+                        onClick={handleDrawerToggle}
+                        sx={{mr: 2, display: {sm: 'none'}}}
                     >
-
                         <MenuIcon />
                     </IconButton>
 
@@ -145,15 +115,13 @@ export default function SideDrawer() {
                     >
                         ROMSCENT
                     </Typography>
-
-                    {/*USER AVATAR (ON THE RIGHT)*/}
                     <Box display={"flex"} alignItems={"center"} flexDirection={"row"} sx={{flexGrow: 0, marginLeft: "auto", paddingRight: "10%"}}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
                                 <Avatar alt="CurrentUser" src="/static/images/avatar/2.jpg" />
                             </IconButton>
                         </Tooltip>
-                        <Typography noWrap variant='h6' sx={{ml:3}}>{"Silvia"}</Typography>
+                        <Typography noWrap variant='h6' sx={{ml: 3}}>{"Silvia"}</Typography>
                         <Menu
                             sx={{mt: '45px'}}
                             id="menu-appbar"
@@ -178,108 +146,40 @@ export default function SideDrawer() {
                         </Menu>
                     </Box>
 
+
                 </Toolbar>
             </AppBar>
-
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        boxSizing: 'border-box',
-                    },
-                }}
-                variant="permanent"
-                anchor="left"
-                open={open}
+            <Box
+                component="nav"
+                sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
+                aria-label="mailbox folders"
             >
-                <DrawerHeader>
-                    {/*
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-*/}
-                </DrawerHeader>
-
-                <Divider />
-                <List>
-                    <ListItem key={"Dashboard"} disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                <MailIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={'Dashboard'} />
-                        </ListItemButton>
-                    </ListItem>
-                </List>
-                <Divider />
-
-                <List>
-                    <ListSubheader children={"DEPOZIT"} />
-
-                    <SidebarListDropdown item="Receptie marfa" index={1}
-                            menuItems={[
-                            {name: 'Comenzi furnizori', link:"/receptie_marfa/comenzi_furnizori"}]
-                            }/>
-                    <SidebarListItem item='Comenzi in astepare' link='#' index={2}/>
-                    <SidebarListItem item='Produse in asteptare' link='#' index={3}/>
-                    <SidebarListItem item='Borderouri' link='#' index={4}/>
-
-                    <SidebarListDropdown item="Wholesale" index={9}
-                            menuItems={[
-                            {name:'Comenzi', link:'/wholesale/comenzi'},
-                            {name:'Export produse', link:'/wholesale/export_produse'},
-                            {name: 'Clienti', link:"/wholesale/clienti"}]}/>
-
-                    <SidebarListDropdown item="Inventare"  index={8}
-                            menuItems={[
-                            {
-                                name:'Inventar general',
-                                link:'/inventar/inventar_general'
-                            },
-                            {
-                                name:'Inventar producator',
-                            link:'/inventar/inventar_producator'}
-                            ]}/>
-
-                    <SidebarListItem item='Achizitii' link='#' index={7}/>
-                </List>
-
-                <Divider />
-
-                <List>
-                    <ListSubheader children={"PARTENERI"} />
-                    {['Amazon', 'eMag'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-
-                <Divider />
-
-                <List>
-                    <ListSubheader children={"MAGAZIN"} />
-                    {['Produse', 'Promotii'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
-
+                <Drawer
+                    container={container}
+                    variant="temporary"
+                    open={mobileOpen}
+                    onClose={handleDrawerToggle}
+                    ModalProps={{
+                        keepMounted: true, // Better open performance on mobile.
+                    }}
+                    sx={{
+                        display: {xs: 'block', sm: 'none'},
+                        '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
+                    }}
+                >
+                    {drawer}
+                </Drawer>
+                <Drawer
+                    variant="permanent"
+                    sx={{
+                        display: {xs: 'none', sm: 'block'},
+                        '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
+                    }}
+                    open
+                >
+                    {drawer}
+                </Drawer>
+            </Box>
         </Box>
     );
 }
-

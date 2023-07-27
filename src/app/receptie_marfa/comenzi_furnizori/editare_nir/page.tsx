@@ -1,11 +1,12 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
+import BasicTable from "@/components/common/BasicTable";
 import CustomToolbar from "@/components/common/CustomToolbar";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
-import {Alert, Box, Button, Divider, Grid, Modal, Snackbar, Tab, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, colors, Divider, FormControlLabel, Grid, makeStyles, Modal, Paper, Snackbar, Switch, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {DateField, LocalizationProvider} from "@mui/x-date-pickers";
@@ -17,11 +18,17 @@ import {useForm} from "react-hook-form";
 import {editInvoiceReducer} from "./editInvoiceState";
 
 
+const disabledButtonStyle = {
+    '& .MuiInputBase-root.Mui-disabled': {
+        color: colors.common
+    }
+}
+
 
 const InvoiceEdit = () => {
     const [state, dispatch] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
-    const {register, handleSubmit} = useForm();
+    const [invoiceDetails, setInvoiceDetails]=useState<{invoiceSeries:string, invoiceNumber:number, date:Date}>()
     const [productCart, setProductCart] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -29,6 +36,7 @@ const InvoiceEdit = () => {
     const debounce = require('lodash.debounce');
     const [selectionModel, setSelectionModel] = useState<any>([0])
     const [editInvoiceState, editInvoiceDispatch] = useReducer(editInvoiceReducer, {})
+    const [editSwitch, setEditSwitch] = useState(false);
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
@@ -46,7 +54,7 @@ const InvoiceEdit = () => {
         console.log("New row data: ", data, index)
         dispatch({type: "SET_PRODUCT_BASKET", payload: data})
     }
-    const handleSubmitInvoiceDetails = async ()=>{
+    const handleSubmitInvoiceDetails = async () => {
 
         setLoading(true)
         await callNextApi("POST", "purchase/setInvoiceValues", {
@@ -68,7 +76,7 @@ const InvoiceEdit = () => {
 
             )
 
-        }
+    }
 
 
     const handleSubmitProducts = async () => {
@@ -147,11 +155,17 @@ const InvoiceEdit = () => {
         await callNextApi("POST", "purchase/getPurchase", {invoice_id: invoiceId})
             .catch(e => console.log("Error in fetching invoice details: ", e))
             .then((r: any) => {
+                const invoiceData= r?.response[0]
                 console.log("invoice details: \n", r)
-                dispatch({type:"SET_CURRENT_INVOICE_DETAILS", payload:r})
-                editInvoiceDispatch({type:"SET_DATE", payload:dayjs(r?.response[0]?.invoice_date, "YYYY-MM-DD")})
-                editInvoiceDispatch({type:"SET_INVOICE_SERIES", payload:r?.response[0]?.invoice_series})
-                editInvoiceDispatch({type:"SET_INVOICE_NUMBER", payload:r?.response[0]?.invoice_number})
+                dispatch({type: "SET_CURRENT_INVOICE_DETAILS", payload: r})
+                setInvoiceDetails({
+                    invoiceNumber: invoiceData.invoice_number,
+                    invoiceSeries: invoiceData.invoice_series,
+                    date: invoiceData.invoice_date
+                })
+                editInvoiceDispatch({type: "SET_DATE", payload: dayjs(r?.response[0]?.invoice_date, "YYYY-MM-DD")})
+                editInvoiceDispatch({type: "SET_INVOICE_SERIES", payload: r?.response[0]?.invoice_series})
+                editInvoiceDispatch({type: "SET_INVOICE_NUMBER", payload: r?.response[0]?.invoice_number})
             })
     }
 
@@ -223,7 +237,7 @@ const InvoiceEdit = () => {
                                     columns={useMemo(() => ([
                                         {field: 'id', headerName: 'ID Produs', flex: 2},
                                         {field: 'name', headerName: 'Denumire Produs', flex: 4},
-                                        {field: 'acquisition_price', headerName: 'Pret de Achizitie', flex: 2, editable: true, type: "string",},
+                                        {field: 'acquisition_price', headerName: 'Pret de Achizitie', flex: 2, editable: true, type: "string", },
                                         {field: 'quantity', headerName: 'Cantitate', flex: 2, editable: true, type: "number"},
                                         {field: 'tax', headerName: 'TVA', flex: 2, editable: true, type: "number"},
 
@@ -271,127 +285,168 @@ const InvoiceEdit = () => {
                                 <Typography variant={"h6"} sx={{mb: 2}} gutterBottom >{"Detalii NIR:"}</ Typography>
                             </Grid>
 
+                            <Grid item xs={12} sx={{...center, }}>
+                                <TableContainer component={Paper}>
+                                    <Table sx={{minWidth: 450}} aria-label="invoice data table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell align="center">Serie factura</TableCell>
+                                                <TableCell align="center">Numar Factura</TableCell>
+                                                <TableCell align="center">Data Factura</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+
+                                        <TableBody>
+                                            <TableRow
+                                                key={editInvoiceState.invoiceNumber}
+                                            >
+                                                <TableCell component="th" scope="row" align='center'>
+                                                    {invoiceDetails?.invoiceSeries}
+                                                </TableCell>
+                                                <TableCell align="center">{invoiceDetails?.invoiceNumber}</TableCell>
+                                                <TableCell align="center" >{dayjs(invoiceDetails?.date).format("YYYY-MM-DD")}</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Grid>
+
                             <Grid item xs={4} sx={center}>
-                                <TextField contentEditable={false} id="invoiceSeries" focused={true} label="Serie Factura" variant="standard" value={editInvoiceState.invoiceSeries} />
+                                <TextField disabled={!editSwitch} id="invoiceSeries" focused={true} label="Serie Factura" variant="standard"
+                                    onChange={(event) => editInvoiceDispatch({type: "SET_INVOICE_SERIES", payload: event.target.value})}
+                                />
                             </ Grid>
 
                             <Grid item xs={4} sx={center}>
-                                <TextField id="invoiceNummber" focused={true} label="Numar Factura" variant="standard" value={editInvoiceState.invoiceNumber} />
+                                <TextField disabled={!editSwitch} id="invoiceNummber" focused={true} label="Numar Factura" variant="standard"
+                                    onChange={(event) => editInvoiceDispatch({type: "SET_INVOICE_NUMBER", payload: event.target.value})}
+                                />
                             </ Grid>
 
                             <Grid item xs={4} sx={center}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DateField
+                                        disabled={!editSwitch}
                                         focused={true}
                                         required
                                         format={"YYYY-MM-DD"}
                                         label="Data Factura"
-                                        value={editInvoiceState.date}
-                                        onChange={(newDate) => {
-                                            editInvoiceDispatch({type:"SET_DATE", payload:dayjs(newDate).format("YYYY-MM-DD")})
+                                        onChange={(newDate:any) => {
+                                            editInvoiceDispatch({type: "SET_DATE", payload: dayjs(newDate).format("YYYY-MM-DD")})
                                         }}
                                     />
                                 </LocalizationProvider>
                             </ Grid>
+                            <Grid item xs={12} sx={center} >
 
-                            <Grid item xs={12} sx={center}>
-                                <Button  variant="contained" sx={{mt: 2}} onClick={handleSubmitInvoiceDetails}>
+                                <Divider sx={{width: "60%"}} />
+
+                            </Grid>
+                            <Grid item xs={6} sx={{display: 'flex', justifyContent: 'right', pr: 2}}>
+                                <Button variant="contained" disabled={!editSwitch} onClick={handleSubmitInvoiceDetails}>
                                     Salveaza
                                 </Button>
+                            </Grid>
+
+                            <Grid item xs={6} sx={{display: 'flex', justifyContent: 'left', pl: 2}}>
+                                <FormControlLabel control={<Switch value={editSwitch}
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                        setEditSwitch(event.target.checked);
+                                    }} />} label="Editeaza" />
                             </Grid>
                         </Grid>
                     </Box>
                 </TabPanel>
             </TabContext>
-                <Modal
-                    autoFocus={true}
-                    open={state.productBasketModal}
-                    aria-labelledby="Product Cart"
-                    aria-describedby="Product-Cart-Modal"
-                    sx={{
-                        position: "absolute",
-                        width: "80vw",
-                        height: "max-content",
-                        left: "50%",
-                        top: "55%",
-                        transform: 'translate(-50%, -50%)'
+            <Modal
+                autoFocus={true}
+                open={state.productBasketModal}
+                aria-labelledby="Product Cart"
+                aria-describedby="Product-Cart-Modal"
+                sx={{
+                    position: "absolute",
+                    width: "80vw",
+                    height: "max-content",
+                    left: "50%",
+                    top: "55%",
+                    transform: 'translate(-50%, -50%)'
 
-                    }}
-                >
-                    <Box sx={{
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                    }}>
+                }}
+            >
+                <Box sx={{
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                }}>
 
-                        <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
-                            Alege produse
-                        </Typography>
-                        <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flexDirection={"column"} sx={{mt: 5}}>
-                            <Grid item xs={10} sm={10} md={10} lg={10} xl={10} >
-                                <TextField
-                                    sx={{width: '30rem'}}
-                                    onChange={handleSearch}
-                                    label={'Denumire / SKU / ID'}
-                                />
-                            </ Grid>
+                    <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
+                        Alege produse
+                    </Typography>
+                    <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flexDirection={"column"} sx={{mt: 5}}>
+                        <Grid item xs={10} sm={10} md={10} lg={10} xl={10} >
+                            <TextField
+                                sx={{width: '30rem'}}
+                                onChange={handleSearch}
+                                label={'Denumire / SKU / ID'}
+                            />
+                        </ Grid>
 
-                            <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{width: "80%"}}>
-                                <DataGrid
-                                    getRowId={(row) => row.id}
-                                    rowSelection={true}
-                                    columnHeaderHeight={60}
-                                    checkboxSelection
-                                    rows={state.productResult}
-                                    pageSizeOptions={[10, 25, 50]}
-                                    initialState={{pagination: {paginationModel: paginationModel}}}
-                                    onPaginationModelChange={setPaginationModel}
-                                    onRowSelectionModelChange={(newRowSelectionModel) => {
-                                        setSelectionModel(newRowSelectionModel)
-                                    }}
-                                    columns={[
-                                        {field: 'crt', headerName: 'Crt', flex: 1},
-                                        {field: 'id', headerName: 'ID Produs', flex: 1},
-                                        {field: 'name', headerName: 'Denumire Produs', flex: 4},
-                                        {field: 'model', headerName: 'Model', flex: 4},
+                        <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{width: "80%"}}>
+                            <DataGrid
+                                getRowId={(row) => row.id}
+                                rowSelection={true}
+                                columnHeaderHeight={60}
+                                checkboxSelection
+                                rows={state.productResult}
+                                pageSizeOptions={[10, 25, 50]}
+                                initialState={{pagination: {paginationModel: paginationModel}}}
+                                onPaginationModelChange={setPaginationModel}
+                                onRowSelectionModelChange={(newRowSelectionModel) => {
+                                    setSelectionModel(newRowSelectionModel)
+                                }}
+                                columns={[
+                                    {field: 'crt', headerName: 'Crt', flex: 1},
+                                    {field: 'id', headerName: 'ID Produs', flex: 1},
+                                    {field: 'name', headerName: 'Denumire Produs', flex: 4},
+                                    {field: 'model', headerName: 'Model', flex: 4},
 
-                                    ]}
-                                    rowSelectionModel={selectionModel}
-                                    autoPageSize={false}
-                                    loading={loading}
-                                    sx={{minHeight: "30vh", maxHeight: "50vh"}}
-                                />
-                            </ Grid>
+                                ]}
+                                rowSelectionModel={selectionModel}
+                                autoPageSize={false}
+                                loading={loading}
+                                sx={{minHeight: "30vh", maxHeight: "50vh"}}
+                            />
+                        </ Grid>
 
 
-                            <Grid item xs={10} sm={10} md={10} lg={10} xl={10} alignItems={"center"} justifyItems={"center"} justifyContent={"center"} >
-                                <Divider sx={{mt: 3, mb: 3}} />
-                                <Button disabled={selectionModel?.length == 0} variant="contained" onClick={() => {
-                                    setSnackBar({message: "Produse adaugate in cos!", type: 'success', state: true})
-                                    selectionModel?.forEach((itemSelected: any) => {
-                                        const checkIfProductIsInBasket = (id: any) => {
-                                            return state.productBasket.some((productInBasket: any) => productInBasket.id == id)
+                        <Grid item xs={10} sm={10} md={10} lg={10} xl={10} alignItems={"center"} justifyItems={"center"} justifyContent={"center"} >
+                            <Divider sx={{mt: 3, mb: 3}} />
+                            <Button disabled={selectionModel?.length == 0} variant="contained" onClick={() => {
+                                setSnackBar({message: "Produse adaugate in cos!", type: 'success', state: true})
+                                selectionModel?.forEach((itemSelected: any) => {
+                                    const checkIfProductIsInBasket = (id: any) => {
+                                        return state.productBasket.some((productInBasket: any) => productInBasket.id == id)
+                                    }
+                                    try {
+                                        if (!checkIfProductIsInBasket(itemSelected)) {
+                                            dispatch({
+                                                type: "SET_PRODUCT_BASKET",
+                                                payload: state.productResult.find((productObject: any) => productObject.id == itemSelected)
+                                            })
                                         }
-                                        try {
-                                            if (!checkIfProductIsInBasket(itemSelected)) {
-                                                dispatch({
-                                                    type: "SET_PRODUCT_BASKET",
-                                                    payload: state.productResult.find((productObject: any) => productObject.id == itemSelected)
-                                                })
-                                            }
-                                        } catch (error) {console.log("Error in adding products to invoice!", error)}
-                                    })
-                                    setSelectionModel([])
-                                }} sx={{width: "10rem"}}>
-                                    Adauga
-                                </Button>
-                                <Button variant="contained" sx={{ml: 5}} onClick={() => dispatch({type: "SET_PRODUCT_BASKET_MODAL", payload: false})}>
-                                    Inchide
-                                </Button>
-                            </Grid>
+                                    } catch (error) {console.log("Error in adding products to invoice!", error)}
+                                })
+                                setSelectionModel([])
+                            }} sx={{width: "10rem"}}>
+                                Adauga
+                            </Button>
+                            <Button variant="contained" sx={{ml: 5}} onClick={() => dispatch({type: "SET_PRODUCT_BASKET_MODAL", payload: false})}>
+                                Inchide
+                            </Button>
                         </Grid>
-                    </Box>
-                </Modal>
+                    </Grid>
+                </Box>
+            </Modal>
             <Snackbar
                 anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
                 open={snackBar.state}
@@ -404,5 +459,5 @@ const InvoiceEdit = () => {
     );
 }
 
-const center = {display:'flex', justifyContent:'center'}
+const center = {display: 'flex', justifyContent: 'center'}
 export default InvoiceEdit;
