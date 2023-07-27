@@ -6,7 +6,7 @@ import CustomToolbar from "@/components/common/CustomToolbar";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
-import {Alert, Box, Button, colors, Divider, FormControlLabel, Grid, makeStyles, Modal, Paper, Snackbar, Switch, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, colors, Divider, Drawer, Fade, FormControlLabel, Grid, makeStyles, Modal, Paper, Snackbar, Switch, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {DateField, LocalizationProvider} from "@mui/x-date-pickers";
@@ -281,6 +281,13 @@ const InvoiceEdit = () => {
                         p: 4,
                     }}>
                         <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flexDirection={"row"} >
+                            <Grid item xs={12} sx={{display: 'flex', justifyContent: 'left', pl: 4}}>
+                                <FormControlLabel control={<Switch value={editSwitch}
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                        setEditSwitch(event.target.checked);
+                                    }} />} label="Editeaza" />
+                            </Grid>
+
                             <Grid item xs={12} sx={center}>
                                 <Typography variant={"h6"} sx={{mb: 2}} gutterBottom >{"Detalii NIR:"}</ Typography>
                             </Grid>
@@ -311,68 +318,65 @@ const InvoiceEdit = () => {
                                 </TableContainer>
                             </Grid>
 
-                            <Grid item xs={4} sx={center}>
-                                <TextField disabled={!editSwitch} id="invoiceSeries" focused={true} label="Serie Factura" variant="standard"
-                                    onChange={(event) => editInvoiceDispatch({type: "SET_INVOICE_SERIES", payload: event.target.value})}
-                                />
-                            </ Grid>
-
-                            <Grid item xs={4} sx={center}>
-                                <TextField disabled={!editSwitch} id="invoiceNummber" focused={true} label="Numar Factura" variant="standard"
-                                    onChange={(event) => editInvoiceDispatch({type: "SET_INVOICE_NUMBER", payload: event.target.value})}
-                                />
-                            </ Grid>
-
-                            <Grid item xs={4} sx={center}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DateField
-                                        disabled={!editSwitch}
-                                        focused={true}
-                                        required
-                                        format={"YYYY-MM-DD"}
-                                        label="Data Factura"
-                                        onChange={(newDate:any) => {
-                                            editInvoiceDispatch({type: "SET_DATE", payload: dayjs(newDate).format("YYYY-MM-DD")})
-                                        }}
+                            <Fade in={editSwitch}>
+                                <Grid item xs={4} sx={center}>
+                                    <TextField disabled={!editSwitch} id="invoiceSeries" focused={true} label="Serie Factura" variant="standard"
+                                        onChange={(event) => editInvoiceDispatch({type: "SET_INVOICE_SERIES", payload: event.target.value})}
                                     />
-                                </LocalizationProvider>
-                            </ Grid>
+                                </ Grid>
+                            </Fade>
+
+                            <Fade in={editSwitch}>
+                                <Grid item xs={4} sx={center}>
+                                    <TextField disabled={!editSwitch} id="invoiceNummber" focused={true} label="Numar Factura" variant="standard"
+                                        onChange={(event) => editInvoiceDispatch({type: "SET_INVOICE_NUMBER", payload: event.target.value})}
+                                    />
+                                </ Grid>
+
+                            </Fade>
+                            <Fade in={editSwitch}>
+                                <Grid item xs={4} sx={center}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DateField
+                                            disabled={!editSwitch}
+                                            focused={true}
+                                            required
+                                            format={"YYYY-MM-DD"}
+                                            label="Data Factura"
+                                            onChange={(newDate: any) => {
+                                                editInvoiceDispatch({type: "SET_DATE", payload: dayjs(newDate).format("YYYY-MM-DD")})
+                                            }}
+                                        />
+                                    </LocalizationProvider>
+                                </ Grid>
+                            </Fade>
                             <Grid item xs={12} sx={center} >
 
                                 <Divider sx={{width: "60%"}} />
 
                             </Grid>
-                            <Grid item xs={6} sx={{display: 'flex', justifyContent: 'right', pr: 2}}>
+                            <Fade in={editSwitch}>
+                            <Grid item xs={12} sx={{display: 'flex', justifyContent: 'center', pr: 2}}>
                                 <Button variant="contained" disabled={!editSwitch} onClick={handleSubmitInvoiceDetails}>
                                     Salveaza
                                 </Button>
                             </Grid>
 
-                            <Grid item xs={6} sx={{display: 'flex', justifyContent: 'left', pl: 2}}>
-                                <FormControlLabel control={<Switch value={editSwitch}
-                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                        setEditSwitch(event.target.checked);
-                                    }} />} label="Editeaza" />
-                            </Grid>
+                            </Fade>
+
                         </Grid>
                     </Box>
                 </TabPanel>
             </TabContext>
-            <Modal
-                autoFocus={true}
-                open={state.productBasketModal}
+
+            <Drawer
+            anchor={"top"}
+            open={state.productBasketModal}
+            onClose={()=>dispatch({type:'SET_PRODUCT_BASKET_MODAL', payload:true})}
                 aria-labelledby="Product Cart"
                 aria-describedby="Product-Cart-Modal"
-                sx={{
-                    position: "absolute",
-                    width: "80vw",
-                    height: "max-content",
-                    left: "50%",
-                    top: "55%",
-                    transform: 'translate(-50%, -50%)'
+          >
 
-                }}
-            >
                 <Box sx={{
                     bgcolor: 'background.paper',
                     boxShadow: 24,
@@ -446,7 +450,7 @@ const InvoiceEdit = () => {
                         </Grid>
                     </Grid>
                 </Box>
-            </Modal>
+          </Drawer>
             <Snackbar
                 anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
                 open={snackBar.state}
