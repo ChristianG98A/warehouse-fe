@@ -8,7 +8,6 @@ import {callNextApi} from "@/helpers/apiMethods";
 import {Box, Button, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Paper, Select, SelectChangeEvent, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
-import SellerInvoiceRow from "./SellerInvoiceRow";
 import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import PrintIcon from '@mui/icons-material/Print';
@@ -19,6 +18,8 @@ import dayjs from "dayjs";
 import {PersonPinCircleSharp} from "@mui/icons-material";
 import {useRouter} from "next/navigation";
 import {grey} from "@mui/material/colors";
+import SellerInvoiceRow from "@/app/achizitii/comenzi_furnizori/SellerInvoiceRow";
+import ReceptionsColumns from "./ReceptionsColumns";
 
 const rowsPlaceholder: GridRowsProp = [
     {id: 1, crt: 1, Furnizor: "sc cacamaca", Serie_Factura: 12312313, invoiceNumber: 123132, date: "12.07.2023", product: "eau du saq", EAN: 523526, TVA: "19", discount: "0%", buy_price: 909.9, nrceva: 1324, deposit: "barbu v", sofer: "cutare"},
@@ -30,12 +31,6 @@ const rows: GridRowsProp | Purchase[] = [
 
 
 const rowsPerPageOptions = [10, 20, 100];
-const actions = [
-    {icon: <FileCopyIcon />, name: 'Copy'},
-    {icon: <SaveIcon />, name: 'Save'},
-    {icon: <PrintIcon />, name: 'Print'},
-    {icon: <ShareIcon />, name: 'Share'},
-];
 const ProviderOrders = () => {
     const [state, dispatch] = useContext(StateContext)
     const [newInvoiceModal, setNewInvoiceModal] = useState(false);
@@ -57,11 +52,11 @@ const ProviderOrders = () => {
 
     // Initial Data Fetch
 
-    const getInvoices = async () => {
-        await callNextApi("POST", "purchase/purchaseList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
+    const getReceptions = async () => {
+        await callNextApi("POST", "inventory/getReceptionsList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
             .then((r: any) => {
                 console.log(r)
-                dispatch({type: "SET_INVOICES", payload: r?.response})
+                dispatch({type: "SET_RECEPTIONS", payload: r?.response})
                 setLoading(false)
             });
         return null;
@@ -70,7 +65,7 @@ const ProviderOrders = () => {
     useEffect(() => {
         //console.log("this is the context api state:\n", state);
         console.log('initial datafetch')
-        getInvoices();
+        getReceptions();
         setLoading(true);
     }, [paginationModel])
 
@@ -102,7 +97,7 @@ const ProviderOrders = () => {
             // console.log("Payload:", payload)
             callNextApi("POST", "/purchase/createPurchase", payload).then(
                 (r: any) => {
-                    getInvoices();
+                    getReceptions();
                     setLoading(false);
                     setNewInvoiceModal(false);
                     dispatch({type: "SET_CURRENT_INVOICE", payload: r?.response.id_nir})
@@ -114,16 +109,16 @@ const ProviderOrders = () => {
 
     return (
         <>
-            <Typography variant={"h6"} sx={{mb: 2}} gutterBottom >Lista note intrare-receptie</Typography>
+            <Typography textAlign={'center'} variant={"h5"} fontWeight={800} sx={{mb: 2}} gutterBottom >Receptie Marfa</Typography>
             <PageBreadcrumbs
                 items={[
                     {
-                        name: "Receptie marfa",
-                        path: "/receptie_marfa",
+                        name: "Depozit",
+                        path: "/depozit",
                     },
                     {
-                        name: "Comenzi Furnizori",
-                        path: "/comenzi_furnizori",
+                        name: "Receptie Marfa",
+                        path: "/receptie_marfa",
                     },
                 ]}
             />
@@ -131,8 +126,8 @@ const ProviderOrders = () => {
                 <DataGrid
                     rowSelection={true}
                     columnHeaderHeight={60}
-                    rows={state.invoices}
-                    columns={SellerInvoiceRow()}
+                    rows={state.receptions}
+                    columns={ReceptionsColumns()}
                     initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
                     onPaginationModelChange={setPaginationModel}
                     pageSizeOptions={[10, 25, 50]}
@@ -292,7 +287,7 @@ const ProviderOrders = () => {
                     icon={<PersonPinCircleSharp />}
                     tooltipTitle={"Editare N.I.R."}
                     onClick={() => {
-                            router.push("/receptie_marfa/comenzi_furnizori/editare_nir")
+                            router.push("/achizitii/comenzi_furnizori/editare_nir")
                         }
                     }
                 />

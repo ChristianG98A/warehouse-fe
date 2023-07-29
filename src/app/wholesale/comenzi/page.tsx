@@ -4,7 +4,7 @@ import {StateContext} from "@/app/state/context";
 import GridColumns from "@/components/common/GridColumns";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Button, Dialog, DialogActions, DialogTitle, Grid, Paper, Snackbar, Typography} from "@mui/material";
+import {Alert, Box, Button, Dialog, DialogActions, DialogTitle, Grid, LinearProgress, Paper, Snackbar, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
@@ -74,7 +74,7 @@ const Orders = () => {
 
     return (
         <>
-        <Typography variant={"h6"} sx={{mb:2}} gutterBottom >Comenzi Wholesale</Typography>
+        <Typography textAlign={'center'} variant={"h5"} fontWeight={800} sx={{mb:2}} gutterBottom >Comenzi Wholesale</Typography>
             <PageBreadcrumbs
                 items={[
                     {

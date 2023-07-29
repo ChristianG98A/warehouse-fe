@@ -187,12 +187,12 @@ const InvoiceEdit = () => {
 
     return (
         <>
-            <Typography variant={"h6"} sx={{mb: 2}} gutterBottom >{"Lista note intrare-receptie id: " + state.currentInvoice}</ Typography>
+            <Typography variant={"h5"} fontWeight={800} sx={{mb: 2}} textAlign='center' gutterBottom >{"Lista note intrare-receptie id: " + state.currentInvoice}</ Typography>
             <PageBreadcrumbs
                 items={[
                     {
-                        name: "Receptie marfa",
-                        path: "/receptie_marfa",
+                        name: "Achizitii",
+                        path: "/achizitii",
                     },
                     {
                         name: "Comenzi Furnizori",

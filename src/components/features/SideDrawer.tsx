@@ -57,19 +57,24 @@ export default function SideDrawer(props: Props) {
             <Divider />
             <List>
                 <Fade in={open}>
-                    <ListSubheader children={"DEPOZIT"} />
+                    <ListSubheader children={"MAGAZIN"} />
                 </Fade>
                 <SidebarListDropdown item="Achizitii" index={1}
                     menuItems={[
-                        {name: 'Comenzi Furnizori', link: "/receptie_marfa/comenzi_furnizori"}]
+                        {name: 'Comenzi Furnizori', link: "/achizitii/comenzi_furnizori"}]
                     } />
 
-                <SidebarListDropdown item="Wholesale" index={9}
+                <SidebarListDropdown item="Wholesale" index={2}
                     menuItems={[
                         {name: 'Comenzi', link: '/wholesale/comenzi'},
                         {name: 'Export produse', link: '/wholesale/export_produse'},
                         {name: 'Clienti', link: "/wholesale/clienti"}]} />
 
+                <SidebarListDropdown item="Depozit" index={3}
+                    menuItems={[
+                        {name: 'Receptie Marfa', link: '/depozit/receptie_marfa'},
+                    ]}
+                />
             </List>
         </div>
     );

@@ -1,4 +1,4 @@
-import {Skeleton} from "@mui/material";
+import {Box, LinearProgress, Skeleton} from "@mui/material";
 import React from "react";
 
                 //<Skeleton variant="circular" width={40} height={40} />
@@ -6,17 +6,19 @@ import React from "react";
 
 export default function LoadingWholesaleProducts(){
         return(
-            <div style={{paddingTop:"4rem"}}>
-                <Skeleton variant="rounded" width={210} height={30} />
-                <Skeleton variant="text" sx={{fontSize: '2rem'}} />
-                <Skeleton variant="rounded" width={210} height={30} />
-                <Skeleton variant="text" sx={{fontSize: '2rem'}} />
-                <Skeleton variant="rounded" width={210} height={30} />
-                <Skeleton variant="text" sx={{fontSize: '2rem'}} />
-                {/* For other variants, adjust the size with `width` and `height` */}
-            </ div>
+            <Box sx={{width: '100%'}}>
+                <LinearProgress />
+            </Box>
         )
 
 
 
     }
+
+            //<div style={{paddingTop:"4rem"}}>
+            //    <Skeleton variant="text" sx={{fontSize: '5rem'}} />
+
+            //    <Skeleton variant="circular" width={"10rem"} height={"10rem"} />
+            //    <Skeleton variant="rectangular" width={610} height={120} />
+            //    <Skeleton variant="rounded" width={610} height={120} />
+            //</ div>
