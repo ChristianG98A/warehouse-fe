@@ -64,6 +64,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_RECEPTIONS':
             return {...state, receptions:action.payload}
 
+        case 'SET_RECEPTION_INVENTORY':
+            return {...state, receptionInventory:action.payload}
+
         default:
             return state
     }
