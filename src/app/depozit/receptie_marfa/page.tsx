@@ -3,7 +3,7 @@ import {Purchase} from "@/app/api/purchase/types/types";
 import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Grid, Paper, SpeedDial, SpeedDialAction, SpeedDialIcon, Typography} from "@mui/material";
+import {Alert, Grid, Paper, Snackbar, SpeedDial, SpeedDialAction, SpeedDialIcon, Typography} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
@@ -24,6 +24,7 @@ const rows: GridRowsProp | Purchase[] = [
 const rowsPerPageOptions = [10, 20, 100];
 const ProviderOrders = () => {
     const [state, dispatch] = useContext(StateContext)
+    const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const [newInvoiceModal, setNewInvoiceModal] = useState(false);
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [loading, setLoading] = useState(false);
@@ -40,6 +41,7 @@ const ProviderOrders = () => {
         page: 0
     })
     const router = useRouter();
+
 
     // Initial Data Fetch
 
@@ -67,6 +69,13 @@ const ProviderOrders = () => {
         }
         setNewInvoiceModal(false);
         //     dispatch({type: "SET_OPEN_ERROR_SNACK", payload: false})
+    };
+
+    const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackBar({...snackBar, state: false})
     };
 
     return (
@@ -123,11 +132,25 @@ const ProviderOrders = () => {
                     icon={<PersonPinCircleSharp />}
                     tooltipTitle={"Receptioneaza"}
                     onClick={() => {
-                            router.push("/depozit/receptie_marfa/receptie_comanda")
+                        if (state?.currentInvoice) {
+                            router.push(`/depozit/receptie_marfa/receptie_comanda/${state.currentInvoice}`)
                         }
+                        else {
+                            setSnackBar({message: "Selecteaza o comanda!", type: "error", state: true})
+                        }
+                    }
                     }
                 />
             </SpeedDial>
+
+            <Snackbar
+                anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
+                open={snackBar.state}
+                autoHideDuration={3000}
+                onClose={handleSnackClose}
+            >
+                <Alert onClose={handleSnackClose} severity={snackBar.type}>{snackBar.message}</Alert>
+            </Snackbar>
         </>
     )
 }

@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import {useRouter} from "next/navigation";
 import {useContext, useEffect, useMemo, useReducer, useState} from "react";
 import {useForm} from "react-hook-form";
-import {editInvoiceReducer} from "./editInvoiceState";
+import { editInvoiceReducer } from "../editInvoiceState";
 
 
 const disabledButtonStyle = {
@@ -25,7 +25,7 @@ const disabledButtonStyle = {
 }
 
 
-const InvoiceEdit = () => {
+const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
     const [state, dispatch] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
     const [invoiceDetails, setInvoiceDetails]=useState<{invoiceSeries:string, invoiceNumber:number, date:Date}>()
@@ -41,7 +41,7 @@ const InvoiceEdit = () => {
         pageSize: 10,
         page: 0
     })
-
+    const invoiceId = parseInt(params.invoiceId)
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
@@ -58,7 +58,7 @@ const InvoiceEdit = () => {
 
         setLoading(true)
         await callNextApi("POST", "purchase/setInvoiceValues", {
-            invoice_id: parseInt(state?.currentInvoice[0]),
+            invoice_id: invoiceId,
             invoice_series: editInvoiceState.invoiceSeries,
             invoice_number: editInvoiceState.invoiceNumber,
             invoice_date: editInvoiceState.date
@@ -70,7 +70,7 @@ const InvoiceEdit = () => {
             .then(
                 r => {
                     setLoading(false)
-                    getInvoiceDetails(state.currentInvoice)
+                    getInvoiceDetails(invoiceId)
                     setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
                 }
 
@@ -82,7 +82,7 @@ const InvoiceEdit = () => {
     const handleSubmitProducts = async () => {
         setLoading(true)
         await callNextApi("POST", "purchase/addProduct", {
-            invoice_id: parseInt(state?.currentInvoice[0]),
+            invoice_id: invoiceId,
             products: state.productBasket.map((product: any) => {
                 return ({
                     "product_id": parseInt(product.id),
@@ -100,7 +100,7 @@ const InvoiceEdit = () => {
             .then(
                 r => {
                     setLoading(false)
-                    getInvoiceProducts(state.currentInvoice).then(r => setLoading(false))
+                    getInvoiceProducts(invoiceId).then(r => setLoading(false))
                     setProductCart(false)
                     setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
                 }
@@ -171,12 +171,12 @@ const InvoiceEdit = () => {
 
     useEffect(() => {
         setLoading(true)
-        if (!state.currentInvoice) {
-            router.push('/receptie_marfa/comenzi_furnizori')
+        if (!invoiceId) {
+            router.push('/achizitii/comenzi_furnizori')
         } else {
             setLoading(false);
-            getInvoiceProducts(state.currentInvoice).then(r => setLoading(false))
-            getInvoiceDetails(state.currentInvoice)
+            getInvoiceProducts(invoiceId).then(r => setLoading(false))
+            getInvoiceDetails(invoiceId)
         }
     }, [])
 
@@ -187,7 +187,7 @@ const InvoiceEdit = () => {
 
     return (
         <>
-            <Typography variant={"h5"} fontWeight={800} sx={{mb: 2}} textAlign='center' gutterBottom >{"Lista note intrare-receptie id: " + state.currentInvoice}</ Typography>
+            <Typography variant={"h5"} fontWeight={800} sx={{mb: 2}} textAlign='center' gutterBottom >{"Lista note intrare-receptie id: " + invoiceId}</ Typography>
             <PageBreadcrumbs
                 items={[
                     {
@@ -199,7 +199,7 @@ const InvoiceEdit = () => {
                         path: "/comenzi_furnizori",
                     },
                     {
-                        name: "Editare N.I.R.",
+                        name: `Editare N.I.R. ${invoiceId}`,
                         path: "/editare_nir",
                     },
                 ]}

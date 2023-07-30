@@ -5,7 +5,7 @@ import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Box, Button, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Paper, Select, SelectChangeEvent, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Paper, Select, SelectChangeEvent, Snackbar, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
 import SellerInvoiceRow from "./SellerInvoiceRow";
@@ -39,6 +39,7 @@ const actions = [
 const ProviderOrders = () => {
     const [state, dispatch] = useContext(StateContext)
     const [newInvoiceModal, setNewInvoiceModal] = useState(false);
+    const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [loading, setLoading] = useState(false);
     const {register, handleSubmit} = useForm();
@@ -74,6 +75,12 @@ const ProviderOrders = () => {
         setLoading(true);
     }, [paginationModel])
 
+    const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackBar({...snackBar, state: false})
+    };
 
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -292,11 +299,23 @@ const ProviderOrders = () => {
                     icon={<PersonPinCircleSharp />}
                     tooltipTitle={"Editare N.I.R."}
                     onClick={() => {
-                            router.push("/achizitii/comenzi_furnizori/editare_nir")
+                        if (state?.currentInvoice) {
+                            router.push(`/depozit/receptie_marfa/receptie_comanda/${state.currentInvoice}`)
                         }
-                    }
+                        else {
+                            setSnackBar({message: "Selecteaza o comanda!", type: "error", state: true})
+                        }
+                    }}
                 />
             </SpeedDial>
+            <Snackbar
+                anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
+                open={snackBar.state}
+                autoHideDuration={3000}
+                onClose={handleSnackClose}
+            >
+                <Alert onClose={handleSnackClose} severity={snackBar.type}>{snackBar.message}</Alert>
+            </Snackbar>
         </>
     )
 }

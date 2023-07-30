@@ -1,7 +1,6 @@
 "use client"
 
 import {editInvoiceReducer} from "@/app/achizitii/comenzi_furnizori/editare_nir/editInvoiceState";
-import InvoiceEdit from "@/app/achizitii/comenzi_furnizori/editare_nir/page";
 import {StateContext} from "@/app/state/context";
 import BasicTable from "@/components/common/BasicTable";
 import CustomToolbar from "@/components/common/CustomToolbar";
@@ -20,7 +19,7 @@ import LoadingInventoryReception from "./loading";
 
 
 
-const OrderReception = () => {
+const OrderReception = ({ params } : { params: { invoiceId: string } }) => {
     const [state, dispatch] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
     const [invoiceDetails, setInvoiceDetails]=useState<{invoiceSeries:string, invoiceNumber:number, date:Date}>()
@@ -36,6 +35,8 @@ const OrderReception = () => {
         pageSize: 10,
         page: 0
     })
+    const invoiceId= parseInt(params.invoiceId);
+
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -65,7 +66,7 @@ const OrderReception = () => {
             .then(
                 r => {
                     setLoading(false)
-                    getInvoiceDetails(state.currentInvoice)
+                    getInvoiceDetails(invoiceId)
                     setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
                 }
 
@@ -95,7 +96,7 @@ const OrderReception = () => {
             .then(
                 r => {
                     setLoading(false)
-                    getInvoiceProducts(state.currentInvoice).then(r => setLoading(false))
+                    //getInvoiceProducts(state.currentInvoice).then(r => setLoading(false))
                     setProductCart(false)
                     setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
                 }
@@ -160,12 +161,12 @@ const OrderReception = () => {
 
     useEffect(() => {
         setLoading(true)
-        if (!state.currentInvoice) {
+        if (!invoiceId) {
             router.push('/depozit/receptie_marfa')
         } else {
             setLoading(false);
-            getReceptionProducts(state.currentInvoice).then(r => setLoading(false))
-            getInvoiceDetails(state.currentInvoice)
+            getReceptionProducts(invoiceId).then(r => setLoading(false))
+            //getInvoiceDetails(state.currentInvoice)
         }
     }, [])
 
@@ -176,19 +177,19 @@ const OrderReception = () => {
 
     return (
         <>
-            <Typography variant={"h5"} fontWeight={800} sx={{mb: 2}} textAlign='center' gutterBottom >{"Receptie comanda id: " + state.currentInvoice}</ Typography>
+            <Typography variant={"h5"} fontWeight={800} sx={{mb: 2}} textAlign='center' gutterBottom >{"Receptie comanda id: " + invoiceId}</ Typography>
             <PageBreadcrumbs
                 items={[
                     {
-                        name: "Achizitii",
-                        path: "/achizitii",
+                        name: "Depozit",
+                        path: "/depozit",
                     },
                     {
-                        name: "Comenzi Furnizori",
+                        name: "Receptie Marfa",
                         path: "/receptie_marfa",
                     },
                     {
-                        name: "Editare N.I.R.",
+                        name: `Receptie comanda ${invoiceId}`,
                         path: "/receptie_comanda",
                     },
                 ]}
