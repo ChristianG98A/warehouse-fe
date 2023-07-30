@@ -172,7 +172,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
     useEffect(() => {
         setLoading(true)
         if (!invoiceId) {
-            router.push('/achizitii/comenzi_furnizori')
+            router.push('/receptie_marfa/comenzi_furnizori')
         } else {
             setLoading(false);
             getInvoiceProducts(invoiceId).then(r => setLoading(false))

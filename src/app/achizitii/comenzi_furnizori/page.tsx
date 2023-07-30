@@ -300,7 +300,7 @@ const ProviderOrders = () => {
                     tooltipTitle={"Editare N.I.R."}
                     onClick={() => {
                         if (state?.currentInvoice) {
-                            router.push(`/depozit/receptie_marfa/receptie_comanda/${state.currentInvoice}`)
+                            router.push(`/achizitii/comenzi_furnizori/editare_nir/${state.currentInvoice}`)
                         }
                         else {
                             setSnackBar({message: "Selecteaza o comanda!", type: "error", state: true})
