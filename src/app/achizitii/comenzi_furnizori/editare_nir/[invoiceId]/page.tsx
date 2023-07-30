@@ -129,6 +129,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
     }, 1000)
 
     const getInvoiceProducts = async (invoiceId: number) => {
+        setLoading(true)
         dispatch({type: "RESET_PRODUCT_BASKET"})
         await callNextApi("POST", "purchase/getInvoicePList", {invoice_id: invoiceId})
             .catch(e => console.log("Error in fetching invoice products: ", e))
@@ -147,6 +148,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                         }
                     })
                 })
+                setLoading(false)
             })
     }
 

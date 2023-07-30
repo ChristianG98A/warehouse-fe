@@ -28,13 +28,6 @@ const ProviderOrders = () => {
     const [newInvoiceModal, setNewInvoiceModal] = useState(false);
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [loading, setLoading] = useState(false);
-    const {register, handleSubmit} = useForm();
-    const [selectedCurrency, setSelectedCurreny] = useState<"EUR" | "RON" | "USD" | string>("RON");
-    const [selectedDate, setSelectedDate] = useState<any>("");
-    const [warehouses, setWarehouses] = useState([]);
-    const [selectedWarehouse, setSelectedWarehouse] = useState<any>("");
-    const [suppliers, setSuppliers] = useState([]);
-    const [selectedSupplier, setSelectedSupplier] = useState<any>({id: "", alias: ""})
 
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
@@ -46,6 +39,7 @@ const ProviderOrders = () => {
     // Initial Data Fetch
 
     const getReceptions = async () => {
+        setLoading(true)
         await callNextApi("POST", "inventory/getReceptionsList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
             .then((r: any) => {
                 console.log(r)
@@ -115,6 +109,7 @@ const ProviderOrders = () => {
                         bottom: params.isLastVisible ? 0 : 5
                     })}
                     sx={{
+                        minHeight:"55vh",
                         '& .MuiDataGrid-row': {
                             backgroundColor: grey[200],
                         },
@@ -158,9 +153,3 @@ const ProviderOrders = () => {
 
 export default ProviderOrders;
 
-//const actions = [
-//  { icon: <FileCopyIcon />, name: 'Copy' },
-//  { icon: <SaveIcon />, name: 'Save' },
-//  { icon: <PrintIcon />, name: 'Print' },
-//  { icon: <ShareIcon />, name: 'Share' },
-//];

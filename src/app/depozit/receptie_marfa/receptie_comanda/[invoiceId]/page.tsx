@@ -246,6 +246,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                                 bottom: params.isLastVisible ? 0 : 5
                             })}
                             sx={{
+                                minHeight: "55vh",
                                 '& .MuiDataGrid-row': {
                                     backgroundColor: grey[200],
                                 },
@@ -254,11 +255,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                             autoPageSize={false}
                             onRowClick={handleRowClick}
                             loading={loading}
-                            onRowEditCommit={(ceva: any) => console.log("bum ", ceva)}
-                            processRowUpdate={handleRowUpdate}
-                            onProcessRowUpdateError={e => console.log('Error encountered when editing rows: \n', e)}
                             getRowId={(row) => row.id}
-                            editMode="row"
                         />
                     </ Grid>
 
@@ -293,7 +290,6 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                         <Grid item xs={10} sm={10} md={10} lg={10} xl={10} >
                             <TextField
                                 sx={{width: '30rem'}}
-                                onChange={handleSearch}
                                 label={'Denumire / SKU / ID'}
                             />
                         </ Grid>
@@ -319,7 +315,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                                 rowSelectionModel={selectionModel}
                                 autoPageSize={false}
                                 loading={loading}
-                                sx={{minHeight: "30vh", maxHeight: "55vh"}}
+                                sx={{minHeight: "55vh", maxHeight: "55vh"}}
                             />
                         </ Grid>
 
