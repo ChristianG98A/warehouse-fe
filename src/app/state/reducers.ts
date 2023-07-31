@@ -70,6 +70,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_PRODUCTS_LEFT_FOR_RECEPTION':
             return {...state, productsLeftForReception:action.payload}
 
+        case 'SET_TRANSFERS':
+            return {...state, transfers:action.payload}
+
 
         default:
             return state

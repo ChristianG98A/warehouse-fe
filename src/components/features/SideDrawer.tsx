@@ -37,7 +37,6 @@ export default function SideDrawer(props: Props) {
     const [open, setOpen] = React.useState(true);
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -73,6 +72,7 @@ export default function SideDrawer(props: Props) {
                 <SidebarListDropdown item="Depozit" index={3}
                     menuItems={[
                         {name: 'Receptie Marfa', link: '/depozit/receptie_marfa'},
+                        {name: 'Transfer Marfa', link: '/depozit/transfer_marfa'},
                     ]}
                 />
             </List>
