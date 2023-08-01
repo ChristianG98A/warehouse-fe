@@ -87,7 +87,7 @@ export default function SideDrawer(props: Props) {
             <AppBar
                 position="fixed"
                 sx={{
-                    width: {lg: `calc(100% - ${drawerWidth}px)`, md:`calc(100% - ${drawerWidth}px)`},
+                    width: {lg: `calc(100% - ${drawerWidth}px)`, },
                     ml: {lg: `${drawerWidth}px`, md:`${drawerWidth}px`},
                 }}
             >
@@ -97,7 +97,7 @@ export default function SideDrawer(props: Props) {
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{mr: 2, display: {md: 'none' }}}
+                        sx={{mr: 2, display: {lg: 'none' }}}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -110,7 +110,7 @@ export default function SideDrawer(props: Props) {
                         sx={{
                             mr: 2,
                             ml: 6,
-                            display: {xs: 'none', md: 'none', lg:'flex'},
+                            display: {xs: 'none', md: 'flex', lg:'flex'},
                             fontFamily: 'monospace',
                             fontWeight: 800,
                             letterSpacing: '.3rem',
@@ -168,7 +168,7 @@ export default function SideDrawer(props: Props) {
                         keepMounted: true, // Better open performance on mobile.
                     }}
                     sx={{
-                        display: {xs: 'block', sm: 'block', md:'none'},
+                        display: {xs: 'block', sm: 'block', md:'block', lg:'none'},
                         '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
                     }}
                 >
