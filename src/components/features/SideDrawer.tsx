@@ -72,7 +72,7 @@ export default function SideDrawer(props: Props) {
                 <SidebarListDropdown item="Depozit" index={3}
                     menuItems={[
                         {name: 'Receptie Marfa', link: '/depozit/receptie_marfa'},
-                        {name: 'Transfer Marfa', link: '/depozit/transfer_marfa'},
+                        {name: 'Transfer Marfa', link: '/depozit/receptie_marfa'},
                     ]}
                 />
             </List>
@@ -87,8 +87,8 @@ export default function SideDrawer(props: Props) {
             <AppBar
                 position="fixed"
                 sx={{
-                    width: {sm: `calc(100% - ${drawerWidth}px)`},
-                    ml: {sm: `${drawerWidth}px`},
+                    width: {lg: `calc(100% - ${drawerWidth}px)`, md:`calc(100% - ${drawerWidth}px)`},
+                    ml: {lg: `${drawerWidth}px`, md:`${drawerWidth}px`},
                 }}
             >
                 <Toolbar>
@@ -97,7 +97,7 @@ export default function SideDrawer(props: Props) {
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{mr: 2, display: {sm: 'none'}}}
+                        sx={{mr: 2, display: {md: 'none' }}}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -110,7 +110,7 @@ export default function SideDrawer(props: Props) {
                         sx={{
                             mr: 2,
                             ml: 6,
-                            display: {xs: 'none', md: 'flex'},
+                            display: {xs: 'none', md: 'none', lg:'flex'},
                             fontFamily: 'monospace',
                             fontWeight: 800,
                             letterSpacing: '.3rem',
@@ -156,7 +156,7 @@ export default function SideDrawer(props: Props) {
             </AppBar>
             <Box
                 component="nav"
-                sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
+                sx={{width: {lg: drawerWidth }, flexShrink: {sm: 0, md: 0}}}
                 aria-label="mailbox folders"
             >
                 <Drawer
@@ -168,7 +168,7 @@ export default function SideDrawer(props: Props) {
                         keepMounted: true, // Better open performance on mobile.
                     }}
                     sx={{
-                        display: {xs: 'block', sm: 'none'},
+                        display: {xs: 'block', sm: 'block', md:'none'},
                         '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
                     }}
                 >
@@ -177,7 +177,7 @@ export default function SideDrawer(props: Props) {
                 <Drawer
                     variant="permanent"
                     sx={{
-                        display: {xs: 'none', sm: 'block'},
+                        display: {xs: 'none', sm: 'none', md:'none', lg:'block'},
                         '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
                     }}
                     open
