@@ -12,7 +12,7 @@ export interface State {
     productResult: ProductResult[];
     receptions?: ReceptionItem[];
     currentInvoice? : GridRowSelectionModel;
-    receptionInventory?: ReceptionInventoryProduct[];
+    receptionInventory: ReceptionInventoryProduct[];
     deletePrompt:boolean;
     errorSnack:boolean;
     snackBar:SnackBarState;

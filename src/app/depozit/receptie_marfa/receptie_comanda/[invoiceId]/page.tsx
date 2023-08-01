@@ -2,14 +2,14 @@
 
 import {StateContext} from "@/app/state/context";
 import {Action, State} from "@/app/state/types/stateTypes";
+import KeyboardListener from "@/components/features/KeyboardListener";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Box, Button, Divider, Drawer, FormControlLabel, Grid, Snackbar, Switch, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, Divider, Drawer, FormControlLabel, Grid, Modal, Paper, Snackbar, Switch, TextField, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
-import {ChangeEvent, KeyboardEvent, useContext, useEffect, useMemo, useState} from "react";
-import {useZxing} from "react-zxing";
+import {ChangeEvent, KeyboardEvent, KeyboardEventHandler, SyntheticEvent, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {ReceptionProduct} from "./types";
 
 
@@ -20,33 +20,28 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
     const [receptionCartModal, setReceptionCartModal] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [needConfirmation, setNeedConfirmaton] = useState(false);
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const debounce = require('lodash.debounce');
     const [selectionModel, setSelectionModel] = useState<any>([0])
     const [confirmSwitch, setConfirmSwitch] = useState(false);
+    const [currentReception, setCurrentReception] = useState<any>();
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
     })
     const [productsLeftForReception, setProductsLeftForReception] = useState<ReceptionProduct[]>([]);
-    const {ref} = useZxing({
-        onResult(result) {
-            console.log("Scanner result", result.getText());
-        }
-    })
 
     const invoiceId = parseInt(params.invoiceId);
+    const barcodeInputRef = useRef(null)
 
-    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            console.log(currentEAN);
+
+    const handleKeyDown = (event: any) => {
+        if (event.key === "Enter") {
+            handleSubmitInventoryProduct(false);
         }
     };
 
-    const handleSubmitInventoryProduct = () => {
-        console.log(currentEAN)
-        return null
-    }
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -58,8 +53,30 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
 
     const handleRowClick = async (params: any) => {
         setReceptionCartModal(true)
+        setCurrentReception(parseInt(params.row?.row_id))
         await getNotReceptionedProducts(parseInt(params.row?.row_id))
     }
+
+
+    const handleSubmitInventoryProduct = (eanConfirm: boolean) => {
+        console.log("This will go to function", currentEAN)
+        setLoading(true)
+
+        const productToBeSubmitted = productsLeftForReception[0]
+        console.log("This product will be confirmed: ", productToBeSubmitted)
+
+        const payload = [{
+            product_id: parseInt(productToBeSubmitted.product_id),
+            ean_code: parseInt(currentEAN),
+            row_id: parseInt(productToBeSubmitted.id),
+            publish_ean: eanConfirm ? 1 : 0,
+        }]
+
+        console.log("the payload ", payload)
+        addProductToInventory(payload)
+            .catch(e => console.log("error in confirming stock! ", e))
+    }
+
 
     const getNotReceptionedProducts = async (rowId: number) => {
         setLoading(true);
@@ -89,9 +106,30 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
             })
     }
 
+    const addProductToInventory = async (product: any) => {
+        setLoading(true);
+        await callNextApi("POST", "inventory/addProductInventory", product)
+            .catch(e => console.log("Error in fetching the products left for reception: ", e))
+            .then(async (r: any) => {
+                console.log("The response: ", r.responses)
+                if (r.responses.find((item: any) => item.ean_exist === 0)) {
+                    setNeedConfirmaton(true);
+                    await getNotReceptionedProducts(currentReception)
+                        .catch(e => console.log("Error refetching products", e))
+                }
+                else {
+                    setNeedConfirmaton(false);
+                    setCurrentEAN("")
+                    await getNotReceptionedProducts(currentReception)
+                        .catch(e => console.log("Error refetching products", e))
+                }
+            })
+
+    }
 
     useEffect(() => {
         setLoading(true)
+        console.log(barcodeInputRef.current)
         if (!invoiceId) {
             router.push('/depozit/receptie_marfa')
         } else {
@@ -100,7 +138,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
         }
     }, [])
 
-    //useEffect(()=>console.log(state.receptionInventory), [state.receptionInventory])
+    //useEffect(() => console.log(currentEAN), [currentEAN])
 
 
 
@@ -189,13 +227,63 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                 aria-labelledby="Reception Cart"
                 aria-describedby="Reception-Cart-Modal"
             >
+                <Modal
+                    autoFocus={true}
+                    component={"form"}
+                    onSubmit={() => console.log("onSubmit works")}
+                    open={needConfirmation}
+                    aria-labelledby="New Invoice Modal"
+                    aria-describedby="new-invoice-modal"
+                    sx={{
+                        position: "absolute",
+                        width: "max-content",
+                        height: "max-content",
+                        left: "50%",
+                        top: "50%",
+                        transform: 'translate(-50%, -50%)'
+
+                    }}
+                >
+                    <Box sx={{
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                    }}>
+                        <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} >
+                            <Grid item xs={12}>
+                                <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
+                                    Codul EAN nu exista in evidenta. Doresti sa il adaugi?
+                                </Typography>
+                            </Grid>
+
+                            <Grid item xs={6} sx={{display: 'flex', justifyContent: "right"}}>
+                                <Button variant="contained" type={"submit"} onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSubmitInventoryProduct(true);
+                                    setCurrentEAN("")
+                                }}>
+                                    Confirma
+                                </Button>
+                            </Grid>
+                            <Grid item xs={6} sx={{display: 'flex', justifyContent: "left"}}>
+                                <Button variant="contained" onClick={() => {
+                                    setNeedConfirmaton(false)
+                                    setCurrentEAN("")
+                                }}>
+
+                                    Anuleaza
+                                </Button>
+                            </Grid>
+
+                        </Grid>
+                    </ Box>
+                </Modal>
 
                 <Box sx={{
                     bgcolor: 'background.paper',
                     boxShadow: 24,
                     p: 4,
                 }}>
-
                     <Typography textAlign={"center"} id="reception_cart" variant="h6" component="h2">
                         Scaneaza Produse
                     </Typography>
@@ -204,9 +292,11 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                             <TextField
                                 sx={{width: '100%', }}
                                 label={'EAN'}
+                                inputRef={barcodeInputRef}
                                 value={currentEAN}
                                 onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrentEAN(event.target.value)}
                                 onKeyDown={handleKeyDown}
+                                autoFocus={true}
                             />
                         </ Grid>
                         <Grid item md={2} lg={1}>
@@ -259,7 +349,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                             <Button
                                 sx={{mr: 3}}
                                 variant="contained"
-                                onClick={handleSubmitInventoryProduct}
+                                onClick={() => handleSubmitInventoryProduct(false)}
                             >
                                 Submit
                             </Button>

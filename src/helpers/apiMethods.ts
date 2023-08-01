@@ -23,7 +23,7 @@ export const callNextApi = async (method:"GET"|"POST"|"PATCH"|"UPDATE"|"DELETE",
             body: JSON.stringify(body)
         }).then(
         r=>{
-            //console.log("Response in next api:\n", r)
+            console.log("Response in next api:\n", r)
             return r;
         }
         );
