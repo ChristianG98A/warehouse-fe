@@ -33,9 +33,6 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_CURRENT_INVOICE':
             return {...state, currentInvoice:action.payload}
 
-        case 'SET_CURRENT_INVOICE_DETAILS':
-            return {...state, currentInvoiceDetails:action.payload}
-
         case 'SET_DELETE_PROMPT':
             return {...state, deletePrompt:action.payload}
 

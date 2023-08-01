@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import {PersonPinCircleSharp} from "@mui/icons-material";
 import {useRouter} from "next/navigation";
 import {grey} from "@mui/material/colors";
+import {Action, State} from "@/app/state/types/stateTypes";
 
 const rowsPlaceholder: GridRowsProp = [
     {id: 1, crt: 1, Furnizor: "sc cacamaca", Serie_Factura: 12312313, invoiceNumber: 123132, date: "12.07.2023", product: "eau du saq", EAN: 523526, TVA: "19", discount: "0%", buy_price: 909.9, nrceva: 1324, deposit: "barbu v", sofer: "cutare"},
@@ -37,7 +38,7 @@ const actions = [
     {icon: <ShareIcon />, name: 'Share'},
 ];
 const ProviderOrders = () => {
-    const [state, dispatch] = useContext(StateContext)
+    const [state, dispatch] : [State, Action] = useContext(StateContext)
     const [newInvoiceModal, setNewInvoiceModal] = useState(false);
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
@@ -61,7 +62,7 @@ const ProviderOrders = () => {
     const getInvoices = async () => {
         await callNextApi("POST", "purchase/purchaseList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
             .then((r: any) => {
-                console.log(r)
+                console.log("INVOICEEES", r)
                 dispatch({type: "SET_INVOICES", payload: r?.response})
                 setLoading(false)
             });

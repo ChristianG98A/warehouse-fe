@@ -65,7 +65,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
         await callNextApi("POST", "inventory/getProductsList", {invoice_id: invoiceId})
             .catch(e => console.log("Error in fetching invoice products: ", e))
             .then((r: any) => {
-                console.log('reception inventory: \n', r?.response)
+//                console.log('reception inventory: \n', r?.response)
 
                 dispatch({
                     type: "SET_RECEPTION_INVENTORY", payload: (r?.response)

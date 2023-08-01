@@ -1,6 +1,7 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
+import {Action, State} from "@/app/state/types/stateTypes";
 import BasicTable from "@/components/common/BasicTable";
 import CustomToolbar from "@/components/common/CustomToolbar";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
@@ -26,7 +27,7 @@ const disabledButtonStyle = {
 
 
 const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
-    const [state, dispatch] = useContext(StateContext)
+    const [state, dispatch]: [State, Action] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
     const [invoiceDetails, setInvoiceDetails]=useState<{invoiceSeries:string, invoiceNumber:number, date:Date}>()
     const [productCart, setProductCart] = useState(false);
@@ -50,8 +51,9 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
     };
 
     const handleRowUpdate = (data: any) => {
-        const index = state.productBasket.findIndex((item: any) => item.id === data.id);
-        console.log("New row data: ", data, index)
+        //console.log("This goes into product basket! :", data)
+        const index = state?.productBasket?.findIndex((item: any) => item.id === data.id);
+        //console.log("New row data: ", data, index)
         dispatch({type: "SET_PRODUCT_BASKET", payload: data})
     }
     const handleSubmitInvoiceDetails = async () => {
@@ -83,7 +85,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
         setLoading(true)
         await callNextApi("POST", "purchase/addProduct", {
             invoice_id: invoiceId,
-            products: state.productBasket.map((product: any) => {
+            products: state?.productBasket?.map((product: any) => {
                 return ({
                     "product_id": parseInt(product.id),
                     "product_name": product.name,
@@ -122,6 +124,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                     console.log(r.response)
                     let id_key = 1
                     const result = r.response.map((product: {id: string, name: string, model: string}) => ({crt: id_key++, ...product}))
+                    console.log("resuuult:\n", result);
                     dispatch({type: "SET_PRODUCT_RESULT", payload: result})
                     setLoading(false)
                 })
@@ -134,7 +137,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
         await callNextApi("POST", "purchase/getInvoicePList", {invoice_id: invoiceId})
             .catch(e => console.log("Error in fetching invoice products: ", e))
             .then((r: any) => {
-                console.log('products in invoice: \n', r?.response)
+                //console.log('products in invoice: \n', r?.response)
                 r.response.forEach((productResult: any) => {
 
                     dispatch({
@@ -158,8 +161,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
             .catch(e => console.log("Error in fetching invoice details: ", e))
             .then((r: any) => {
                 const invoiceData= r?.response[0]
-                console.log("invoice details: \n", r)
-                dispatch({type: "SET_CURRENT_INVOICE_DETAILS", payload: r})
+                //console.log("invoice detailssssssss: \n", r)
                 setInvoiceDetails({
                     invoiceNumber: invoiceData.invoice_number,
                     invoiceSeries: invoiceData.invoice_series,
@@ -182,8 +184,8 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
         }
     }, [])
 
-    useEffect(() => console.log("Checkbox Selected: ", selectionModel), [selectionModel])
-    useEffect(() => console.log("Product basket: ", state?.productBasket), [state.productBasket])
+   // useEffect(() => console.log("Checkbox Selected: ", selectionModel), [selectionModel])
+   // useEffect(() => console.log("Product basket: ", state?.productBasket), [state.productBasket])
 
 
 

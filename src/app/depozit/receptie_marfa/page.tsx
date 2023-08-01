@@ -42,7 +42,7 @@ const ProviderOrders = () => {
         setLoading(true)
         await callNextApi("POST", "inventory/getReceptionsList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
             .then((r: any) => {
-                console.log(r)
+                //console.log(r)
                 dispatch({type: "SET_RECEPTIONS", payload: r?.response})
                 setLoading(false)
             });
@@ -51,7 +51,7 @@ const ProviderOrders = () => {
 
     useEffect(() => {
         //console.log("this is the context api state:\n", state);
-        console.log('initial datafetch')
+        //console.log('initial datafetch')
         getReceptions();
         setLoading(true);
     }, [paginationModel])
