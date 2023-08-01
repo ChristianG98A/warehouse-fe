@@ -9,7 +9,7 @@ import {Alert, Box, Button, Divider, Drawer, FormControlLabel, Grid, Modal, Pape
 import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
-import {ChangeEvent, KeyboardEvent, KeyboardEventHandler, SyntheticEvent, useContext, useEffect, useMemo, useRef, useState} from "react";
+import {ChangeEvent, KeyboardEvent, KeyboardEventHandler, SyntheticEvent, useContext, useEffect, useMemo, useState} from "react";
 import {ReceptionProduct} from "./types";
 
 
@@ -21,8 +21,8 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [needConfirmation, setNeedConfirmaton] = useState(false);
+    const [confirmedQuantity, setConfirmedQuantity] = useState(0)
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
-    const debounce = require('lodash.debounce');
     const [selectionModel, setSelectionModel] = useState<any>([0])
     const [confirmSwitch, setConfirmSwitch] = useState(false);
     const [currentReception, setCurrentReception] = useState<any>();
@@ -33,8 +33,6 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
     const [productsLeftForReception, setProductsLeftForReception] = useState<ReceptionProduct[]>([]);
 
     const invoiceId = parseInt(params.invoiceId);
-    const barcodeInputRef = useRef(null)
-
 
     const handleKeyDown = (event: any) => {
         if (event.key === "Enter") {
@@ -62,19 +60,41 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
         console.log("This will go to function", currentEAN)
         setLoading(true)
 
-        const productToBeSubmitted = productsLeftForReception[0]
-        console.log("This product will be confirmed: ", productToBeSubmitted)
+        if (confirmSwitch) {
+            const payload = []
+            for (let i = 0; i < confirmedQuantity; i++){
+                const productToBeSubmitted = productsLeftForReception[i]
 
-        const payload = [{
-            product_id: parseInt(productToBeSubmitted.product_id),
-            ean_code: parseInt(currentEAN),
-            row_id: parseInt(productToBeSubmitted.id),
-            publish_ean: eanConfirm ? 1 : 0,
-        }]
+                payload.push({
+                    product_id: parseInt(productToBeSubmitted.product_id),
+                    ean_code: parseInt(currentEAN),
+                    row_id: parseInt(productToBeSubmitted.id),
+                    publish_ean: eanConfirm ? 1 : 0,
 
-        console.log("the payload ", payload)
-        addProductToInventory(payload)
-            .catch(e => console.log("error in confirming stock! ", e))
+                })
+                }
+            console.log("The biiig payload: ", payload)
+
+            addProductToInventory(payload)
+                .catch(e => console.log("error in confirming stock of multiple items! ", e))
+
+        }
+        else {
+            const productToBeSubmitted = productsLeftForReception[0]
+            console.log("This product will be confirmed: ", productToBeSubmitted)
+
+            const payload = [{
+                product_id: parseInt(productToBeSubmitted.product_id),
+                ean_code: parseInt(currentEAN),
+                row_id: parseInt(productToBeSubmitted.id),
+                publish_ean: eanConfirm ? 1 : 0,
+            }]
+
+            console.log("the payload ", payload)
+            addProductToInventory(payload)
+                .catch(e => console.log("error in confirming stock! ", e))
+
+        }
     }
 
 
@@ -108,10 +128,12 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
 
     const addProductToInventory = async (product: any) => {
         setLoading(true);
+
         await callNextApi("POST", "inventory/addProductInventory", product)
             .catch(e => console.log("Error in fetching the products left for reception: ", e))
             .then(async (r: any) => {
                 console.log("The response: ", r.responses)
+
                 if (r.responses.find((item: any) => item.ean_exist === 0)) {
                     setNeedConfirmaton(true);
                     await getNotReceptionedProducts(currentReception)
@@ -129,7 +151,6 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
 
     useEffect(() => {
         setLoading(true)
-        console.log(barcodeInputRef.current)
         if (!invoiceId) {
             router.push('/depozit/receptie_marfa')
         } else {
@@ -292,7 +313,6 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                             <TextField
                                 sx={{width: '100%', }}
                                 label={'EAN'}
-                                inputRef={barcodeInputRef}
                                 value={currentEAN}
                                 onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrentEAN(event.target.value)}
                                 onKeyDown={handleKeyDown}
@@ -304,6 +324,8 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                                 disabled={!confirmSwitch}
                                 label={"Cantitate"}
                                 type="number"
+                                value={confirmedQuantity}
+                                onChange={(event)=>setConfirmedQuantity(event.target.value)}
                             />
                         </Grid>
                         <Grid item md={2} lg={2}>
