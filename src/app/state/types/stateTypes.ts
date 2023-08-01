@@ -1,16 +1,23 @@
-import Order, {allOrdersApiResponse} from "@/components/types/Order";
+import {allOrdersApiResponse} from "@/components/types/Order";
 import {GridRowSelectionModel} from "@mui/x-data-grid";
 
 export interface State {
     status?:string;
-    orders?: Order[];
-    selectionModel?: GridRowSelectionModel;
+    orders: Order[];
+    selectionModel: GridRowSelectionModel;
     loading?:boolean;
     trigger?:boolean;
     productBasket: ProductInBasket[];
     productBasketModal: boolean;
     productResult: ProductResult[];
+    receptions?: ReceptionItem[];
+    currentInvoice? : GridRowSelectionModel;
+    receptionInventory?: ReceptionInventoryProduct[];
+    deletePrompt:boolean;
+    errorSnack:boolean;
 }
+
+type Currency = "RON" | "EUR" | "USD";
 
 type ProductResult = {
     crt: number;
@@ -30,7 +37,7 @@ type Invoice = {
     nr_auto: string;
     locked: number | null;
     currency_rate: string;
-    currency: "RON" | "EUR" | "USD",
+    currency: Currency;
     reception_date: null | string;
     totalNoVat: number;
     totalWithVat: number;
@@ -46,6 +53,41 @@ type Invoice = {
     tax: number;
  }
 
+ type ReceptionItem = {
+    id: string;
+    invoice_date: string ;
+    invoice_series: string;
+    invoice_number: string;
+    supplier_name: string;
+    currency: Currency;
+    total_quantity: string;
+    receptioned_quantity: string;
+    not_receptioned_quantity: number;
+    invoice_value: string;
+ }
+
+ type ReceptionInventoryProduct = {
+    id:number;
+    row_id: string;
+    product_id: string;
+    product_name: string;
+    total_quantity: string;
+    receptioned_quantity: string;
+    not_confirmed_quantity: number;
+ }
+
+ type Order = {
+    crt: number;
+    id: string;
+    invoice_company: string;
+    delivery_price: string;
+    tax_rate: string;
+    status: string;
+    whStatus: string;
+    order_notes: string;
+    totalNoVat: string;
+    totalWithVat: number;
+ }
 export type Action = (reducerAction:ActionTypes) => void
 
 export type ActionTypes  =
@@ -101,5 +143,14 @@ export type ActionTypes  =
         payload: Invoice[];
     } |
     {
-        type:"test";
+        type:"SET_RECEPTIONS";
+        payload: ReceptionItem[];
+    }|
+    {
+        type:"SET_RECEPTION_INVENTORY";
+        payload: ReceptionInventoryProduct[];
+    }|
+    {
+        type:"SET_ORDERS";
+        payload: Order[];
     }

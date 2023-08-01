@@ -1,6 +1,7 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
+import {Action, State} from "@/app/state/types/stateTypes";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Alert, Box, Button, Divider, Drawer, FormControlLabel, Grid, Snackbar, Switch, TextField, Typography} from "@mui/material";
@@ -14,7 +15,7 @@ import {ReceptionProduct} from "./types";
 
 
 const OrderReception = ({params}: {params: {invoiceId: string}}) => {
-    const [state, dispatch] = useContext(StateContext)
+    const [state, dispatch] : [State, Action] = useContext(StateContext)
     const [receptionCartModal, setReceptionCartModal] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -65,7 +66,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
         await callNextApi("POST", "inventory/getProductsList", {invoice_id: invoiceId})
             .catch(e => console.log("Error in fetching invoice products: ", e))
             .then((r: any) => {
-//                console.log('reception inventory: \n', r?.response)
+                console.log('reception inventory: \n', r?.response)
 
                 dispatch({
                     type: "SET_RECEPTION_INVENTORY", payload: (r?.response)
@@ -86,6 +87,8 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
             getReceptionProducts(invoiceId).then(r => setLoading(false))
         }
     }, [])
+
+    //useEffect(()=>console.log(state.receptionInventory), [state.receptionInventory])
 
 
 

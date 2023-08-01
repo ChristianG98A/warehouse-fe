@@ -1,6 +1,7 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
+import {Action, State} from "@/app/state/types/stateTypes";
 import GridColumns from "@/components/common/GridColumns";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
@@ -9,16 +10,6 @@ import {grey} from "@mui/material/colors";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
 
-const rows: GridRowsProp = [
-    {crt: 1, id: 1, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
-    {crt: 2, id: 2, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
-    {crt: 3, id: 3, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
-    {crt: 4, id: 4, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
-    {crt: 5, id: 5, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
-    {crt: 6, id: 6, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
-    {crt: 7, id: 7, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
-    {crt: 8, id: 8, status: "merge", status_deposit: "si asta merge", produse_alocate: "aha", total_fara_tva: "adevarat", total_cu_tva: "nebunie", nr_comanda_client: "69", note: "da"},
-];
 
 
 const rowsPerPageOptions = [10, 20, 100];
@@ -28,7 +19,7 @@ const Orders = () => {
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [loading, setLoading] = useState(false);  //fetch lag.....
     //    const [orders, setOrders] = useState<any>([]);
-    const [state, dispatch] = useContext(StateContext)
+    const [state, dispatch]:[State, Action] = useContext(StateContext)
     const [trigger, setTrigger] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [paginationModel, setPaginationModel] = useState({
@@ -42,8 +33,8 @@ const Orders = () => {
         console.log('initial datafetch')
         setLoading(true);
         callNextApi("POST", "orders", {limit: paginationModel.pageSize, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
-            .then((r) => {
-                //console.log(r)
+            .then((r:any) => {
+                console.log("ORDEEERS", r)
                 dispatch({type: "SET_ORDERS", payload: r})
                 setLoading(false)
             });
@@ -93,7 +84,7 @@ const Orders = () => {
                     <DataGrid
                         columnHeaderHeight={60}
                         //rows={useMemo(() => {return state.orders}, [state.orders])} //aici va veni Orders
-                        rows={state.orders}
+                        rows={state.orders ?? []}
                         columns={GridColumns()}
                         paginationModel={paginationModel}
                         initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}

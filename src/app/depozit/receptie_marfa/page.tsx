@@ -1,15 +1,15 @@
 "use client"
 import {Purchase} from "@/app/api/purchase/types/types";
 import {StateContext} from "@/app/state/context";
+import {Action, State} from "@/app/state/types/stateTypes";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Grid, Paper, Snackbar, SpeedDial, SpeedDialAction, SpeedDialIcon, Typography} from "@mui/material";
-import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
-import {useContext, useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
 import {PersonPinCircleSharp} from "@mui/icons-material";
-import {useRouter} from "next/navigation";
+import {Alert, Grid, Paper, Snackbar, SpeedDial, SpeedDialAction, SpeedDialIcon, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
+import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
+import {useRouter} from "next/navigation";
+import {useContext, useEffect, useState} from "react";
 import ReceptionsColumns from "./ReceptionsColumns";
 
 const rowsPlaceholder: GridRowsProp = [
@@ -23,7 +23,7 @@ const rows: GridRowsProp | Purchase[] = [
 
 const rowsPerPageOptions = [10, 20, 100];
 const ProviderOrders = () => {
-    const [state, dispatch] = useContext(StateContext)
+    const [state, dispatch] : [State, Action] = useContext(StateContext)
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const [newInvoiceModal, setNewInvoiceModal] = useState(false);
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
@@ -42,7 +42,7 @@ const ProviderOrders = () => {
         setLoading(true)
         await callNextApi("POST", "inventory/getReceptionsList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
             .then((r: any) => {
-                //console.log(r)
+                console.log("RECEPTIONSSS! ", r)
                 dispatch({type: "SET_RECEPTIONS", payload: r?.response})
                 setLoading(false)
             });
