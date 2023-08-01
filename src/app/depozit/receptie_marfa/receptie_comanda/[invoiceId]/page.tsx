@@ -8,34 +8,45 @@ import {Alert, Box, Button, Divider, Drawer, FormControlLabel, Grid, Snackbar, S
 import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
-import {useContext, useEffect, useMemo, useState} from "react";
+import {ChangeEvent, KeyboardEvent, useContext, useEffect, useMemo, useState} from "react";
 import {useZxing} from "react-zxing";
 import {ReceptionProduct} from "./types";
 
 
 
 const OrderReception = ({params}: {params: {invoiceId: string}}) => {
-    const [state, dispatch] : [State, Action] = useContext(StateContext)
+    const [state, dispatch]: [State, Action] = useContext(StateContext)
+    const [currentEAN, setCurrentEAN] = useState("");
     const [receptionCartModal, setReceptionCartModal] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const debounce = require('lodash.debounce');
     const [selectionModel, setSelectionModel] = useState<any>([0])
-    const [editSwitch, setEditSwitch] = useState(false);
+    const [confirmSwitch, setConfirmSwitch] = useState(false);
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
     })
     const [productsLeftForReception, setProductsLeftForReception] = useState<ReceptionProduct[]>([]);
-    const { ref } = useZxing({
-            onResult(result){
-                    console.log("Scanner result", result.getText());
-                }
-        })
+    const {ref} = useZxing({
+        onResult(result) {
+            console.log("Scanner result", result.getText());
+        }
+    })
 
     const invoiceId = parseInt(params.invoiceId);
 
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            console.log(currentEAN);
+        }
+    };
+
+    const handleSubmitInventoryProduct = () => {
+        console.log(currentEAN)
+        return null
+    }
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -45,10 +56,10 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
     };
 
 
-    const handleRowClick = async (params:any) =>{
-            setReceptionCartModal(true)
-            await getNotReceptionedProducts(parseInt(params.row?.row_id))
-        }
+    const handleRowClick = async (params: any) => {
+        setReceptionCartModal(true)
+        await getNotReceptionedProducts(parseInt(params.row?.row_id))
+    }
 
     const getNotReceptionedProducts = async (rowId: number) => {
         setLoading(true);
@@ -77,6 +88,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                 })
             })
     }
+
 
     useEffect(() => {
         setLoading(true)
@@ -188,26 +200,38 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                         Scaneaza Produse
                     </Typography>
                     <Grid alignItems={"center"} alignContent={'center'} justifyItems={"center"} justifyContent={"center"} container spacing={3} sx={{mt: 5}}>
-                        <Grid item xs={12} sx={{display:'flex', justifyContent:'center', }}>
+                        <Grid item md={5} lg={5} sx={{display: 'flex', justifyContent: 'center', }}>
                             <TextField
-                                sx={{width: '30rem', pr:5}}
+                                sx={{width: '100%', }}
                                 label={'EAN'}
+                                value={currentEAN}
+                                onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrentEAN(event.target.value)}
+                                onKeyDown={handleKeyDown}
                             />
-                            <FormControlLabel control={<Switch value={editSwitch}
+                        </ Grid>
+                        <Grid item md={2} lg={1}>
+                            <TextField
+                                disabled={!confirmSwitch}
+                                label={"Cantitate"}
+                                type="number"
+                            />
+                        </Grid>
+                        <Grid item md={2} lg={2}>
+                            <FormControlLabel control={<Switch value={confirmSwitch}
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                    setEditSwitch(event.target.checked);
+                                    setConfirmSwitch(event.target.checked);
                                 }} />}
                                 label="Confirma cantitatea"
                             />
-                        </ Grid>
+                        </Grid>
 
 
-                        <Grid item xs={12} md={8} sx={{...center}} >
+                        <Grid item xs={12} md={9} sx={{...center}} >
                             <DataGrid
                                 getRowId={(row) => row.id}
                                 rowSelection={true}
                                 columnHeaderHeight={70}
-                                rows={productsLeftForReception?? []}
+                                rows={productsLeftForReception ?? []}
                                 pageSizeOptions={[10, 25, 50]}
                                 initialState={{pagination: {paginationModel: paginationModel}}}
                                 onPaginationModelChange={setPaginationModel}
@@ -232,6 +256,13 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                         </Grid>
 
                         <Grid item xs={10} sx={{...center}} >
+                            <Button
+                                sx={{mr: 3}}
+                                variant="contained"
+                                onClick={handleSubmitInventoryProduct}
+                            >
+                                Submit
+                            </Button>
                             <Button variant="contained" onClick={() => setReceptionCartModal(false)}>
                                 Inchide
                             </Button>

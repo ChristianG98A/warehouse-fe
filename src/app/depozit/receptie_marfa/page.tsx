@@ -10,6 +10,7 @@ import {grey} from "@mui/material/colors";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
 import {useContext, useEffect, useState} from "react";
+import ReceptionGridToolbar from "./ReceptionGridToolbar";
 import ReceptionsColumns from "./ReceptionsColumns";
 
 const rowsPlaceholder: GridRowsProp = [
@@ -24,7 +25,6 @@ const rows: GridRowsProp | Purchase[] = [
 const rowsPerPageOptions = [10, 20, 100];
 const ProviderOrders = () => {
     const [state, dispatch] : [State, Action] = useContext(StateContext)
-    const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const [newInvoiceModal, setNewInvoiceModal] = useState(false);
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [loading, setLoading] = useState(false);
@@ -52,24 +52,17 @@ const ProviderOrders = () => {
     useEffect(() => {
         //console.log("this is the context api state:\n", state);
         //console.log('initial datafetch')
+        dispatch({type: "SET_CURRENT_INVOICE", payload: null})
         getReceptions();
         setLoading(true);
     }, [paginationModel])
-
-
-    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setNewInvoiceModal(false);
-        //     dispatch({type: "SET_OPEN_ERROR_SNACK", payload: false})
-    };
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
-        setSnackBar({...snackBar, state: false})
+        dispatch({type:"SET_SNACKBAR", payload:{...state.snackBar, state:false}})
+
     };
 
     return (
@@ -87,7 +80,7 @@ const ProviderOrders = () => {
                     },
                 ]}
             />
-            <Grid component={Paper} container direction="column" justifySelf={"center"} justifyItems={"center"} style={{width: '100%', height: "60vh"}} >
+            <Grid component={Paper} container justifySelf={"center"} justifyItems={"center"} style={{height: "60vh"}} >
                 <DataGrid
                     rowSelection={true}
                     columnHeaderHeight={60}
@@ -103,7 +96,7 @@ const ProviderOrders = () => {
                     autoPageSize={false}
                     loading={loading}
                     // slots={{toolbar: CustomToolbar}}
-                    slots={{toolbar: GridToolbar}}
+                    slots={{toolbar: ReceptionGridToolbar}}
                     getRowSpacing={params => ({
                         top: params.isFirstVisible ? 0 : 5,
                         bottom: params.isLastVisible ? 0 : 5
@@ -117,34 +110,14 @@ const ProviderOrders = () => {
                 />
             </Grid>
 
-            <SpeedDial
-                ariaLabel="Reception Action"
-                sx={{position: 'absolute', bottom: "1rem", right: "2rem"}}
-                icon={<SpeedDialIcon />}
-            >
-                <SpeedDialAction
-                    key={"item_reception"}
-                    icon={<PersonPinCircleSharp />}
-                    tooltipTitle={"Receptioneaza"}
-                    onClick={() => {
-                        if (state?.currentInvoice) {
-                            router.push(`/depozit/receptie_marfa/receptie_comanda/${state.currentInvoice}`)
-                        }
-                        else {
-                            setSnackBar({message: "Selecteaza o comanda!", type: "error", state: true})
-                        }
-                    }
-                    }
-                />
-            </SpeedDial>
 
             <Snackbar
                 anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
-                open={snackBar.state}
+                open={state.snackBar?.state}
                 autoHideDuration={3000}
                 onClose={handleSnackClose}
             >
-                <Alert onClose={handleSnackClose} severity={snackBar.type}>{snackBar.message}</Alert>
+                <Alert onClose={handleSnackClose} severity={state?.snackBar?.type}>{state?.snackBar?.message}</Alert>
             </Snackbar>
         </>
     )

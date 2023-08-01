@@ -70,6 +70,8 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_TRANSFERS':
             return {...state, transfers:action.payload}
 
+        case 'SET_SNACKBAR':
+            return {...state, snackBar:action.payload}
 
         default:
             return state

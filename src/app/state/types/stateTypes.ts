@@ -15,6 +15,7 @@ export interface State {
     receptionInventory?: ReceptionInventoryProduct[];
     deletePrompt:boolean;
     errorSnack:boolean;
+    snackBar:SnackBarState;
 }
 
 type Currency = "RON" | "EUR" | "USD";
@@ -88,12 +89,18 @@ type Invoice = {
     totalNoVat: string;
     totalWithVat: number;
  }
+
+type SnackBarState = {
+    state: boolean;
+    message: string;
+    type: "success" | "error" | "warning";
+}
 export type Action = (reducerAction:ActionTypes) => void
 
 export type ActionTypes  =
     {
         type: "SET_CURRENT_INVOICE";
-        payload: number;
+        payload: number | null;
     } |
     {
         type: "SET_PRODUCT_BASKET_MODAL";
@@ -153,4 +160,8 @@ export type ActionTypes  =
     {
         type:"SET_ORDERS";
         payload: Order[];
+    }|
+    {
+        type:"SET_SNACKBAR";
+        payload: SnackBarState;
     }
