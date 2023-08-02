@@ -90,6 +90,7 @@ const StockTransfer = () => {
         //console.log("this is the context api state:\n", state);
         console.log('initial datafetch')
         getTransfers();
+        dispatch({type:"SET_CURRENT_TRANSFER", payload: undefined})
         setLoading(true);
     }, [paginationModel])
 
