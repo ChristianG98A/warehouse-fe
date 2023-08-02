@@ -20,18 +20,21 @@ export interface State {
     warehouseSelection: Warehouse[];
     supplierSelection: Supplier[];
     newInvoiceModal:boolean;
+    warehouseTransferSelection:WarehouseTransferOptions;
+    newTransferModal:boolean;
+    transfers: Transfer[];
 }
 
-type Currency = "RON" | "EUR" | "USD";
+export type Currency = "RON" | "EUR" | "USD";
 
-type ProductResult = {
+export type ProductResult = {
     crt: number;
     id: string;
     name: string;
     model: string;
 }
 
-type Invoice = {
+export type Invoice = {
     id: number;
     invoice_date: string;
     due_date: string | null;
@@ -47,7 +50,7 @@ type Invoice = {
     totalNoVat: number;
     totalWithVat: number;
 }
-type ProductInBasket = {
+export type ProductInBasket = {
     row_id?: number | null;
     crt?: number;
     id: number;
@@ -58,7 +61,7 @@ type ProductInBasket = {
     tax: number;
 }
 
-type ReceptionItem = {
+export type ReceptionItem = {
     id: string;
     invoice_date: string;
     invoice_series: string;
@@ -71,7 +74,7 @@ type ReceptionItem = {
     invoice_value: string;
 }
 
-type ReceptionInventoryProduct = {
+export type ReceptionInventoryProduct = {
     id: number;
     row_id: string;
     product_id: string;
@@ -81,7 +84,7 @@ type ReceptionInventoryProduct = {
     not_confirmed_quantity: number;
 }
 
-type Order = {
+export type Order = {
     crt: number;
     id: string;
     invoice_company: string;
@@ -94,20 +97,34 @@ type Order = {
     totalWithVat: number;
 }
 
-type SnackBarState = {
+export type SnackBarState = {
     state: boolean;
     message: string;
     type: "success" | "error" | "warning";
 }
 
-type Warehouse = {
+export type WarehouseTransferOptions = {
+    warehousesAllowingServicingStock : Warehouse[];
+    warehouseAllowingSellingStock: Warehouse[];
+}
+
+
+export type Warehouse = {
     id: string;
     name: string;
 }
 
-type Supplier = {
+export type Supplier = {
     id: string;
     alias: string;
+}
+
+export type Transfer = {
+    id: string;
+    old_warehouse_name: string;
+    new_warehouse_name: string;
+    status: string;
+    confirmed:any;
 }
 
 export type Action = (reducerAction: ActionTypes) => void
@@ -187,6 +204,18 @@ export type ActionTypes =
     {
         type: "SET_NEW_INVOICE_MODAL";
         payload: boolean;
+    } |
+    {
+        type: "SET_WAREHOUSE_TRANSFER_SELECTION";
+        payload: boolean;
+    } |
+    {
+        type: "SET_NEW_TRANSFER_MODAL";
+        payload: boolean;
+    } |
+    {
+        type: "SET_TRANSFERS";
+        payload: Transfer[];
     } |
     {
         type: "SET_SNACKBAR";

@@ -1,26 +1,54 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
-import {Action, State} from "@/app/state/types/stateTypes";
-import {Button} from "@mui/material";
+import {Box, Button} from "@mui/material";
+import {GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector, GridToolbarExport} from "@mui/x-data-grid";
+import {useRouter} from "next/navigation";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import React, {useContext} from "react";
+import AddchartIcon from '@mui/icons-material/Addchart';
+import {callNextApi} from "@/helpers/apiMethods";
+import {Action, State} from "@/app/state/types/stateTypes";
 
-const CustomToolbar = () => {
-    const [state, dispatch] :[State, Action] = useContext(StateContext);
 
+const ReceptionButton = ()=>{
+    const [state, dispatch] = useContext(StateContext);
+    const router = useRouter();
+
+        return(
+        <>
+           <Button
+               color="primary"
+               key={"item_reception"}
+               style={{ fontSize: "0.8rem"}}
+                startIcon={<AddCircleIcon />}
+
+                onClick={async() => {
+                    await callNextApi("POST", "transfers/transferInit").then((r: any) => {
+                        dispatch({type: 'SET_WAREHOUSE_TRANSFER_SELECTION', payload: {
+                                warehousesAllowingServicingStock:r?.response?.warehouses_allow_servicing_stock,
+                                warehouseAllowingSellingStock:r?.response?.warehouses_allow_selling_stock,
+                            }})
+                    })
+                    dispatch({type: 'SET_NEW_TRANSFER_MODAL', payload: true})
+                }
+                }
+
+           >
+               Transfer Nou
+           </Button>
+        </>)
+}
+
+const TransferToolbar = () => {
     return (
-        <div>
-            <Button
-                color="primary"
-                size="large"
-                onClick={() => dispatch({type:"SET_PRODUCT_BASKET_MODAL", payload:true})}
-                style={{marginLeft: "1rem"}}
-            >
-                Adauga Produse
-            </Button>
-
-        </div>
+        <GridToolbarContainer>
+            <GridToolbarColumnsButton />
+            <GridToolbarFilterButton />
+            <GridToolbarExport />
+            <ReceptionButton />
+        </GridToolbarContainer>
     );
 }
 
-export default CustomToolbar;
+export default TransferToolbar;

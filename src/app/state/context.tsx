@@ -15,7 +15,8 @@ const [state, dispatch] = useReducer(reducer, {
     productBasket:[],
     productBasketModal:false,
     receptionInventory:[],
-    newInvoiceModal:false
+    newInvoiceModal:false,
+    newTransferModal:false,
     })
 
 

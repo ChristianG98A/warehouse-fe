@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 import {PersonPinCircleSharp} from "@mui/icons-material";
 import {useRouter} from "next/navigation";
 import {grey} from "@mui/material/colors";
-import {Action, State} from "@/app/state/types/stateTypes";
+import {Action, Currency, State} from "@/app/state/types/stateTypes";
 import InvoiceGridToolbar from "./InvoiceGridToolbar";
 
 const rowsPlaceholder: GridRowsProp = [
@@ -43,7 +43,7 @@ const ProviderOrders = () => {
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [loading, setLoading] = useState(false);
     const {register, handleSubmit} = useForm();
-    const [selectedCurrency, setSelectedCurreny] = useState<"EUR" | "RON" | "USD" | string>("RON");
+    const [selectedCurrency, setSelectedCurreny] = useState<Currency>("RON");
     const [selectedDate, setSelectedDate] = useState<any>("");
     const [selectedWarehouse, setSelectedWarehouse] = useState<any>("");
     const [selectedSupplier, setSelectedSupplier] = useState<any>({id: "", alias: ""})
@@ -267,7 +267,7 @@ const ProviderOrders = () => {
 
                         </Grid>
                         <Divider sx={{mt: 10}} />
-                        <Box sx={{display: "flex", justifyContent: "right", gap: "5rem", pt: 2}} >
+                        <Box sx={{display: "flex", justifyContent: "center", gap: "5rem", pt: 2}} >
                             <Button variant="contained" type={"submit"}>
                                 Save
                             </Button>

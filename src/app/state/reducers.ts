@@ -82,6 +82,12 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_SUPPLIER_SELECTION':
             return {...state, supplierSelection:action.payload}
 
+        case 'SET_WAREHOUSE_TRANSFER_SELECTION':
+            return {...state, warehouseTransferSelection:action.payload}
+
+        case 'SET_NEW_TRANSFER_MODAL':
+            return {...state, newTransferModal:action.payload}
+
         default:
             return state
     }
