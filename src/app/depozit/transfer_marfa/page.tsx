@@ -93,6 +93,8 @@ const StockTransfer = () => {
         setLoading(true);
     }, [paginationModel])
 
+    useEffect(()=>console.log(state.currentTransfer),[state.currentTransfer])
+
 
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -140,7 +142,7 @@ const StockTransfer = () => {
                     onPaginationModelChange={setPaginationModel}
                     pageSizeOptions={[10, 25, 50]}
                     onRowSelectionModelChange={(newRowSelectionModel) => {
-                        dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
+                        dispatch({type: "SET_CURRENT_TRANSFER", payload: state.transfers.find(transfer=>transfer.id==newRowSelectionModel[0])})
                     }}
                     rowSelectionModel={state.selectionModel}
                     autoPageSize={false}

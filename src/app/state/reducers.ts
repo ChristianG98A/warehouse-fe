@@ -88,6 +88,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_NEW_TRANSFER_MODAL':
             return {...state, newTransferModal:action.payload}
 
+        case 'SET_CURRENT_TRANSFER':
+            return {...state, currentTransfer:action.payload}
+
         default:
             return state
     }

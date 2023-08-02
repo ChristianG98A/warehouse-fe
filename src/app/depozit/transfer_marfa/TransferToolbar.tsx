@@ -9,6 +9,7 @@ import React, {useContext} from "react";
 import AddchartIcon from '@mui/icons-material/Addchart';
 import {callNextApi} from "@/helpers/apiMethods";
 import {Action, State} from "@/app/state/types/stateTypes";
+import EditNoteIcon from '@mui/icons-material/EditNote';
 
 
 const ReceptionButton = ()=>{
@@ -40,6 +41,34 @@ const ReceptionButton = ()=>{
         </>)
 }
 
+const EditButton = () => {
+    const [state, dispatch]:[State, Action] = useContext(StateContext);
+    const router = useRouter();
+
+    return (
+        <>
+            <Button
+                color="primary"
+                key={"item_reception"}
+                style={{fontSize: "0.8rem"}}
+                startIcon={<EditNoteIcon />}
+
+                onClick={() => {
+                    if (state?.currentTransfer) {
+                        router.push(`/depozit/transfer_marfa/editare_transfer/${state.currentTransfer.id}`)
+                    }
+                    else {
+                        dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Selecteaza un transfer!", type: "error"}})
+                    }
+                }
+                }
+
+            >
+                Editeaza Transfer
+            </Button>
+        </>)
+}
+
 const TransferToolbar = () => {
     return (
         <GridToolbarContainer>
@@ -47,6 +76,7 @@ const TransferToolbar = () => {
             <GridToolbarFilterButton />
             <GridToolbarExport />
             <ReceptionButton />
+            <EditButton />
         </GridToolbarContainer>
     );
 }

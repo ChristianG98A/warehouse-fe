@@ -191,7 +191,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
 
     return (
         <>
-            <Typography variant={"h5"} fontWeight={800} sx={{mb: 2}} textAlign='center' gutterBottom >{"Lista note intrare-receptie id: " + invoiceId}</ Typography>
+            <Typography variant={"h5"} fontWeight={800} sx={{mb: 2}} textAlign='center' gutterBottom >{"Editare N.I.R. " + invoiceId}</ Typography>
             <PageBreadcrumbs
                 items={[
                     {

@@ -23,6 +23,8 @@ export interface State {
     warehouseTransferSelection:WarehouseTransferOptions;
     newTransferModal:boolean;
     transfers: Transfer[];
+    currentTransfer: Transfer | undefined;
+    transferProductResult: TransferProduct[];
 }
 
 export type Currency = "RON" | "EUR" | "USD";
@@ -127,6 +129,15 @@ export type Transfer = {
     confirmed:any;
 }
 
+export type TransferProduct = {
+    crt: number; //comes from a local .map function, NOT FROM API!
+    id: string;
+    name: string;
+    model: string;
+    available_quantity: string;
+    warehouse_name: string;
+}
+
 export type Action = (reducerAction: ActionTypes) => void
 
 export type ActionTypes =
@@ -216,6 +227,14 @@ export type ActionTypes =
     {
         type: "SET_TRANSFERS";
         payload: Transfer[];
+    } |
+    {
+        type: "SET_CURRENT_TRANSFER";
+        payload: Transfer | undefined;
+    } |
+    {
+        type: "SET_TRANSFER_PRODUCT_RESULT";
+        payload: TransferProduct[];
     } |
     {
         type: "SET_SNACKBAR";
