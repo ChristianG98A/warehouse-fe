@@ -20,6 +20,7 @@ import {PersonPinCircleSharp} from "@mui/icons-material";
 import {useRouter} from "next/navigation";
 import {grey} from "@mui/material/colors";
 import {Action, State} from "@/app/state/types/stateTypes";
+import InvoiceGridToolbar from "./InvoiceGridToolbar";
 
 const rowsPlaceholder: GridRowsProp = [
     {id: 1, crt: 1, Furnizor: "sc cacamaca", Serie_Factura: 12312313, invoiceNumber: 123132, date: "12.07.2023", product: "eau du saq", EAN: 523526, TVA: "19", discount: "0%", buy_price: 909.9, nrceva: 1324, deposit: "barbu v", sofer: "cutare"},
@@ -39,16 +40,12 @@ const actions = [
 ];
 const ProviderOrders = () => {
     const [state, dispatch] : [State, Action] = useContext(StateContext)
-    const [newInvoiceModal, setNewInvoiceModal] = useState(false);
-    const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [loading, setLoading] = useState(false);
     const {register, handleSubmit} = useForm();
     const [selectedCurrency, setSelectedCurreny] = useState<"EUR" | "RON" | "USD" | string>("RON");
     const [selectedDate, setSelectedDate] = useState<any>("");
-    const [warehouses, setWarehouses] = useState([]);
     const [selectedWarehouse, setSelectedWarehouse] = useState<any>("");
-    const [suppliers, setSuppliers] = useState([]);
     const [selectedSupplier, setSelectedSupplier] = useState<any>({id: "", alias: ""})
 
     const [paginationModel, setPaginationModel] = useState({
@@ -80,14 +77,14 @@ const ProviderOrders = () => {
         if (reason === 'clickaway') {
             return;
         }
-        setSnackBar({...snackBar, state: false})
+        dispatch({type:"SET_SNACKBAR", payload:{...state.snackBar, state:false}})
     };
 
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
-        setNewInvoiceModal(false);
+        dispatch({type:'SET_NEW_INVOICE_MODAL', payload: false})
         //     dispatch({type: "SET_OPEN_ERROR_SNACK", payload: false})
     };
 
@@ -112,7 +109,7 @@ const ProviderOrders = () => {
                 (r: any) => {
                     getInvoices();
                     setLoading(false);
-                    setNewInvoiceModal(false);
+                    dispatch({type:'SET_NEW_INVOICE_MODAL', payload:false})
                     dispatch({type: "SET_CURRENT_INVOICE", payload: r?.response.id_nir})
                 },
                 e => console.log(e)
@@ -126,12 +123,12 @@ const ProviderOrders = () => {
             <PageBreadcrumbs
                 items={[
                     {
-                        name: "Receptie marfa",
-                        path: "/receptie_marfa",
+                        name: "Achizitii",
+                        path: "#",
                     },
                     {
                         name: "Comenzi Furnizori",
-                        path: "/comenzi_furnizori",
+                        path: "/achizitii/comenzi_furnizori",
                     },
                 ]}
             />
@@ -139,7 +136,7 @@ const ProviderOrders = () => {
                 <DataGrid
                     rowSelection={true}
                     columnHeaderHeight={60}
-                    rows={state.invoices}
+                    rows={state?.invoices ?? []}
                     columns={SellerInvoiceRow()}
                     initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
                     onPaginationModelChange={setPaginationModel}
@@ -150,8 +147,7 @@ const ProviderOrders = () => {
                     rowSelectionModel={state.selectionModel}
                     autoPageSize={false}
                     loading={loading}
-                    // slots={{toolbar: CustomToolbar}}
-                    slots={{toolbar: GridToolbar}}
+                    slots={{toolbar: InvoiceGridToolbar}}
                     getRowSpacing={params => ({
                         top: params.isFirstVisible ? 0 : 5,
                         bottom: params.isLastVisible ? 0 : 5
@@ -170,12 +166,18 @@ const ProviderOrders = () => {
                     autoFocus={true}
                     component={"form"}
                     onSubmit={addInvoice}
-                    open={newInvoiceModal}
+                    open={state?.newInvoiceModal?? false}
                     aria-labelledby="New Invoice Modal"
                     aria-describedby="new-invoice-modal"
                     sx={{
                         position: "absolute",
-                        width: "max-content",
+                        width: {
+                               xs: "100vw",
+                               sm: "100vw",
+                               md: "90vw",
+                               lg: "max-content",
+                               xl: "max-content",
+                            },
                         height: "max-content",
                         left: "50%",
                         top: "50%",
@@ -247,7 +249,7 @@ const ProviderOrders = () => {
                                 <FormControl variant='standard' sx={{width: "100%"}}>
                                     <InputLabel id="groupSelector" >Depozit</InputLabel>
                                     <Select labelId='warehouse_selector' id="warehouse_selector" value={selectedWarehouse}>
-                                        {warehouses?.map((warehouse: {id: string, name: string} | any) =>
+                                        {state.warehouseSelection?.map((warehouse: {id: string, name: string} | any) =>
                                             (<MenuItem onClick={() => setSelectedWarehouse(warehouse)} key={warehouse.id} value={warehouse}>{warehouse.name}</MenuItem>))}
                                     </Select>
                                 </FormControl>
@@ -257,7 +259,7 @@ const ProviderOrders = () => {
                                 <FormControl variant='standard' sx={{width: "100%", }}>
                                     <InputLabel id="supplier" >Furnizor</InputLabel>
                                     <Select {...register("supplier")} labelId='supplier_selector' id="supplier_select" value={selectedSupplier.alias}>
-                                        {suppliers?.map((supplier: {id: string, alias: string}) => (<MenuItem key={supplier.id}
+                                        {state.supplierSelection?.map((supplier: {id: string, alias: string}) => (<MenuItem key={supplier.id}
                                             onClick={() => setSelectedSupplier(supplier)} value={supplier.alias}>{supplier.alias}</MenuItem>))}
                                     </Select>
                                 </FormControl>
@@ -277,45 +279,13 @@ const ProviderOrders = () => {
                     </Box>
                 </Modal>
             </div>
-            <SpeedDial
-                ariaLabel="Invoice Actions"
-                sx={{position: 'absolute', bottom: "1rem", right: "2rem"}}
-                icon={<SpeedDialIcon />}
-            >
-                <SpeedDialAction
-                    key={"new_invoice"}
-                    icon={<SaveIcon />}
-                    tooltipTitle={"Creeaza N.I.R."}
-                    onClick={() => {
-                        callNextApi("POST", "purchase/purchaseInit").then((r: any) => {
-                            setWarehouses(r?.response.warehouses)
-                            setSuppliers(r?.response.suppliers)
-                        })
-                        setNewInvoiceModal(true)
-                    }}
-                />
-
-                <SpeedDialAction
-                    key={"edit_invoice"}
-                    icon={<PersonPinCircleSharp />}
-                    tooltipTitle={"Editare N.I.R."}
-                    onClick={() => {
-                        if (state?.currentInvoice) {
-                            router.push(`/achizitii/comenzi_furnizori/editare_nir/${state.currentInvoice}`)
-                        }
-                        else {
-                            setSnackBar({message: "Selecteaza o comanda!", type: "error", state: true})
-                        }
-                    }}
-                />
-            </SpeedDial>
             <Snackbar
                 anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
-                open={snackBar.state}
+                open={state.snackBar?.state}
                 autoHideDuration={3000}
                 onClose={handleSnackClose}
             >
-                <Alert onClose={handleSnackClose} severity={snackBar.type}>{snackBar.message}</Alert>
+                <Alert onClose={handleSnackClose} severity={state?.snackBar?.type}>{state?.snackBar?.message}</Alert>
             </Snackbar>
         </>
     )

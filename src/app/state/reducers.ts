@@ -73,6 +73,15 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_SNACKBAR':
             return {...state, snackBar:action.payload}
 
+        case 'SET_NEW_INVOICE_MODAL':
+            return {...state, newInvoiceModal:action.payload}
+
+        case 'SET_WAREHOUSE_SELECTION':
+            return {...state, warehouseSelection:action.payload}
+
+        case 'SET_SUPPLIER_SELECTION':
+            return {...state, supplierSelection:action.payload}
+
         default:
             return state
     }

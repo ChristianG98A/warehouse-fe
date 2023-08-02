@@ -196,15 +196,15 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                 items={[
                     {
                         name: "Achizitii",
-                        path: "/achizitii",
+                        path: "#",
                     },
                     {
                         name: "Comenzi Furnizori",
-                        path: "/comenzi_furnizori",
+                        path: "/achizitii/comenzi_furnizori",
                     },
                     {
                         name: `Editare N.I.R. ${invoiceId}`,
-                        path: "/editare_nir",
+                        path: `/achizitii/comenzi_furnizori/editare_nir/${invoiceId}`,
                     },
                 ]}
             />

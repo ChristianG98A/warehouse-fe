@@ -2,20 +2,24 @@ import {allOrdersApiResponse} from "@/components/types/Order";
 import {GridRowSelectionModel} from "@mui/x-data-grid";
 
 export interface State {
-    status?:string;
+    status?: string;
     orders: Order[];
     selectionModel: GridRowSelectionModel;
-    loading?:boolean;
-    trigger?:boolean;
+    loading?: boolean;
+    trigger?: boolean;
     productBasket: ProductInBasket[];
     productBasketModal: boolean;
     productResult: ProductResult[];
     receptions?: ReceptionItem[];
-    currentInvoice? : GridRowSelectionModel;
+    currentInvoice?: GridRowSelectionModel;
     receptionInventory: ReceptionInventoryProduct[];
-    deletePrompt:boolean;
-    errorSnack:boolean;
-    snackBar:SnackBarState;
+    deletePrompt: boolean;
+    errorSnack: boolean;
+    snackBar: SnackBarState;
+    invoices: Invoice[];
+    warehouseSelection: Warehouse[];
+    supplierSelection: Supplier[];
+    newInvoiceModal:boolean;
 }
 
 type Currency = "RON" | "EUR" | "USD";
@@ -43,20 +47,20 @@ type Invoice = {
     totalNoVat: number;
     totalWithVat: number;
 }
- type ProductInBasket = {
+type ProductInBasket = {
     row_id?: number | null;
-    crt?: number ;
+    crt?: number;
     id: number;
     name: string;
-    model?: string ;
+    model?: string;
     acquisition_price: number;
     quantity: number;
     tax: number;
- }
+}
 
- type ReceptionItem = {
+type ReceptionItem = {
     id: string;
-    invoice_date: string ;
+    invoice_date: string;
     invoice_series: string;
     invoice_number: string;
     supplier_name: string;
@@ -65,19 +69,19 @@ type Invoice = {
     receptioned_quantity: string;
     not_receptioned_quantity: number;
     invoice_value: string;
- }
+}
 
- type ReceptionInventoryProduct = {
-    id:number;
+type ReceptionInventoryProduct = {
+    id: number;
     row_id: string;
     product_id: string;
     product_name: string;
     total_quantity: string;
     receptioned_quantity: string;
     not_confirmed_quantity: number;
- }
+}
 
- type Order = {
+type Order = {
     crt: number;
     id: string;
     invoice_company: string;
@@ -88,16 +92,27 @@ type Invoice = {
     order_notes: string;
     totalNoVat: string;
     totalWithVat: number;
- }
+}
 
 type SnackBarState = {
     state: boolean;
     message: string;
     type: "success" | "error" | "warning";
 }
-export type Action = (reducerAction:ActionTypes) => void
 
-export type ActionTypes  =
+type Warehouse = {
+    id: string;
+    name: string;
+}
+
+type Supplier = {
+    id: string;
+    alias: string;
+}
+
+export type Action = (reducerAction: ActionTypes) => void
+
+export type ActionTypes =
     {
         type: "SET_CURRENT_INVOICE";
         payload: number | null;
@@ -150,18 +165,30 @@ export type ActionTypes  =
         payload: Invoice[];
     } |
     {
-        type:"SET_RECEPTIONS";
+        type: "SET_RECEPTIONS";
         payload: ReceptionItem[];
-    }|
+    } |
     {
-        type:"SET_RECEPTION_INVENTORY";
+        type: "SET_RECEPTION_INVENTORY";
         payload: ReceptionInventoryProduct[];
-    }|
+    } |
     {
-        type:"SET_ORDERS";
+        type: "SET_ORDERS";
         payload: Order[];
-    }|
+    } |
     {
-        type:"SET_SNACKBAR";
+        type: "SET_WAREHOUSE_SELECTION";
+        payload: Warehouse[];
+    } |
+    {
+        type: "SET_SUPPLIER_SELECTION";
+        payload: Supplier[];
+    } |
+    {
+        type: "SET_NEW_INVOICE_MODAL";
+        payload: boolean;
+    } |
+    {
+        type: "SET_SNACKBAR";
         payload: SnackBarState;
     }

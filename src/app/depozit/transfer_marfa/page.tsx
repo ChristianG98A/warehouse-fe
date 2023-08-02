@@ -80,11 +80,11 @@ const StockTransfer = () => {
                 items={[
                     {
                         name: "Depozit",
-                        path: "/depozit",
+                        path: "#",
                     },
                     {
                         name: "Transfer Marfa",
-                        path: "/transfer_marfa",
+                        path: "/depozit/transfer_marfa",
                     },
                 ]}
             />

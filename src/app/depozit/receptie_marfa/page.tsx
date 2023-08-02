@@ -72,11 +72,11 @@ const ProviderOrders = () => {
                 items={[
                     {
                         name: "Depozit",
-                        path: "/depozit",
+                        path: "#",
                     },
                     {
                         name: "Receptie Marfa",
-                        path: "/receptie_marfa",
+                        path: "/depozit/receptie_marfa",
                     },
                 ]}
             />

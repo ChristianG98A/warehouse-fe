@@ -72,7 +72,7 @@ export default function SideDrawer(props: Props) {
                 <SidebarListDropdown item="Depozit" index={3}
                     menuItems={[
                         {name: 'Receptie Marfa', link: '/depozit/receptie_marfa'},
-                        {name: 'Transfer Marfa', link: '/depozit/receptie_marfa'},
+                        {name: 'Transfer Marfa', link: '/depozit/transfer_marfa'},
                     ]}
                 />
             </List>

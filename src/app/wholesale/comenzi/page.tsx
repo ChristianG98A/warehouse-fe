@@ -70,11 +70,11 @@ const Orders = () => {
                 items={[
                     {
                         name: "Wholesale",
-                        path: "/wholesale",
+                        path: "#",
                     },
                     {
                         name: "Comenzi",
-                        path: "/comenzi",
+                        path: "/wholesale/comenzi",
                     },
                 ]}
             />

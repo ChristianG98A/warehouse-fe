@@ -3,7 +3,6 @@ import {GridColDef} from "@mui/x-data-grid"
 import {useContext} from "react"
 
 export default function ProductsToInvoice() {
-    const [state, dispatch] = useContext(StateContext)
 
 
     const columns: GridColDef[] = [
@@ -13,7 +12,7 @@ export default function ProductsToInvoice() {
         {field: 'due_date', headerName: 'Data Scadenta', flex: 2},
         {field: 'supplier_id', headerName: 'Id Furnizor', flex: 2},
         {field: 'invoice_series', headerName: 'Serie Factura', flex: 2},
-        {field: 'supplier_name', headerName: 'Nume Furnizor', flex: 2},
+        {field: 'supplier_name', headerName: 'Nume Furnizor', flex: 3},
         {field: 'supplier_code', headerName: 'Cod Furnizor', flex: 2},
         {field: 'driver', headerName: 'Sofer', flex: 2},
         {field: 'nr_auto', headerName: 'Numar Auto', flex: 2},
@@ -26,17 +25,3 @@ export default function ProductsToInvoice() {
 
     return columns;
 }
-
-        //{field: 'id', headerName: 'Id', flex: 1},
-        //{field: 'invoice_number', headerName: 'Nr. Factura', flex: 1},
-        //{field: 'invoice_date', headerName: 'Data Factura', flex: 1},
-        //{field: 'supplier_name', headerName: 'Nume Furnizor', flex: 1},
-        //{field: 'invoice_series', headerName: 'Serie Factura', flex: 1},
-        //{field: 'invoice_number', headerName: 'Numar Factura', flex: 1},
-        //{field: 'invoice_date', headerName: 'Data Factura', flex: 1},
-        //{field: 'due_date', headerName: 'Data Scadenta', flex: 1},
-        //{field: 'totalNoVat', headerName: 'Valoare fara TVA', flex: 1},
-        //{field: 'totalWithVat', headerName: 'Valoare cu TVA', flex: 1},
-        //{field: 'driver', headerName: 'Driver', flex: 1},
-        //{field: 'nr_auto', headerName: 'Auto Nr.', flex: 1},
-        //{field: 'driver', headerName: 'Driver', flex: 1},

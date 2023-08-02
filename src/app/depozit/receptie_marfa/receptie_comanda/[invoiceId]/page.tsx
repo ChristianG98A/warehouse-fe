@@ -170,15 +170,15 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                 items={[
                     {
                         name: "Depozit",
-                        path: "/depozit",
+                        path: "#",
                     },
                     {
                         name: "Receptie Marfa",
-                        path: "/receptie_marfa",
+                        path: "/depozit/receptie_marfa",
                     },
                     {
                         name: `Receptie comanda ${invoiceId}`,
-                        path: "/receptie_comanda",
+                        path: `/depozit/receptie_marfa/receptie_comanda/${invoiceId}`,
                     },
                 ]}
             />
