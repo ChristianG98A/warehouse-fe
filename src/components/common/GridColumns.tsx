@@ -1,13 +1,15 @@
 "use client"
 import {StateContext} from "@/app/state/context";
+import {useRouter} from "next/navigation";
 import CloseIcon from '@mui/icons-material/Close';
 import CreateIcon from '@mui/icons-material/Create';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import WidgetsIcon from '@mui/icons-material/Widgets';
 import {IconButton, Tooltip} from "@mui/material";
-import {GridColDef} from "@mui/x-data-grid";
+import {GridColDef, GridRenderCellParams} from "@mui/x-data-grid";
 import {useContext} from "react";
+import {Action, State} from "@/app/state/types/stateTypes";
 
 
 //type buttonId = "export_pdf_proforma_button" | "export_xls_proforma_button" | "export_pregatire_produse_button" | "order_edit_button" | "delete_order_button"
@@ -41,7 +43,8 @@ const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
 };
 
 export default function GridColumns() { // implement type here................
-    const [state, dispatch] = useContext(StateContext)
+    const [state, dispatch]:[State, Action] = useContext(StateContext)
+    const router = useRouter();
 
 
 
@@ -63,13 +66,13 @@ export default function GridColumns() { // implement type here................
             align:"center",
             headerAlign:"center",
             width: 330,
-            renderCell: (params) => {
+            renderCell: (params:GridRenderCellParams<Number>) => {
 
 //type buttonId = "export_pdf_proforma_button" | "export_xls_proforma_button" | "export_pregatire_produse_button" | "order_edit_button" | "delete_order_button"
                 return (
                     <>
                         <Tooltip title="Export pdf proforma">
-                          <IconButton id='export_pdf_proforma_button' aria-label="Test Me!" onClick={handleClick}>
+                          <IconButton id='export_pdf_proforma_button' aria-label="Test Me!" onClick={()=>console.log(params.id)}>
                               <PictureAsPdfIcon color="primary" />
                           </IconButton>
                         </Tooltip>
@@ -88,7 +91,7 @@ export default function GridColumns() { // implement type here................
                         </Tooltip>
 
                         <Tooltip title="Editare comanda">
-                          <IconButton id='order_edit_button' aria-label="Test Me!" onClick={handleClick}>
+                          <IconButton id='order_edit_button' aria-label="Test Me!" onClick={()=>router.push("comenzi/"+params.id)}>
                               <CreateIcon color="primary" />
                           </IconButton>
                         </Tooltip>

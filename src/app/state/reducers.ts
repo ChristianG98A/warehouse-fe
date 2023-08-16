@@ -7,9 +7,6 @@ const findIndexByObjectId = (dataArray:any, targetId:number) => {
 
 export const reducer = (state: State|any, action: Action|any) => {
     switch (action.type) {
-        case 'test':
-            //console.log("dispatch merge! \n State: ", state);
-            return {...state, status: "test"}
 
         case 'SET_SELECTION_MODEL':
             return {...state, selectionModel:action.payload}
@@ -90,6 +87,9 @@ export const reducer = (state: State|any, action: Action|any) => {
 
         case 'SET_CURRENT_TRANSFER':
             return {...state, currentTransfer:action.payload}
+
+        case 'SET_CURRENT_ORDER':
+            return {...state, currentOrder:action.payload}
 
         default:
             return state

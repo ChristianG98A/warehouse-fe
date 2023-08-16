@@ -40,6 +40,7 @@ const Orders = () => {
             });
     }, [paginationModel])
 
+    useEffect(()=>console.log(state.selectionModel), [state.selectionModel]);
 
 
 
@@ -70,7 +71,7 @@ const Orders = () => {
                 items={[
                     {
                         name: "Wholesale",
-                        path: "#",
+                        path: "/wholesale",
                     },
                     {
                         name: "Comenzi",

@@ -25,6 +25,7 @@ export interface State {
     transfers: Transfer[];
     currentTransfer: Transfer | undefined;
     transferProductResult: TransferProduct[];
+    currentOrder: number;
 }
 
 export type Currency = "RON" | "EUR" | "USD";
@@ -235,6 +236,10 @@ export type ActionTypes =
     {
         type: "SET_TRANSFER_PRODUCT_RESULT";
         payload: TransferProduct[];
+    } |
+    {
+        type: "SET_CURRENT_ORDER";
+        payload: number;
     } |
     {
         type: "SET_SNACKBAR";
