@@ -4,18 +4,28 @@ import {Action, State} from "@/app/state/types/stateTypes";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {OrderData} from "@/components/types/Order";
 import {Card, CardContent, Divider, Grid, Paper, Typography} from "@mui/material";
+import {grey} from "@mui/material/colors";
+import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
 import {useContext, useEffect, useState} from "react";
 import DataCard from "./DataCard";
 import getOrderDetails from "./helpers";
+import OrderColumns from "./OrderColumns";
 
 
+
+const rowsPerPageOptions = [10, 20, 100];
 const EditOrder = ({params}: {params: {orderId: string}}) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext);
     const router = useRouter();
     const orderId = parseInt(params.orderId);
     const [loading, setLoading] = useState(false);
     const [orderData, setOrderData] = useState<OrderData>();
+    const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
+    const [paginationModel, setPaginationModel] = useState({
+        pageSize: 10,
+        page: 0
+    })
 
 
     useEffect(() => {
@@ -246,8 +256,33 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                         </CardContent>
                     </Card>
                 </Grid>
-
             </Grid>
+                <DataGrid
+                    rowSelection={true}
+                    columnHeaderHeight={60}
+                    rows={orderData?.orderProducts ?? []}
+                    columns={OrderColumns()}
+                    initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
+                    onPaginationModelChange={setPaginationModel}
+                    pageSizeOptions={[10, 25, 50]}
+                    onRowSelectionModelChange={(newRowSelectionModel) => {
+                        //dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
+                    }}
+                    rowSelectionModel={state.selectionModel}
+                    autoPageSize={false}
+                    loading={loading}
+                    // slots={{toolbar: CustomToolbar}}
+                    getRowSpacing={params => ({
+                        top: params.isFirstVisible ? 0 : 5,
+                        bottom: params.isLastVisible ? 0 : 5
+                    })}
+                    sx={{
+                        minHeight:"55vh",
+                        '& .MuiDataGrid-row': {
+                            backgroundColor: grey[200],
+                        },
+                    }}
+                />
         </>)
 }
 
