@@ -16,15 +16,15 @@ import {useRouter} from "next/navigation";
 import {useContext, useEffect, useState} from "react";
 import getOrderDetails from "./helpers";
 import OrderColumns from "./OrderColumns";
-
+import DataCard from "./DataCard";
 
 
 const rowsPerPageOptions = [10, 20, 100];
-const EditOrder = ({params}: {params: {orderId: string}}) => {
+const EditOrder = ({params}: { params: { orderId: string } }) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext);
     const router = useRouter();
     const orderId = parseInt(params.orderId);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [orderData, setOrderData] = useState<OrderData>();
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [paginationModel, setPaginationModel] = useState({
@@ -35,17 +35,20 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
 
     useEffect(() => {
         setLoading(true)
+        dispatch({type:"SET_LOADING", payload:true})
         if (!orderId) {
             router.push('/depozit/receptie_marfa')
         } else {
             setLoading(false);
+            dispatch({type:"SET_LOADING", payload:false})
             getOrderDetails(orderId).then(r => setOrderData(r.response))
         }
     }, [])
 
     return (
         <>
-            <Typography textAlign={'center'} variant={"h5"} fontWeight={800} sx={{mb: 2}} gutterBottom >Comanda nr. {orderId}</Typography>
+            <Typography textAlign={'center'} variant={"h5"} fontWeight={800} sx={{mb: 2}} gutterBottom>Comanda
+                nr. {orderId}</Typography>
             <PageBreadcrumbs
                 items={[
                     {
@@ -63,164 +66,61 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                 ]}
             />
 
-            <Grid component={Paper} container sx={{padding: 3}}>
-                <Grid item xs={12} sm={4} sx={{padding: 2}}>
-                    <Card sx={{height: "100%"}}>
-                        <CardHeader
-                            sx={{bgcolor: red[100]}}
-                            title={"Detalii client"}
-                            avatar={<PersonIcon />}
-                            titleTypographyProps={{variant: 'h6'}}
-                        />
-                        <CardContent>
-                            <Divider sx={{mb: 2}} />
+            <Grid component={Paper} container sx={{padding: {sm:0, md:3}}}>
+                <DataCard
+                    loading={loading}
+                    sx={{variant: 'h6', bgcolor: red[100]}}
+                    avatar={<PersonIcon/>}
+                    title={"Detalii client"}
+                    values={[
+                        {name: 'Customer Name', value: orderData?.invoice_data[0].invoice_company},
+                        {name: 'Company', value: orderData?.invoice_data[0].invoice_company},
+                        {name: 'Email', value: orderData?.email},
+                        {name: 'Phone', value: orderData?.phone},
+                    ]}
+                />
 
-                            <Grid container>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Customer Name</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.invoice_data[0].invoice_company}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Company</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.invoice_data[0].invoice_company}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Email</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.email}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Phone</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.phone}</Typography>
-                                </Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                <DataCard
+                    loading={loading}
+                    sx={{variant: 'h6', bgcolor: red[100]}}
+                    avatar={<DescriptionIcon/>}
+                    title={"Detalii comanda"}
+                    values={[
+                        {name: 'Order Id', value: orderData?.order_id},
+                        {name: 'Order Date & Time', value: "???"},
+                        {name: 'Order Status', value: orderData?.status},
+                        {name: 'WOrder Status', value: orderData?.whStatus},
+                        {name: 'Grand Total (with TAX)', value: orderData?.totalWithVat},
+                        {name: 'Payment Information', value: orderData?.payment_method},
+                        {name: 'Packing Method', value: "De pus dropbox"},
+                        {name: 'Client Order Number', value: "de pus textfield"},
+                    ]}
+                />
 
-                <Grid item xs={12} sm={4} sx={{padding: 2}} >
-                    <Card sx={{height: "100%"}}>
-                        <CardHeader
-                            sx={{bgcolor: red[100]}}
-                            title={"Detalii comanda"}
-                            avatar={<DescriptionIcon />}
-                            titleTypographyProps={{variant: 'h6'}}
-                        />
-                        <CardContent>
-                            <Divider sx={{mb: 1}} />
+                <DataCard
+                    loading={loading}
+                    sx={{variant: 'h6', bgcolor: red[100]}}
+                    avatar={<LocalShippingIcon/>}
+                    title={"Detalii livrare"}
+                    values={[
+                        {name: 'Depozit', value: "de pus dropbox"},
+                        {name: 'Adresa', value: orderData?.delivery_data[0].delivery_address},
+                        {name: 'Email', value: orderData?.email},
+                        {name: 'Phone', value: orderData?.phone},
 
-                            <Grid container>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Order Id</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.order_id}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Order Date & Time</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{"???"}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Order Status</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.status}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>WOrder Status</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.whStatus}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Grand Total (with TAX)</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.totalWithVat}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Payment Information</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.payment_method}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Packing Method</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{"De pus dropbox"}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Client Order Number</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{"De pus textfield"}</Typography>
-                                </Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                    ]}
+                />
 
-                <Grid item xs={12} sm={4} sx={{padding: 2}} >
-                    <Card sx={{height: "100%"}}>
-                        <CardHeader
-                            sx={{bgcolor: red[100]}}
-                            title={"Detalii comanda"}
-                            avatar={<LocalShippingIcon />}
-                            titleTypographyProps={{variant: 'h6'}}
-                        />
-                        <CardContent>
-                            <Divider sx={{mb: 1}} />
-
-                            <Grid container>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Depozit</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{"de pus dropbox"}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Adresa</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.delivery_data[0].delivery_address}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Email</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.email}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Phone</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.phone}</Typography>
-                                </Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={4} sx={{padding: 2}} >
+                <Grid item xs={12} sm={6} md={4} sx={{padding: 2}}>
                     <Card sx={{height: "100%"}}>
                         <CardHeader
                             sx={{bgcolor: green[100]}}
                             title={"Adauga produse din XLS"}
-                            avatar={<AddchartIcon />}
+                            avatar={<AddchartIcon/>}
                             titleTypographyProps={{variant: 'h6'}}
                         />
                         <CardContent>
-                            <Divider sx={{mb: 1}} />
+                            <Divider sx={{mb: 1}}/>
 
                             <Grid container>
                                 <Grid item xs={12} sm={6}>
@@ -234,16 +134,16 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={4} sx={{padding: 2}} >
+                <Grid item xs={12} sm={6} md={4} sx={{padding: 2}}>
                     <Card sx={{height: "100%"}}>
                         <CardHeader
                             sx={{bgcolor: yellow[100]}}
                             title={"Notes"}
-                            avatar={<PostAddIcon />}
+                            avatar={<PostAddIcon/>}
                             titleTypographyProps={{variant: 'h6'}}
                         />
                         <CardContent>
-                            <Divider sx={{mb: 1}} />
+                            <Divider sx={{mb: 1}}/>
                             <Grid container>
                                 <Grid item xs={12} sm={6}>
                                     <Typography>De aduagat textfield + buton</Typography>
@@ -256,40 +156,17 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={4} sx={{padding: 2}} >
-                    <Card sx={{height: "100%"}}>
-                        <CardHeader
-                            sx={{bgcolor: purple[100]}}
-                            title={"Detalii facturare"}
-                            avatar={<PostAddIcon />}
-                            titleTypographyProps={{variant: 'h6'}}
-                        />
-                        <CardContent>
-                            <Divider sx={{mb: 1}} />
-
-                            <Grid container>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Adresa</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.invoice_data[0].invoice_address}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Localitate</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.invoice_data[0].invoice_state}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Judet</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{orderData?.invoice_data[0].invoice_city}</Typography>
-                                </Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                <DataCard
+                    loading={loading}
+                    sx={{variant: 'h6', bgcolor: purple[100]}}
+                    avatar={<PostAddIcon/>}
+                    title={"Detalii facturare"}
+                    values={[
+                        {name: 'Adresa', value: orderData?.invoice_data[0].invoice_address},
+                        {name: 'Localitate', value: orderData?.invoice_data[0].invoice_state},
+                        {name: 'Judet', value: orderData?.invoice_data[0].invoice_city},
+                    ]}
+                />
             </Grid>
             <DataGrid
                 rowSelection={true}

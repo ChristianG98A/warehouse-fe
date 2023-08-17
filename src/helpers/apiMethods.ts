@@ -1,5 +1,3 @@
-import {allOrdersApiResponse} from "@/components/types/Order";
-import addCrtNumberToRows from "./objectParsers";
 
 require('dotenv').config();
 
@@ -30,7 +28,7 @@ export const callNextApi = async (method:"GET"|"POST"|"PATCH"|"UPDATE"|"DELETE",
         const responseData = await response.json()
         .catch(e=>console.log("Error caught in next api call! \n", e))
         .then(
-            (r:allOrdersApiResponse)=>{
+            (r)=>{
                 return(r)
             }
         );
