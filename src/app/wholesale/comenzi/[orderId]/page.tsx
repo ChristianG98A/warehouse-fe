@@ -1,14 +1,19 @@
 "use client"
+
 import {StateContext} from "@/app/state/context";
 import {Action, State} from "@/app/state/types/stateTypes";
+import AddchartIcon from '@mui/icons-material/Addchart';
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {OrderData} from "@/components/types/Order";
-import {Card, CardContent, Divider, Grid, Paper, Typography} from "@mui/material";
-import {grey} from "@mui/material/colors";
+import DescriptionIcon from '@mui/icons-material/Description';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import PersonIcon from '@mui/icons-material/Person';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import {Card, CardContent, CardHeader, Divider, Grid, Paper, Typography} from "@mui/material";
+import {green, grey, purple, red, yellow} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
 import {useContext, useEffect, useState} from "react";
-import DataCard from "./DataCard";
 import getOrderDetails from "./helpers";
 import OrderColumns from "./OrderColumns";
 
@@ -59,11 +64,16 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
             />
 
             <Grid component={Paper} container sx={{padding: 3}}>
-                <Grid item xs={12} sm={4} sx={{padding:2}}>
-                    <Card sx={{height:"100%"}}>
+                <Grid item xs={12} sm={4} sx={{padding: 2}}>
+                    <Card sx={{height: "100%"}}>
+                        <CardHeader
+                            sx={{bgcolor: red[100]}}
+                            title={"Detalii client"}
+                            avatar={<PersonIcon />}
+                            titleTypographyProps={{variant: 'h6'}}
+                        />
                         <CardContent>
-                            <Typography variant="h5" sx={{mb: 1}}>Detalii client</Typography>
-                            <Divider sx={{mb: 1}} />
+                            <Divider sx={{mb: 2}} />
 
                             <Grid container>
                                 <Grid item xs={12} sm={6}>
@@ -95,10 +105,15 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={4} sx={{padding:2}} >
-                    <Card sx={{height:"100%"}}>
+                <Grid item xs={12} sm={4} sx={{padding: 2}} >
+                    <Card sx={{height: "100%"}}>
+                        <CardHeader
+                            sx={{bgcolor: red[100]}}
+                            title={"Detalii comanda"}
+                            avatar={<DescriptionIcon />}
+                            titleTypographyProps={{variant: 'h6'}}
+                        />
                         <CardContent>
-                            <Typography variant="h5" sx={{mb: 1}}>Detalii comanda</Typography>
                             <Divider sx={{mb: 1}} />
 
                             <Grid container>
@@ -155,10 +170,15 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={4} sx={{padding:2}} >
-                    <Card sx={{height:"100%"}}>
+                <Grid item xs={12} sm={4} sx={{padding: 2}} >
+                    <Card sx={{height: "100%"}}>
+                        <CardHeader
+                            sx={{bgcolor: red[100]}}
+                            title={"Detalii comanda"}
+                            avatar={<LocalShippingIcon />}
+                            titleTypographyProps={{variant: 'h6'}}
+                        />
                         <CardContent>
-                            <Typography variant="h5" sx={{mb: 1}}>Detalii livrare</Typography>
                             <Divider sx={{mb: 1}} />
 
                             <Grid container>
@@ -191,10 +211,15 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={4} sx={{padding:2}} >
-                    <Card sx={{height:"100%"}}>
+                <Grid item xs={12} sm={4} sx={{padding: 2}} >
+                    <Card sx={{height: "100%"}}>
+                        <CardHeader
+                            sx={{bgcolor: green[100]}}
+                            title={"Adauga produse din XLS"}
+                            avatar={<AddchartIcon />}
+                            titleTypographyProps={{variant: 'h6'}}
+                        />
                         <CardContent>
-                            <Typography variant="h5" sx={{mb: 1}}>Adauga produse din XLS</Typography>
                             <Divider sx={{mb: 1}} />
 
                             <Grid container>
@@ -209,12 +234,16 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={4} sx={{padding:2}} >
-                    <Card sx={{height:"100%"}}>
+                <Grid item xs={12} sm={4} sx={{padding: 2}} >
+                    <Card sx={{height: "100%"}}>
+                        <CardHeader
+                            sx={{bgcolor: yellow[100]}}
+                            title={"Notes"}
+                            avatar={<PostAddIcon />}
+                            titleTypographyProps={{variant: 'h6'}}
+                        />
                         <CardContent>
-                            <Typography variant="h5" sx={{mb: 1}}>Notes</Typography>
                             <Divider sx={{mb: 1}} />
-
                             <Grid container>
                                 <Grid item xs={12} sm={6}>
                                     <Typography>De aduagat textfield + buton</Typography>
@@ -227,10 +256,15 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={4} sx={{padding:2}} >
-                    <Card sx={{height:"100%"}}>
+                <Grid item xs={12} sm={4} sx={{padding: 2}} >
+                    <Card sx={{height: "100%"}}>
+                        <CardHeader
+                            sx={{bgcolor: purple[100]}}
+                            title={"Detalii facturare"}
+                            avatar={<PostAddIcon />}
+                            titleTypographyProps={{variant: 'h6'}}
+                        />
                         <CardContent>
-                            <Typography variant="h5" sx={{mb: 1}}>Detalii facturare</Typography>
                             <Divider sx={{mb: 1}} />
 
                             <Grid container>
@@ -257,32 +291,32 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     </Card>
                 </Grid>
             </Grid>
-                <DataGrid
-                    rowSelection={true}
-                    columnHeaderHeight={60}
-                    rows={orderData?.orderProducts ?? []}
-                    columns={OrderColumns()}
-                    initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
-                    onPaginationModelChange={setPaginationModel}
-                    pageSizeOptions={[10, 25, 50]}
-                    onRowSelectionModelChange={(newRowSelectionModel) => {
-                        //dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
-                    }}
-                    rowSelectionModel={state.selectionModel}
-                    autoPageSize={false}
-                    loading={loading}
-                    // slots={{toolbar: CustomToolbar}}
-                    getRowSpacing={params => ({
-                        top: params.isFirstVisible ? 0 : 5,
-                        bottom: params.isLastVisible ? 0 : 5
-                    })}
-                    sx={{
-                        minHeight:"55vh",
-                        '& .MuiDataGrid-row': {
-                            backgroundColor: grey[200],
-                        },
-                    }}
-                />
+            <DataGrid
+                rowSelection={true}
+                columnHeaderHeight={60}
+                rows={orderData?.orderProducts ?? []}
+                columns={OrderColumns()}
+                initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
+                onPaginationModelChange={setPaginationModel}
+                pageSizeOptions={[10, 25, 50]}
+                onRowSelectionModelChange={(newRowSelectionModel) => {
+                    //dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
+                }}
+                rowSelectionModel={state.selectionModel}
+                autoPageSize={false}
+                loading={loading}
+                // slots={{toolbar: CustomToolbar}}
+                getRowSpacing={params => ({
+                    top: params.isFirstVisible ? 0 : 5,
+                    bottom: params.isLastVisible ? 0 : 5
+                })}
+                sx={{
+                    minHeight: "55vh",
+                    '& .MuiDataGrid-row': {
+                        backgroundColor: grey[200],
+                    },
+                }}
+            />
         </>)
 }
 
