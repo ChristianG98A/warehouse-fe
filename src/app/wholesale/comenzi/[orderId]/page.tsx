@@ -9,7 +9,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import PersonIcon from '@mui/icons-material/Person';
 import PostAddIcon from '@mui/icons-material/PostAdd';
-import {Card, CardContent, CardHeader, Divider, Grid, Paper, Typography} from "@mui/material";
+import {Card, CardContent, CardHeader, CircularProgress, Divider, Grid, Paper, Typography} from "@mui/material";
 import {green, grey, purple, red, yellow} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
@@ -20,7 +20,7 @@ import DataCard from "./DataCard";
 
 
 const rowsPerPageOptions = [10, 20, 100];
-const EditOrder = ({params}: { params: { orderId: string } }) => {
+const EditOrder = ({params}: {params: {orderId: string}}) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext);
     const router = useRouter();
     const orderId = parseInt(params.orderId);
@@ -35,12 +35,12 @@ const EditOrder = ({params}: { params: { orderId: string } }) => {
 
     useEffect(() => {
         setLoading(true)
-        dispatch({type:"SET_LOADING", payload:true})
+        dispatch({type: "SET_LOADING", payload: true})
         if (!orderId) {
             router.push('/depozit/receptie_marfa')
         } else {
             setLoading(false);
-            dispatch({type:"SET_LOADING", payload:false})
+            dispatch({type: "SET_LOADING", payload: false})
             getOrderDetails(orderId).then(r => setOrderData(r.response))
         }
     }, [])
@@ -66,11 +66,11 @@ const EditOrder = ({params}: { params: { orderId: string } }) => {
                 ]}
             />
 
-            <Grid component={Paper} container sx={{padding: {sm:0, md:3}}}>
+            <Grid component={Paper} container sx={{padding: {sm: 0, md: 3}}}>
                 <DataCard
                     loading={loading}
                     sx={{variant: 'h6', bgcolor: red[100]}}
-                    avatar={<PersonIcon/>}
+                    avatar={<PersonIcon />}
                     title={"Detalii client"}
                     values={[
                         {name: 'Customer Name', value: orderData?.invoice_data[0].invoice_company},
@@ -83,7 +83,7 @@ const EditOrder = ({params}: { params: { orderId: string } }) => {
                 <DataCard
                     loading={loading}
                     sx={{variant: 'h6', bgcolor: red[100]}}
-                    avatar={<DescriptionIcon/>}
+                    avatar={<DescriptionIcon />}
                     title={"Detalii comanda"}
                     values={[
                         {name: 'Order Id', value: orderData?.order_id},
@@ -100,7 +100,7 @@ const EditOrder = ({params}: { params: { orderId: string } }) => {
                 <DataCard
                     loading={loading}
                     sx={{variant: 'h6', bgcolor: red[100]}}
-                    avatar={<LocalShippingIcon/>}
+                    avatar={<LocalShippingIcon />}
                     title={"Detalii livrare"}
                     values={[
                         {name: 'Depozit', value: "de pus dropbox"},
@@ -116,20 +116,22 @@ const EditOrder = ({params}: { params: { orderId: string } }) => {
                         <CardHeader
                             sx={{bgcolor: green[100]}}
                             title={"Adauga produse din XLS"}
-                            avatar={<AddchartIcon/>}
+                            avatar={<AddchartIcon />}
                             titleTypographyProps={{variant: 'h6'}}
                         />
                         <CardContent>
-                            <Divider sx={{mb: 1}}/>
+                            <Divider sx={{mb: 2}} />
+                            {loading ? <Grid item xs={12} sx={{display: 'flex', justifyContent: 'center'}}><CircularProgress /></Grid> : (
 
-                            <Grid container>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>Excel File</Typography>
+                                <Grid container>
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography>Excel File</Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography>{"de pus dropbox"}</Typography>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{"de pus dropbox"}</Typography>
-                                </Grid>
-                            </Grid>
+                            )}
                         </CardContent>
                     </Card>
                 </Grid>
@@ -139,19 +141,21 @@ const EditOrder = ({params}: { params: { orderId: string } }) => {
                         <CardHeader
                             sx={{bgcolor: yellow[100]}}
                             title={"Notes"}
-                            avatar={<PostAddIcon/>}
+                            avatar={<PostAddIcon />}
                             titleTypographyProps={{variant: 'h6'}}
                         />
                         <CardContent>
-                            <Divider sx={{mb: 1}}/>
-                            <Grid container>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>De aduagat textfield + buton</Typography>
+                            <Divider sx={{mb: 2}} />
+                            {loading ? <Grid item xs={12} sx={{display: 'flex', justifyContent: 'center'}}><CircularProgress /></Grid> : (
+                                <Grid container>
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography>De aduagat textfield + buton</Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography>{"..."}</Typography>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography>{"..."}</Typography>
-                                </Grid>
-                            </Grid>
+                            )}
                         </CardContent>
                     </Card>
                 </Grid>
@@ -159,7 +163,7 @@ const EditOrder = ({params}: { params: { orderId: string } }) => {
                 <DataCard
                     loading={loading}
                     sx={{variant: 'h6', bgcolor: purple[100]}}
-                    avatar={<PostAddIcon/>}
+                    avatar={<PostAddIcon />}
                     title={"Detalii facturare"}
                     values={[
                         {name: 'Adresa', value: orderData?.invoice_data[0].invoice_address},
