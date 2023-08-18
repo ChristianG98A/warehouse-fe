@@ -171,33 +171,34 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                         {name: 'Judet', value: orderData?.invoice_data[0].invoice_city},
                     ]}
                 />
+                <Grid item xs={12} sx={{padding:2}}>
+                    <DataGrid
+                        rowSelection={true}
+                        columnHeaderHeight={60}
+                        rows={orderData?.orderProducts ?? []}
+                        columns={OrderColumns()}
+                        initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
+                        onPaginationModelChange={setPaginationModel}
+                        pageSizeOptions={[10, 25, 50]}
+                        onRowSelectionModelChange={(newRowSelectionModel) => {
+                            //dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
+                        }}
+                        rowSelectionModel={state.selectionModel}
+                        autoPageSize={false}
+                        loading={loading}
+                        // slots={{toolbar: CustomToolbar}}
+                        getRowSpacing={params => ({
+                            top: params.isFirstVisible ? 0 : 5,
+                            bottom: params.isLastVisible ? 0 : 5
+                        })}
+                        sx={{
+                            '& .MuiDataGrid-row': {
+                                backgroundColor: grey[200],
+                            },
+                        }}
+                    />
+                </Grid>
             </Grid>
-            <DataGrid
-                rowSelection={true}
-                columnHeaderHeight={60}
-                rows={orderData?.orderProducts ?? []}
-                columns={OrderColumns()}
-                initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
-                onPaginationModelChange={setPaginationModel}
-                pageSizeOptions={[10, 25, 50]}
-                onRowSelectionModelChange={(newRowSelectionModel) => {
-                    //dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
-                }}
-                rowSelectionModel={state.selectionModel}
-                autoPageSize={false}
-                loading={loading}
-                // slots={{toolbar: CustomToolbar}}
-                getRowSpacing={params => ({
-                    top: params.isFirstVisible ? 0 : 5,
-                    bottom: params.isLastVisible ? 0 : 5
-                })}
-                sx={{
-                    minHeight: "55vh",
-                    '& .MuiDataGrid-row': {
-                        backgroundColor: grey[200],
-                    },
-                }}
-            />
         </>)
 }
 
