@@ -1,7 +1,7 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
-import {Action, State} from "@/app/state/types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import BasicTable from "@/components/common/BasicTable";
 import CustomToolbar from "@/components/common/CustomToolbar";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
@@ -252,6 +252,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                                         bottom: params.isLastVisible ? 0 : 5
                                     })}
                                     sx={{
+                                        minHeight:"27rem",
                                         '& .MuiDataGrid-row': {
                                             backgroundColor: grey[200],
                                         },

@@ -2,7 +2,7 @@
 
 import {Purchase} from "@/app/api/purchase/types/types";
 import {StateContext} from "@/app/state/context";
-import {Action, State, Warehouse} from "@/app/state/types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {PersonPinCircleSharp} from "@mui/icons-material";
@@ -17,6 +17,7 @@ import {useContext, useState, useEffect, useMemo} from "react";
 import {useForm} from "react-hook-form";
 import ReceptionsColumns from "../receptie_marfa/ReceptionsColumns";
 import TransferToolbar from "./TransferToolbar";
+import {Warehouse} from "@/model/warehouse/WarehouseTypes";
 
 const rowsPlaceholder: GridRowsProp = [
     {id: 1, crt: 1, Furnizor: "sc cacamaca", Serie_Factura: 12312313, invoiceNumber: 123132, date: "12.07.2023", product: "eau du saq", EAN: 523526, TVA: "19", discount: "0%", buy_price: 909.9, nrceva: 1324, deposit: "barbu v", sofer: "cutare"},

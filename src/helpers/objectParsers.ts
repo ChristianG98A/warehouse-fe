@@ -1,4 +1,4 @@
-import Order, {allOrdersApiResponse} from "@/components/types/Order";
+import Order, {allOrdersApiResponse} from "@/model/orders/OrderTypes";
 
 
 const addCrtNumberToRows = (orders:allOrdersApiResponse)=>{

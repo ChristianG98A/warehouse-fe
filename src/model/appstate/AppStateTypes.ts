@@ -1,9 +1,13 @@
-import {allOrdersApiResponse} from "@/components/types/Order";
 import {GridRowSelectionModel} from "@mui/x-data-grid";
+import {AllOrdersApiResponse, OrderTypes, ProductInBasket, ProductResult} from "@/model/orders/OrderTypes";
+import {Transfer, TransferProduct} from "@/model/transfers/TransferTypes";
+import {Warehouse, WarehouseTransferOptions} from "@/model/warehouse/WarehouseTypes";
+import {ReceptionInventoryProduct, ReceptionItem} from "@/model/receptions/ReceptionTypes";
+import {Invoice, Supplier} from "@/model/invoices/invoiceTypes";
 
 export interface State {
     status?: string;
-    orders: Order[];
+    orders: OrderTypes[];
     selectionModel: GridRowSelectionModel;
     loading?: boolean;
     trigger?: boolean;
@@ -28,116 +32,12 @@ export interface State {
     currentOrder: number;
 }
 
-export type Currency = "RON" | "EUR" | "USD";
-
-export type ProductResult = {
-    crt: number;
-    id: string;
-    name: string;
-    model: string;
-}
-
-export type Invoice = {
-    id: number;
-    invoice_date: string;
-    due_date: string | null;
-    invoice_series: string;
-    invoice_number: string;
-    supplier_name: string;
-    driver: string;
-    nr_auto: string;
-    locked: number | null;
-    currency_rate: string;
-    currency: Currency;
-    reception_date: null | string;
-    totalNoVat: number;
-    totalWithVat: number;
-}
-export type ProductInBasket = {
-    row_id?: number | null;
-    crt?: number;
-    id: number;
-    name: string;
-    model?: string;
-    acquisition_price: number;
-    quantity: number;
-    tax: number;
-}
-
-export type ReceptionItem = {
-    id: string;
-    invoice_date: string;
-    invoice_series: string;
-    invoice_number: string;
-    supplier_name: string;
-    currency: Currency;
-    total_quantity: string;
-    receptioned_quantity: string;
-    not_receptioned_quantity: number;
-    invoice_value: string;
-}
-
-export type ReceptionInventoryProduct = {
-    id: number;
-    row_id: string;
-    product_id: string;
-    product_name: string;
-    total_quantity: string;
-    receptioned_quantity: string;
-    not_confirmed_quantity: number;
-}
-
-export type Order = {
-    crt: number;
-    id: string;
-    invoice_company: string;
-    delivery_price: string;
-    tax_rate: string;
-    status: string;
-    whStatus: string;
-    order_notes: string;
-    totalNoVat: string;
-    totalWithVat: number;
-}
-
 export type SnackBarState = {
     state: boolean;
     message: string;
     type: "success" | "error" | "warning";
 }
 
-export type WarehouseTransferOptions = {
-    warehousesAllowingServicingStock : Warehouse[];
-    warehouseAllowingSellingStock: Warehouse[];
-}
-
-
-export type Warehouse = {
-    id: string;
-    name: string;
-}
-
-export type Supplier = {
-    id: string;
-    alias: string;
-}
-
-export type Transfer = {
-    id: string;
-    old_warehouse_name: string;
-    new_warehouse_name: string;
-    status: string;
-    confirmed:any;
-}
-
-export type TransferProduct = {
-    crt: number; //comes from a local .map function, NOT FROM API!
-    id: string;
-    name: string;
-    model: string;
-    available_quantity: string;
-    warehouse_name: string;
-}
 
 export type Action = (reducerAction: ActionTypes) => void
 
@@ -163,7 +63,7 @@ export type ActionTypes =
     } |
     {
         type: "SET_ORDERS";
-        payload: allOrdersApiResponse;
+        payload: AllOrdersApiResponse;
     } |
     {
         type: "SET_LOADING";
@@ -203,7 +103,7 @@ export type ActionTypes =
     } |
     {
         type: "SET_ORDERS";
-        payload: Order[];
+        payload: OrderTypes[];
     } |
     {
         type: "SET_WAREHOUSE_SELECTION";

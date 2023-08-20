@@ -1,6 +1,6 @@
 "use client"
 import {StateContext} from "@/app/state/context";
-import {State} from "@/app/state/types/stateTypes";
+import {State} from "@/model/appstate/AppStateTypes";
 import {Card, CardContent, Grid, Typography, Divider, CardHeader, SxProps, LinearProgress, Skeleton, CircularProgress} from "@mui/material";
 import {Action} from "@reduxjs/toolkit";
 import {useContext} from "react";

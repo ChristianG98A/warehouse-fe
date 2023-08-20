@@ -2,7 +2,7 @@
 
 import {createContext, useReducer} from "react"
 import {reducer} from "./reducers"
-import { State, Action } from "./types/stateTypes"
+import { State, Action } from "@/model/appstate/AppStateTypes"
 
 export const StateContext = createContext<any>([null, null])
 

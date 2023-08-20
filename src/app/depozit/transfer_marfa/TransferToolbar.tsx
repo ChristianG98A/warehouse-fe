@@ -8,7 +8,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import React, {useContext} from "react";
 import AddchartIcon from '@mui/icons-material/Addchart';
 import {callNextApi} from "@/helpers/apiMethods";
-import {Action, State} from "@/app/state/types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import EditNoteIcon from '@mui/icons-material/EditNote';
 
 

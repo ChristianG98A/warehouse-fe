@@ -2,7 +2,7 @@
 
 import {editInvoiceReducer} from "@/app/achizitii/comenzi_furnizori/editare_nir/editInvoiceState";
 import {StateContext} from "@/app/state/context";
-import {Action, State} from "@/app/state/types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Alert, Box, Button, colors, Divider, Grid, Snackbar, TextField, Typography} from "@mui/material";

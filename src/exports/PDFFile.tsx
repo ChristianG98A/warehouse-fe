@@ -1,4 +1,4 @@
-import {pListApiResponse} from "@/components/types/Order";
+import {pListApiResponse} from "@/model/orders/OrderTypes";
 import {Page, Text, Document, StyleSheet, Link, Font, View} from "@react-pdf/renderer";
 
 export interface PDFFileDetails {

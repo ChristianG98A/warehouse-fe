@@ -1,10 +1,10 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
-import {Action, State} from "@/app/state/types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import AddchartIcon from '@mui/icons-material/Addchart';
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
-import {OrderData} from "@/components/types/Order";
+import {OrderData} from "@/model/orders/OrderTypes";
 import DescriptionIcon from '@mui/icons-material/Description';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import PersonIcon from '@mui/icons-material/Person';
@@ -86,14 +86,14 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                     avatar={<DescriptionIcon />}
                     title={"Detalii comanda"}
                     values={[
-                        {name: 'Order Id', value: orderData?.order_id},
-                        {name: 'Order Date & Time', value: "???"},
-                        {name: 'Order Status', value: orderData?.status},
+                        {name: 'OrderTypes Id', value: orderData?.order_id},
+                        {name: 'OrderTypes Date & Time', value: "???"},
+                        {name: 'OrderTypes Status', value: orderData?.status},
                         {name: 'WOrder Status', value: orderData?.whStatus},
                         {name: 'Grand Total (with TAX)', value: orderData?.totalWithVat},
                         {name: 'Payment Information', value: orderData?.payment_method},
                         {name: 'Packing Method', value: "De pus dropbox"},
-                        {name: 'Client Order Number', value: "de pus textfield"},
+                        {name: 'Client OrderTypes Number', value: "de pus textfield"},
                     ]}
                 />
 
@@ -171,7 +171,7 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                         {name: 'Judet', value: orderData?.invoice_data[0].invoice_city},
                     ]}
                 />
-                <Grid item xs={12} sx={{padding:2}}>
+                <Grid item xs={12} sm={12} md={12} lg={12} sx={{padding:2}}>
                     <DataGrid
                         rowSelection={true}
                         columnHeaderHeight={60}
@@ -192,6 +192,7 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                             bottom: params.isLastVisible ? 0 : 5
                         })}
                         sx={{
+                            minHeight:"18rem",
                             '& .MuiDataGrid-row': {
                                 backgroundColor: grey[200],
                             },

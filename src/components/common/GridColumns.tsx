@@ -9,7 +9,7 @@ import WidgetsIcon from '@mui/icons-material/Widgets';
 import {IconButton, Tooltip} from "@mui/material";
 import {GridColDef, GridRenderCellParams} from "@mui/x-data-grid";
 import {useContext} from "react";
-import {Action, State} from "@/app/state/types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 
 
 //type buttonId = "export_pdf_proforma_button" | "export_xls_proforma_button" | "export_pregatire_produse_button" | "order_edit_button" | "delete_order_button"

@@ -1,4 +1,4 @@
-import {Action, State} from "@/app/state/types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 
 export const editInvoiceReducer = (state: State|any, action: Action|any) => {
         switch(action.type){

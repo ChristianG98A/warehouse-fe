@@ -1,4 +1,4 @@
-import {Action, State} from "./types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 
 const findIndexByObjectId = (dataArray:any, targetId:number) => {
   const index = dataArray.findIndex((item:any) => item.id === targetId);

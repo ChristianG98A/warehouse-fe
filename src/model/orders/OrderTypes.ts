@@ -1,20 +1,9 @@
 export interface AllOrdersApiResponse {
     status:number;
     code:string;
-    response:Order[]
+    response:OrderTypes[]
 }
 
-export default interface Order{
-  id:number;
-  invoice_company:string;
-  delivery_price:number;
-  tax_rate:number;
-  status:string; // "inprogress" si altceva
-  whStatus:string;
-  order_notes:string;
-  totalNoVat:number;
-  totalWithVat:number;
-}
 
 export type InvoiceOrder = {
     name: string;
@@ -140,3 +129,32 @@ export type OrderData = {
   orderProducts: OrderProduct[];
 };
 
+export type OrderTypes = {
+  crt: number;
+  id: string;
+  invoice_company: string;
+  delivery_price: string;
+  tax_rate: string;
+  status: string;
+  whStatus: string;
+  order_notes: string;
+  totalNoVat: string;
+  totalWithVat: number;
+}
+export type Currency = "RON" | "EUR" | "USD";
+export type ProductResult = {
+  crt: number;
+  id: string;
+  name: string;
+  model: string;
+}
+export type ProductInBasket = {
+  row_id?: number | null;
+  crt?: number;
+  id: number;
+  name: string;
+  model?: string;
+  acquisition_price: number;
+  quantity: number;
+  tax: number;
+}

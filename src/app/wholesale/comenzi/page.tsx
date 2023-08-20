@@ -1,7 +1,7 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
-import {Action, State} from "@/app/state/types/stateTypes";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import GridColumns from "@/components/common/GridColumns";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
