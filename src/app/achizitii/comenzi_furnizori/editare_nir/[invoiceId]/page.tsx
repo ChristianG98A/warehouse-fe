@@ -406,7 +406,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                                 rowSelection={true}
                                 columnHeaderHeight={60}
                                 checkboxSelection
-                                rows={state.productResult}
+                                rows={state.productResult?? []}
                                 pageSizeOptions={[10, 25, 50]}
                                 initialState={{pagination: {paginationModel: paginationModel}}}
                                 onPaginationModelChange={setPaginationModel}

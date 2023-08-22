@@ -42,7 +42,7 @@ const ProviderOrders = () => {
         setLoading(true)
         await callNextApi("POST", "inventory/getReceptionsList", {limit: 300, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
             .then((r: any) => {
-                console.log("RECEPTIONSSS! ", r)
+                //console.log("RECEPTIONSSS! ", r)
                 dispatch({type: "SET_RECEPTIONS", payload: r?.response})
                 setLoading(false)
             });

@@ -1,16 +1,15 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
-import {Action, State} from "@/model/appstate/AppStateTypes";
-import KeyboardListener from "@/components/features/KeyboardListener";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Box, Button, Divider, Drawer, FormControlLabel, Grid, Modal, Paper, Snackbar, Switch, TextField, Typography} from "@mui/material";
-import {green, grey} from "@mui/material/colors";
+import {Action, State} from "@/model/appstate/AppStateTypes";
+import {PostReceptionProductResponse} from "@/model/receptions/ReceptionTypes";
+import {Alert, Box, Button, Grid, Modal, Snackbar, TextField, Typography} from "@mui/material";
+import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
-import {ChangeEvent, KeyboardEvent, KeyboardEventHandler, SyntheticEvent, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {ReceptionProduct} from "./types";
+import {ChangeEvent, useContext, useEffect, useMemo, useRef, useState} from "react";
 
 
 
@@ -22,14 +21,15 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [needConfirmation, setNeedConfirmaton] = useState(false);
-    const [confirmedQuantity, setConfirmedQuantity] = useState<number|"">(1)
     const [selectionModel, setSelectionModel] = useState<any>([0])
-    const [confirmSwitch, setConfirmSwitch] = useState(false);
-    const [highlightedRow, setHighlightedRow] = useState(null);
+    const [confirmModal, setConfirmModal] = useState(false);
+    //const [highlightedRow, setHighlightedRow] = useState(null);
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
     })
+    const [remainingQuantity, setRemainingQuantity]= useState(1);
+    const [confirmedQuantity, setConfirmedQuantity] = useState("1")
     const eanTextFieldRef = useRef<any>(null);
 
     const invoiceId = parseInt(params.invoiceId);
@@ -38,8 +38,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
         await callNextApi("POST", "inventory/getProductsList", {invoice_id: invoiceId})
             .catch(e => console.log("Error in fetching invoice products: ", e))
             .then((r: any) => {
-                console.log('reception inventory: \n', r?.response)
-
+                //console.log('reception inventory: \n', r?.response)
                 dispatch({
                     type: "SET_RECEPTION_INVENTORY", payload: (r?.response)
                         .map((product: any) => ({
@@ -53,19 +52,63 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
         if (event.key === "Enter") {
             setEditable(false);
 
-            await addProductToInventory({
+            const payload = {
                 ean_code: currentEAN,
                 invoice_in_id: invoiceId,
-                total_count_to_add_in_stock: confirmedQuantity,
-            }).catch(e => console.log("Error encountered while submitting product payload:", e))
-                .finally(() => {
-                    setCurrentEAN("")
-                    eanTextFieldRef.current.focus();
-                    setEditable(true);
-                })
+                total_count_to_add_in_stock: remainingQuantity,
+            }
+            console.log(payload)
+            await addProductToInventory(payload)
+                .catch(e => console.log("Error encountered while submitting product payload:", e))
         }
     };
 
+    const addProductToInventory = async (product: {
+        ean_code: string;
+        invoice_in_id: number;
+        total_count_to_add_in_stock: number;
+    }) => {
+        setLoading(true);
+        await callNextApi("POST", "inventory/addProductInventory", product)
+            .catch(e => {
+                console.log("Error in fetching the products left for reception: ", e)
+                dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Error server", type: "error"}})
+            })
+            .then((r: any | PostReceptionProductResponse[]) => {
+                // need refactor!
+
+                if (r?.responses.find((product: PostReceptionProductResponse | any) => product.error === true)) {
+                    dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "EAN-ul inserat nu exista in baza de date, te rog sa il adaugi produsului corespondent", type: "error"}})
+                }
+                else {
+                    dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Produs receptionat cu succes!", type: "success"}})
+                }
+
+                console.log("The post response: ", r?.responses)
+
+                if (r?.responses.find((product: PostReceptionProductResponse) => product.remains_to_be_receptioned)) {
+                    setRemainingQuantity(r?.responses[0]?.remains_to_be_receptioned)
+                    setConfirmModal(true)
+                    console.log("let's see", r?.responses[0]?.remains_to_be_receptioned)
+                } else {
+                    setConfirmModal(false);
+                    setRemainingQuantity(1)
+                    setCurrentEAN("")
+                }
+            })
+            .catch(e => {
+                console.log('could not filter result', e)
+                dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Error filtrare", type: "error"}})
+            }
+            )
+            .finally(() => {
+                setEditable(true);
+                //setCurrentEAN("")
+                eanTextFieldRef.current.focus();
+                confirmModal ? setConfirmModal(false) : null;
+                getReceptionProducts(invoiceId).then(() => setLoading(false));
+            })
+    }
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -80,46 +123,6 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
         //setCurrentReception(parseInt(params.row?.row_id))
         //await getNotReceptionedProducts(parseInt(params.row?.row_id))
     }
-
-
-
-    const addProductToInventory = async (product:{
-            ean_code:string;
-            invoice_in_id:number;
-            total_count_to_add_in_stock:number;
-        }) => {
-        setLoading(true);
-        console.log('adding the following product to inventory', product)
-
-        await callNextApi("POST", "inventory/addProductInventory", product)
-            .catch(e => console.log("Error in fetching the products left for reception: ", e))
-            .then(async (r: any) => {
-                console.log("addProductToInventory: ", r.responses)
-                if (r.responses.find((product: any) => product.error === true)) {
-                    dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "EAN-ul inserat nu exista in baza de date, te rog sa il adaugi produsului corespondent", type: "error"}})
-                }
-                else {
-                    dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Produs receptionat cu succes!", type: "success"}})
-
-                }
-                getReceptionProducts(invoiceId).then(() => setLoading(false));
-            })
-
-    }
-
-//
-//    const getNotReceptionedProducts = async (rowId: number) => {
-//        setLoading(true);
-//        await callNextApi("POST", "inventory/getNotConfirmedProductPcs", {invoice_product_row_id: rowId})
-//            .catch(e => console.log("Error in fetching the products left for reception: ", e))
-//            .then((r: any) => {
-//                console.log(r?.response)
-//                setProductsLeftForReception(r.response)
-//                setLoading(false);
-//            })
-//
-//    }
-//
 
 
     useEffect(() => {
@@ -181,29 +184,6 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                                 inputRef={eanTextFieldRef}
                             />
                         </ Grid>
-                        <Grid item md={2} lg={1}>
-                            <TextField
-                                disabled={!confirmSwitch}
-                                label={"Cantitate"}
-                                type="number"
-                                value={confirmedQuantity}
-                                onChange={(event) => {
-                                    try {
-                                        setConfirmedQuantity(parseInt(event.target.value))
-                                        } catch (e) {
-                                            }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item md={2} lg={2}>
-                            <FormControlLabel control={<Switch value={confirmSwitch}
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                    setConfirmSwitch(event.target.checked);
-                                    setConfirmedQuantity(1);
-                                }} />}
-                                label="Confirma cantitatea"
-                            />
-                        </Grid>
                     </Grid>
 
 
@@ -236,9 +216,6 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                                 '& .MuiDataGrid-row': {
                                     backgroundColor: grey[200],
                                 },
-                                '& .MuiDataGrid-row:hover': {
-                                    backgroundColor: green[100],
-                                },
                             }}
 
                             autoPageSize={false}
@@ -254,12 +231,15 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                             onClick={() => addProductToInventory({
                                 ean_code: currentEAN,
                                 invoice_in_id:invoiceId,
-                                total_count_to_add_in_stock:confirmedQuantity,
+                                total_count_to_add_in_stock:remainingQuantity,
                             })}
                         >
                             Submit
                         </Button>
-                        <Button variant="contained" onClick={() => setReceptionCartModal(false)}>
+                        <Button variant="contained" onClick={() => {
+                            setReceptionCartModal(false)
+                            setRemainingQuantity(1)
+                        }}>
                             Inchide
                         </Button>
                     </Grid>
@@ -278,12 +258,12 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                 autoFocus={true}
                 component={"form"}
                 onSubmit={() => console.log("onSubmit works")}
-                open={needConfirmation}
-                aria-labelledby="New Invoice Modal"
-                aria-describedby="new-invoice-modal"
+                open={confirmModal}
+                aria-labelledby="Quantity confirmation modal"
+                aria-describedby="quantity-confirm-modal"
                 sx={{
                     position: "absolute",
-                    width: "max-content",
+                    width: {xs:"100vw", md:"30vw"},
                     height: "max-content",
                     left: "50%",
                     top: "50%",
@@ -297,31 +277,54 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                     p: 4,
                 }}>
                     <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} >
-                        <Grid item xs={12}>
+                        <Grid item xs={12} >
                             <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
-                                Codul EAN nu exista in evidenta. Doresti sa il adaugi?
+                                Cantitatea ramasa de receptionat pentru produsul scanat: {remainingQuantity}
                             </Typography>
+                        </Grid>
+                        <Grid item xs={12} sx={{mb:2}}>
+                            <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
+                                Confirmi cantitatea?
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={5} md={5}>
+                            <TextField
+                                label={"Cantitate"}
+                                type="number"
+                                sx={{...center}}
+                                value={confirmedQuantity}
+                                onChange={(e:ChangeEvent<HTMLInputElement|HTMLTextAreaElement>)=>setConfirmedQuantity(e.target.value)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
                         </Grid>
 
                         <Grid item xs={6} sx={{display: 'flex', justifyContent: "right"}}>
                             <Button variant="contained" type={"submit"} onClick={(e) => {
                                 e.preventDefault();
-                                //need method
-                                setCurrentEAN("")
+                                addProductToInventory({
+                                    ean_code: currentEAN,
+                                    invoice_in_id: invoiceId,
+                                    total_count_to_add_in_stock: parseInt(confirmedQuantity),
+                                })
+                                    .catch(e => {
+                                        console.log("Error encountered while submitting product payload:", e)
+                                        dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Error server", type: "error"}})
+                                    })
                             }}>
                                 Confirma
                             </Button>
                         </Grid>
                         <Grid item xs={6} sx={{display: 'flex', justifyContent: "left"}}>
                             <Button variant="contained" onClick={() => {
-                                setNeedConfirmaton(false)
+                                setConfirmModal(false)
                                 setCurrentEAN("")
+                                setRemainingQuantity(1)
                             }}>
 
                                 Anuleaza
                             </Button>
                         </Grid>
-
                     </Grid>
                 </ Box>
             </Modal>

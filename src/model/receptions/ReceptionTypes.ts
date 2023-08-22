@@ -21,3 +21,10 @@ export type ReceptionInventoryProduct = {
     receptioned_quantity: string;
     not_confirmed_quantity: number;
 }
+
+export type PostReceptionProductResponse = {
+    ean_exist: 1|0;
+    message: string;
+    remains_to_be_receptioned: number;
+    row_id: string;
+}
