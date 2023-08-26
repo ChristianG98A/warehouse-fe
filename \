@@ -73,11 +73,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                 r => {
                     setLoading(false)
                     getInvoiceDetails(invoiceId)
-                    if (r?.response?.status == "locked") {
-                        setSnackBar({message: "NIR-ul este inchis!", type: "error", state: true})
-                    } else {
-                        setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
-                    }
+                    setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
                 }
 
             )
@@ -108,6 +104,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                     setLoading(false)
                     getInvoiceProducts(invoiceId).then(r => setLoading(false))
                     setProductCart(false)
+                    console.log("blablabla", r)
                     setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
                 }
 

@@ -9,12 +9,12 @@ import {Alert, Box, Button, Grid, Modal, Snackbar, TextField, Typography} from "
 import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
-import {ChangeEvent, useContext, useEffect, useMemo, useRef, useState} from "react";
+import {ChangeEvent, useContext, useEffect, useMemo, useReducer, useRef, useState} from "react";
 
 
 
 const OrderReception = ({params}: {params: {invoiceId: string}}) => {
-    const [state, dispatch]: [State, Action] = useContext(StateContext)
+    const [state, dispatch]: [State, Action] = useContext(StateContext);
     const [editable, setEditable] = useState(true);
     const [currentEAN, setCurrentEAN] = useState("");
     const [receptionCartModal, setReceptionCartModal] = useState(false);
@@ -55,7 +55,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
             const payload = {
                 ean_code: currentEAN,
                 invoice_in_id: invoiceId,
-                total_count_to_add_in_stock: remainingQuantity,
+                total_count_to_add_in_stock: parseInt(confirmedQuantity),
             }
             console.log(payload)
             await addProductToInventory(payload)
@@ -94,6 +94,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                     setConfirmModal(false);
                     setRemainingQuantity(1)
                     setCurrentEAN("")
+                    setConfirmedQuantity("1");
                 }
             })
             .catch(e => {
@@ -105,7 +106,11 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                 setEditable(true);
                 //setCurrentEAN("")
                 eanTextFieldRef.current.focus();
-                confirmModal ? setConfirmModal(false) : null;
+                if(confirmModal){
+                        setConfirmModal(false)
+                        setConfirmedQuantity("1")
+                        setCurrentEAN("")
+                    }
                 getReceptionProducts(invoiceId).then(() => setLoading(false));
             })
     }
@@ -231,16 +236,10 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                             onClick={() => addProductToInventory({
                                 ean_code: currentEAN,
                                 invoice_in_id:invoiceId,
-                                total_count_to_add_in_stock:remainingQuantity,
+                                total_count_to_add_in_stock: parseInt(confirmedQuantity),
                             })}
                         >
                             Submit
-                        </Button>
-                        <Button variant="contained" onClick={() => {
-                            setReceptionCartModal(false)
-                            setRemainingQuantity(1)
-                        }}>
-                            Inchide
                         </Button>
                     </Grid>
 
@@ -320,6 +319,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
                                 setConfirmModal(false)
                                 setCurrentEAN("")
                                 setRemainingQuantity(1)
+                                setConfirmedQuantity("1")
                             }}>
 
                                 Anuleaza
