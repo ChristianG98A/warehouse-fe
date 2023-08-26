@@ -7,8 +7,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import BusinessIcon from '@mui/icons-material/Business';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import List from '@mui/material/List';
+import ScienceIcon from '@mui/icons-material/Science';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -61,19 +65,32 @@ export default function SideDrawer(props: Props) {
                 <SidebarListDropdown item="Achizitii" index={1}
                     menuItems={[
                         {name: 'Comenzi Furnizori', link: "/achizitii/comenzi_furnizori"}]
-                    } />
+                    }
+                    icon={<ShoppingCartIcon />}
+                />
 
                 <SidebarListDropdown item="Wholesale" index={2}
                     menuItems={[
                         {name: 'Comenzi', link: '/wholesale/comenzi'},
                         {name: 'Export produse', link: '/wholesale/export_produse'},
-                        {name: 'Clienti', link: "/wholesale/clienti"}]} />
+                        {name: 'Clienti', link: "/wholesale/clienti"}]}
+                    icon={<BusinessIcon />}
+                />
 
                 <SidebarListDropdown item="Depozit" index={3}
                     menuItems={[
                         {name: 'Receptie Marfa', link: '/depozit/receptie_marfa'},
                         {name: 'Transfer Marfa', link: '/depozit/transfer_marfa'},
                     ]}
+                    icon={<InventoryIcon  />}
+                />
+
+                <SidebarListDropdown item="Produse" index={3}
+                    menuItems={[
+                        {name: 'Lista Produse', link: '/produse/lista_produse'},
+                    //    {name: 'Transfer Marfa', link: '/depozit/transfer_marfa'},
+                    ]}
+                    icon={<ScienceIcon />}
                 />
             </List>
         </div>

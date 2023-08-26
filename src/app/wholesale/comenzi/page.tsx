@@ -108,11 +108,6 @@ const Orders = () => {
                             },
                         }}
                     />
-
-                    <Button onClick={async () => {
-                        console.log(state)
-                        dispatch({type: "SET_DELETE_PROMPT", payload: true})
-                    }}>Log the State!</Button>
             </Grid>
             <Dialog
                 open={state.deletePrompt}

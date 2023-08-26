@@ -31,7 +31,6 @@ const rows: GridRowsProp | Purchase[] = [
 const rowsPerPageOptions = [10, 20, 100];
 const StockTransfer = () => {
     const [state, dispatch]:[State, Action] = useContext(StateContext)
-    const [newInvoiceModal, setNewInvoiceModal] = useState(false);
     const [selectedOldWarehouse, setSelectedOldWarehouse] = useState<Warehouse|any>("");
     const [selectedNewWarehouse, setSelectedNewWarehouse] = useState<Warehouse|any>("");
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
@@ -144,7 +143,7 @@ const StockTransfer = () => {
                     onPaginationModelChange={setPaginationModel}
                     pageSizeOptions={[10, 25, 50]}
                     onRowSelectionModelChange={(newRowSelectionModel) => {
-                        dispatch({type: "SET_CURRENT_TRANSFER", payload: state.transfers.find(transfer=>transfer.id==newRowSelectionModel[0])})
+                        dispatch({type: "SET_CURRENT_TRANSFER", payload: state?.transfers?.find(transfer=>transfer.id==newRowSelectionModel[0])})
                     }}
                     rowSelectionModel={state.selectionModel}
                     autoPageSize={false}

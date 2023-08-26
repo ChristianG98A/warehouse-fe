@@ -31,6 +31,7 @@ export interface State {
     transferProductResult: TransferProduct[];
     currentOrder: number;
     addToStockPrompt:boolean;
+    transferProductSelection:ProductInBasket[];
 }
 
 export type SnackBarState = {
@@ -119,8 +120,11 @@ export type ActionTypes =
         payload: boolean;
     } |
     {
-        type: "SET_WAREHOUSE_TRANSFER_SELECTION";
+        type: "SET_TRANSFER_PRODUCT_SELECTION";
         payload: boolean;
+    } |
+    {
+        type: "RESET_TRANSFER_PRODUCT_SELECTION";
     } |
     {
         type: "SET_NEW_TRANSFER_MODAL";

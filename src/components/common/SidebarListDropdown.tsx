@@ -3,7 +3,7 @@ import {Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText} fr
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import {ExpandLess, ExpandMore} from "@mui/icons-material";
-import React from "react";
+import React, {ReactElement} from "react";
 import {redirect} from "next/dist/server/api-utils";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
@@ -13,7 +13,7 @@ interface SidebarDDMenuItem {
     link: string
 }
 
-export default function SidebarListDropdown(props: {index: number, item: string, menuItems:SidebarDDMenuItem[]}) {
+export default function SidebarListDropdown(props: {index: number, item: string, menuItems:SidebarDDMenuItem[], icon:ReactElement}) {
     const [openSubMenu, setOpenSubMenu] = React.useState(false);
     const router = useRouter();
 
@@ -26,7 +26,7 @@ export default function SidebarListDropdown(props: {index: number, item: string,
                 <ListItem key={props.item} disablePadding>
                     <ListItemButton onClick={handleSubMenuClick}>
                         <ListItemIcon>
-                            {props.index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                            {props.icon}
                         </ListItemIcon>
                         <ListItemText primary={props.item} />
                         {openSubMenu ? <ExpandLess /> : <ExpandMore />}

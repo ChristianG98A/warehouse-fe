@@ -50,34 +50,32 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
         dispatch({type: "SET_PRODUCT_BASKET", payload: data})
     }
 
-    //const handleSubmitProducts = async () => {
-    //    setLoading(true)
-    //    await callNextApi("POST", "purchase/addProduct", {
-    //        invoice_id: invoiceId,
-    //        products: state?.productBasket?.map((product: any) => {
-    //            return ({
-    //                "product_id": parseInt(product.id),
-    //                "product_name": product.name,
-    //                "acquisition_price": product.acquisition_price ?? "0",
-    //                "quantity": product.quantity ?? 0,
-    //                "tax": product.tax ?? "1.19",
-    //            })
-    //        }),
-    //    })
-    //        .catch(e => {
-    //            console.log("Error in submitting products: \n", e)
-    //            setSnackBar({message: "Eroare!", type: "error", state: true})
-    //        })
-    //        .then(
-    //            r => {
-    //                setLoading(false)
-    //                getInvoiceProducts(invoiceId).then(r => setLoading(false))
-    //                setProductCart(false)
-    //                setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
-    //            }
-
-    //        )
-    //}
+    const handleSubmitProducts = async () => {
+        setLoading(true)
+        await callNextApi("POST", "transfers/addProduct", {
+            transfer_id: transferId,
+            products: state?.transferProductSelection?.map((product: any) => {
+                return ({
+                    "product_id": parseInt(product.id),
+                    "product_name": product.name,
+                    "quantity": product.quantity ?? 0,
+                })
+            }),
+        })
+            .catch(e => {
+                console.log("Error in submitting products: \n", e)
+                setSnackBar({message: "Eroare!", type: "error", state: true})
+            })
+            .then(
+                () => {
+                    setLoading(false)
+                    //getInvoiceProducts(invoiceId).then(r => setLoading(false))
+                    //setProductCart(false)
+                    dispatch({type:"RESET_TRANSFER_PRODUCT_SELECTION"})
+                    setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
+                }
+            )
+    }
 
     const handleSearch = debounce(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
@@ -86,7 +84,7 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
 
             await callNextApi("POST", "transfers/searchProduct", {
                 searchterm: input,
-                //old_warehouse_id: state.currentTransfer.,
+                //??????old_warehouse_id: state.currentTransfer.,
             })
                 .catch(e => console.log("Error searching for product: ", e))
                 .then((r: any) => {
@@ -211,15 +209,16 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
                             <Button disabled={selectionModel?.length == 0} variant="contained" onClick={() => {
                                 setSnackBar({message: "Produse adaugate in cos!", type: 'success', state: true})
                                 selectionModel?.forEach((itemSelected: any) => {
-                                    const checkIfProductIsInBasket = (id: any) => {
-                                        return state.productBasket.some((productInBasket: any) => productInBasket.id == id)
+                                    const checkIfProductIsInSelection = (id: any) => {
+                                        return state.transferProductSelection.some((selectedProduct: any) => selectedProduct.product_id == id)
                                     }
+                                    console.log("is product in selection?", checkIfProductIsInSelection);
                                     try {
-                                        if (!checkIfProductIsInBasket(itemSelected)) {
-                                            dispatch({
-                                                type: "SET_PRODUCT_BASKET",
-                                                payload: state.productResult.find((productObject: any) => productObject.id == itemSelected)
-                                            })
+                                        if (!checkIfProductIsInSelection(itemSelected)) {
+                                           // dispatch({
+                                           //     type: "SET_TRANSFER_PRODUCT_SELECTION",
+                                           //     payload: state.productResult.find((productObject: any) => productObject.id == itemSelected)
+                                           // })
                                         }
                                     } catch (error) {console.log("Error in adding products to invoice!", error)}
                                 })

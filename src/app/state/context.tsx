@@ -7,18 +7,19 @@ import { State, Action } from "@/model/appstate/AppStateTypes"
 export const StateContext = createContext<any>([null, null])
 
 export default function ContextProvider({children}:{children:React.ReactNode}) {
-const [state, dispatch] = useReducer(reducer, {
-    deletePrompt: false,
-    addToStockPrompt:false,
-    orders:[],
-    invoices: [],
-    productResult:[],
-    productBasket:[],
-    productBasketModal:false,
-    receptionInventory:[],
-    newInvoiceModal:false,
-    newTransferModal:false,
-    currentInvoice: [0],
+    const [state, dispatch] = useReducer(reducer, {
+        currentInvoice: [0],
+        deletePrompt: false,
+        addToStockPrompt: false,
+        orders: [],
+        invoices: [],
+        productResult: [],
+        productBasket: [],
+        productBasketModal: false,
+        receptionInventory: [],
+        newInvoiceModal: false,
+        newTransferModal: false,
+        transferProductSelection: [],
     })
 
 

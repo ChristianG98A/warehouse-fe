@@ -1,22 +1,23 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
-import {Action, State} from "@/model/appstate/AppStateTypes";
-import AddchartIcon from '@mui/icons-material/Addchart';
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
+import {callNextApi} from "@/helpers/apiMethods";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import {OrderData} from "@/model/orders/OrderTypes";
+import AddchartIcon from '@mui/icons-material/Addchart';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import PersonIcon from '@mui/icons-material/Person';
 import PostAddIcon from '@mui/icons-material/PostAdd';
-import {Card, CardContent, CardHeader, CircularProgress, Divider, Grid, Paper, Typography} from "@mui/material";
+import {Button, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, Paper, TextField, Typography} from "@mui/material";
 import {green, grey, purple, red, yellow} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
 import {useRouter} from "next/navigation";
 import {useContext, useEffect, useState} from "react";
+import DataCard from "./DataCard";
 import getOrderDetails from "./helpers";
 import OrderColumns from "./OrderColumns";
-import DataCard from "./DataCard";
 
 
 const rowsPerPageOptions = [10, 20, 100];
@@ -27,6 +28,7 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
     const [loading, setLoading] = useState(true);
     const [orderData, setOrderData] = useState<OrderData>();
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
+    const [notes, setNotes] = useState("");
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
@@ -41,7 +43,10 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
         } else {
             setLoading(false);
             dispatch({type: "SET_LOADING", payload: false})
-            getOrderDetails(orderId).then(r => setOrderData(r.response))
+            getOrderDetails(orderId).then(r => {
+                setOrderData(r.response)
+                console.log("data", r)
+            })
         }
     }, [])
 
@@ -148,11 +153,26 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                             <Divider sx={{mb: 2}} />
                             {loading ? <Grid item xs={12} sx={{display: 'flex', justifyContent: 'center'}}><CircularProgress /></Grid> : (
                                 <Grid container>
-                                    <Grid item xs={12} sm={6}>
-                                        <Typography>De aduagat textfield + buton</Typography>
+                                    <Grid item xs={12} >
+                                    {/*aici vine notes din payload*/}
+                                        <Typography textAlign={'center'}>{orderData?.order_notes}</Typography>
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <Typography>{"..."}</Typography>
+                                    <Grid item xs={8} sm={9} >
+                                    {/*aici textfield cu post pe endpoint*/}
+                                        <TextField
+                                          sx={{...center, pt:2}}
+                                          value={notes}
+                                          onChange={(event)=>setNotes(event.target.value)}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4} sm={3} sx={{display:'flex', justifyContent:'center'}} >
+                                        <Button onClick={() => {
+                                            callNextApi("POST", "orders/setOrderNotes", {
+                                                "order_id": orderId,
+                                                "order_notes": notes,
+                                            })
+                                        }}
+                                            sx={{...center, mt:2}} variant="outlined" >Add</Button>
                                     </Grid>
                                 </Grid>
                             )}
@@ -180,7 +200,7 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
                         initialState={{pagination: {paginationModel: {pageSize: pageSize}}}}
                         onPaginationModelChange={setPaginationModel}
                         pageSizeOptions={[10, 25, 50]}
-                        onRowSelectionModelChange={(newRowSelectionModel) => {
+                        onRowSelectionModelChange={() => {
                             //dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
                         }}
                         rowSelectionModel={state.selectionModel}
@@ -202,5 +222,5 @@ const EditOrder = ({params}: {params: {orderId: string}}) => {
             </Grid>
         </>)
 }
-
+const center = {display:'flex', alignContent:'center'}
 export default EditOrder;

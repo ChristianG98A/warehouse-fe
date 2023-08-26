@@ -54,6 +54,8 @@ const ProviderOrders = () => {
         page: 0
     })
     const router = useRouter();
+    let currentInvoice;
+
 
     // Initial Data Fetch
 
@@ -72,6 +74,7 @@ const ProviderOrders = () => {
         console.log('initial datafetch')
         getInvoices();
         setLoading(true);
+        currentInvoice = state?.currentInvoice?.length > 0 ? state.currentInvoice[0] : 0;
     }, [paginationModel])
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -284,7 +287,7 @@ const ProviderOrders = () => {
                     onClose={() => dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})}
                     aria-labelledby="add-to-stock-modal"
                 >
-                    <DialogTitle id="add-to-stock-modal">{"Inchidere N.I.R. nr. " + state?.currentInvoice[0] + "?"}</DialogTitle>
+                    <DialogTitle id="add-to-stock-modal">{"Inchidere N.I.R. nr. " + currentInvoice + "?"}</DialogTitle>
 
                     <DialogActions sx={{justifyContent: "center"}}>
                         <Button onClick={()=>{

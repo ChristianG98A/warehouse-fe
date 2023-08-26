@@ -13,3 +13,9 @@ export type TransferProduct = {
     available_quantity: string;
     warehouse_name: string;
 }
+
+export type TransferProductSelection = {
+    product_id: number;
+    product_name: string;
+    quantity: number;
+}
