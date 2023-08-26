@@ -5,7 +5,7 @@ import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Box, Button, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Paper, Select, SelectChangeEvent, Snackbar, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, Dialog, DialogActions, DialogTitle, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Paper, Select, SelectChangeEvent, Snackbar, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
 import SellerInvoiceRow from "./SellerInvoiceRow";
@@ -279,6 +279,30 @@ const ProviderOrders = () => {
 
                     </Box>
                 </Modal>
+                <Dialog
+                    open={state.addToStockPrompt}
+                    onClose={() => dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})}
+                    aria-labelledby="add-to-stock-modal"
+                >
+                    <DialogTitle id="add-to-stock-modal">{"Inchidere N.I.R. nr. " + state?.currentInvoice[0] + "?"}</DialogTitle>
+
+                    <DialogActions sx={{justifyContent: "center"}}>
+                        <Button onClick={()=>{
+                            callNextApi("POST", "purchase/addToStock", {
+                                invoice_id: state?.currentInvoice[0],
+                                warehouse_id: 89
+                            }).then((r: any) => {
+                                dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "N.I.R. inchis cu succes!", type: "success"}})
+                                dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})
+                            },
+                                (e) => dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Eroare server!", type: "error"}}))
+
+                            }} autoFocus>
+                            Accept
+                        </Button>
+                        <Button onClick={() => dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})}>Cancel</Button>
+                    </DialogActions>
+                </Dialog>
             </div>
             <Snackbar
                 anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}

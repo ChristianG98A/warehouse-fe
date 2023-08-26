@@ -91,6 +91,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_CURRENT_ORDER':
             return {...state, currentOrder:action.payload}
 
+        case 'SET_ADDTOSTOCK_PROMPT':
+            return {...state, addToStockPrompt:action.payload}
+
         default:
             return state
     }

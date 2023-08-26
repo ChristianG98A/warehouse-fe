@@ -15,7 +15,7 @@ export interface State {
     productBasketModal: boolean;
     productResult: ProductResult[];
     receptions?: ReceptionItem[];
-    currentInvoice?: GridRowSelectionModel;
+    currentInvoice: GridRowSelectionModel;
     receptionInventory: ReceptionInventoryProduct[];
     deletePrompt: boolean;
     errorSnack: boolean;
@@ -30,6 +30,7 @@ export interface State {
     currentTransfer: Transfer | undefined;
     transferProductResult: TransferProduct[];
     currentOrder: number;
+    addToStockPrompt:boolean;
 }
 
 export type SnackBarState = {
@@ -140,6 +141,10 @@ export type ActionTypes =
     {
         type: "SET_CURRENT_ORDER";
         payload: number;
+    } |
+    {
+        type: "SET_ADDTOSTOCK_PROMPT";
+        payload: boolean;
     } |
     {
         type: "SET_SNACKBAR";

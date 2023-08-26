@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const token = process.env.API_TOKEN
     //console.log("this reaches the next api:\n", data)
 
-    const url = 'https://whx.ybomedia.ro/Api/Products/addProducts';
+    const url = 'https://whx.ybomedia.ro/Api/Purchase/addToStock';
     const options = {
         method: "GET",
         headers: {

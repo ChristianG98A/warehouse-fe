@@ -9,6 +9,7 @@ export const StateContext = createContext<any>([null, null])
 export default function ContextProvider({children}:{children:React.ReactNode}) {
 const [state, dispatch] = useReducer(reducer, {
     deletePrompt: false,
+    addToStockPrompt:false,
     orders:[],
     invoices: [],
     productResult:[],
@@ -17,6 +18,7 @@ const [state, dispatch] = useReducer(reducer, {
     receptionInventory:[],
     newInvoiceModal:false,
     newTransferModal:false,
+    currentInvoice: [0],
     })
 
 

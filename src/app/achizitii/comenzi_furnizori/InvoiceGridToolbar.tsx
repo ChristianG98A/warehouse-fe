@@ -9,6 +9,8 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {EditNote} from "@mui/icons-material";
 import {callNextApi} from "@/helpers/apiMethods";
+import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
+import {Action, State} from "@/model/appstate/AppStateTypes";
 
 
 const ReceptionButton = () => {
@@ -66,6 +68,35 @@ const EditButton = () => {
         </>)
 }
 
+const CloseInvoiceButton = () => {
+    const [state, dispatch]:[State, Action] = useContext(StateContext);
+    const router = useRouter();
+
+    return (
+        <>
+            <Button
+                color="primary"
+                key={"item_reception"}
+                style={{fontSize: "0.8rem"}}
+                startIcon={<DownloadDoneIcon />}
+
+                onClick={() => {
+                    console.log(state?.currentInvoice)
+                    if (state?.currentInvoice[0] != 0) {
+                        dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: true})
+                    }
+                    else {
+                        dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Selecteaza o comanda!", type: "error"}})
+                    }
+                }
+                }
+
+            >
+                Inchide N.I.R.
+            </Button>
+        </>)
+}
+
 const InvoiceGridToolbar = () => {
     return (
         <GridToolbarContainer>
@@ -74,6 +105,7 @@ const InvoiceGridToolbar = () => {
             <GridToolbarExport />
             <ReceptionButton />
             <EditButton />
+            <CloseInvoiceButton />
         </GridToolbarContainer>
     );
 }
