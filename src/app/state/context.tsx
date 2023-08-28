@@ -20,6 +20,7 @@ export default function ContextProvider({children}:{children:React.ReactNode}) {
         newInvoiceModal: false,
         newTransferModal: false,
         transferProductSelection: [],
+        wholesaleOffset:300,
     })
 
 

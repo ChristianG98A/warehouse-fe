@@ -32,6 +32,7 @@ export interface State {
     currentOrder: number;
     addToStockPrompt:boolean;
     transferProductSelection:ProductInBasket[];
+    wholesaleOffset:number;
 }
 
 export type SnackBarState = {
@@ -149,6 +150,10 @@ export type ActionTypes =
     {
         type: "SET_ADDTOSTOCK_PROMPT";
         payload: boolean;
+    } |
+    {
+        type: "SET_WHOLESALE_OFFSET";
+        payload: number;
     } |
     {
         type: "SET_SNACKBAR";

@@ -9,6 +9,7 @@ import {Alert, Box, Button, Dialog, DialogActions, DialogTitle, Grid, LinearProg
 import {grey} from "@mui/material/colors";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
+import WholesaleDatagridFooter from "./WholesaleDatagridFooter";
 
 
 
@@ -97,7 +98,10 @@ const Orders = () => {
                         rowSelectionModel={state.selectionModel}
                         autoPageSize={false}
                         loading={loading}
-                        slots={{toolbar: GridToolbar}}
+                        slots={{
+                            toolbar: GridToolbar,
+                            pagination: WholesaleDatagridFooter
+                        }}
                         getRowSpacing={params => ({
                             top: params.isFirstVisible ? 0 : 5,
                             bottom: params.isLastVisible ? 0 : 5
