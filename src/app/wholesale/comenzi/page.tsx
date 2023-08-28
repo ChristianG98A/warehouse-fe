@@ -33,13 +33,12 @@ const Orders = () => {
         //console.log("this is the context api state:\n", state);
         console.log('initial datafetch')
         setLoading(true);
-        callNextApi("POST", "orders", {limit: paginationModel.pageSize, offset: 0}).catch(e => console.log("Error caught in calling proxy api!\n", e))
+        callNextApi("POST", "orders", {limit: state.wholesaleOffset, offset: 0})
             .then((r:any) => {
-                console.log("ORDEEERS", r)
                 dispatch({type: "SET_ORDERS", payload: r})
                 setLoading(false)
             });
-    }, [paginationModel])
+    }, [state.wholesaleOffset])
 
     useEffect(()=>console.log(state.selectionModel), [state.selectionModel]);
 

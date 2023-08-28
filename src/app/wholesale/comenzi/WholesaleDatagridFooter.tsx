@@ -1,4 +1,5 @@
 import {StateContext} from "@/app/state/context";
+import {callNextApi} from "@/helpers/apiMethods";
 import {Action, State} from "@/model/appstate/AppStateTypes";
 import {Select, MenuItem, Typography} from "@mui/material";
 import {width} from "@mui/system";
@@ -11,6 +12,7 @@ const WholesaleDatagridFooter = (props:any) => {
   const itemsPerPageOptions = [300, 1000, 999999]; // Hardcoded number options
   const [state, dispatch]:[State, Action] = useContext(StateContext)
   let counter = 0
+
 
   return (
     <GridToolbarContainer>
