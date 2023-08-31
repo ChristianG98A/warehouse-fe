@@ -9,7 +9,7 @@ import {useContext} from "react";
 
 const WholesaleDatagridFooter = (props:any) => {
   const { paginationProps } = props;
-  const itemsPerPageOptions = [300, 1000, 999999]; // Hardcoded number options
+  const itemsPerPageOptions = [300, 1000, 9999999]; // Hardcoded number options
   const [state, dispatch]:[State, Action] = useContext(StateContext)
   let counter = 0
 
@@ -29,7 +29,7 @@ const WholesaleDatagridFooter = (props:any) => {
         {itemsPerPageOptions.map(item=>
         (<MenuItem key={counter++}
             onClick={() => dispatch({type: "SET_WHOLESALE_OFFSET", payload: item})}
-            value={item} >{item == 999999? 'MAX': item}</MenuItem>))}
+            value={item} >{item == 9999999? 'MAX': item}</MenuItem>))}
         </Select>
       <GridPagination {...paginationProps} />
     </GridToolbarContainer>

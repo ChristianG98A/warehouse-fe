@@ -1,5 +1,12 @@
 export default null;
 
+export type Product= {
+    id: string;
+    product_name: string;
+    man_name: string;
+    status: string | 'inactive';
+}
+
 export type ProductQueryState = {
     cathegory: string;
     producer: string;

@@ -1,10 +1,17 @@
 "use client"
 
+import {Product} from "@/app/api/purchase/types/types";
+import {StateContext} from "@/app/state/context";
+import WholesaleDatagridFooter from "@/app/wholesale/comenzi/WholesaleDatagridFooter";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
+import {callNextApi} from "@/helpers/apiMethods";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import {ProductQueryAction, ProductQueryState} from "@/model/products/ProductsTypes";
 import {Button, Divider, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Typography} from "@mui/material";
+import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
-import {useReducer} from "react";
+import {useContext, useEffect, useReducer, useState} from "react";
+import ProductColumns from "./ProductColumns";
 
 const queryReducer = (state:ProductQueryState | any, action:ProductQueryAction | any)=>{
         switch(action.type){
@@ -15,7 +22,30 @@ const queryReducer = (state:ProductQueryState | any, action:ProductQueryAction |
     }
 
 const ProductList = () => {
+    const [state, dispatch]:[State, Action] = useContext(StateContext);
     const [queryState, queryDispatch] = useReducer(queryReducer, {})
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [paginationModel, setPaginationModel] = useState({
+        pageSize: 10,
+        page: 0
+    })
+
+
+
+    const getProducts = async () => {
+        await callNextApi('POST', "products/getProductsList", {limit:state?.wholesaleOffset, offset:0})
+            .then((r: any) => {
+                setProducts(r.response?? []);
+            })
+    }
+
+    useEffect(()=>console.log(state.wholesaleOffset), [state.wholesaleOffset]);
+    // Initial Data Fetch
+    useEffect(() => {
+        setLoading(true)
+        getProducts().then(r=>setLoading(false));
+    }, [state?.wholesaleOffset])
 
     return (
         <>
@@ -93,10 +123,35 @@ const ProductList = () => {
                 </Grid>
             </Grid>
 
-            {true && (
-                <DataGrid columns={[]} rows={[]}
+                <DataGrid
+                    rowSelection={true}
+                    columnHeaderHeight={60}
+                    autoHeight={true}
+                    rows={products ?? []}
+                    columns={ProductColumns()}
+                    pageSizeOptions={[10, 25, 50]}
+                    initialState={{pagination: {paginationModel: paginationModel}}}
+                    onPaginationModelChange={setPaginationModel}
+                    onRowSelectionModelChange={(newRowSelectionModel) => {
+                        //dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
+                        dispatch({type:"SET_SELECTION_MODEL", payload:newRowSelectionModel})
+                    }}
+                    rowSelectionModel={state.selectionModel}
+                    autoPageSize={false}
+                    loading={loading}
+                    getRowSpacing={params => ({
+                        top: params.isFirstVisible ? 0 : 5,
+                        bottom: params.isLastVisible ? 0 : 5
+                    })}
+                    slots={{
+                        pagination: WholesaleDatagridFooter
+                    }}
+                    sx={{
+                        '& .MuiDataGrid-row': {
+                            backgroundColor: grey[200],
+                        },
+                    }}
                 />
-            )}
 
         </>
     )
