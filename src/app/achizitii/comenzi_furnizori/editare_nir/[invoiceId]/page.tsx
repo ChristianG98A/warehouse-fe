@@ -1,6 +1,8 @@
 "use client"
 
 import {StateContext} from "@/app/state/context";
+import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import LockIcon from '@mui/icons-material/Lock';
 import {Action, State} from "@/model/appstate/AppStateTypes";
 import BasicTable from "@/components/common/BasicTable";
 import CustomToolbar from "@/components/common/CustomToolbar";
@@ -29,7 +31,7 @@ const disabledButtonStyle = {
 const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
-    const [invoiceDetails, setInvoiceDetails]=useState<{invoiceSeries:string, invoiceNumber:number, date:Date}>()
+    const [invoiceDetails, setInvoiceDetails]=useState<{invoiceSeries:string, invoiceNumber:number, date:Date, locked:"1"|null}>()
     const [productCart, setProductCart] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -169,7 +171,8 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                 setInvoiceDetails({
                     invoiceNumber: invoiceData.invoice_number,
                     invoiceSeries: invoiceData.invoice_series,
-                    date: invoiceData.invoice_date
+                    date: invoiceData.invoice_date,
+                    locked: invoiceData.locked,
                 })
                 editInvoiceDispatch({type: "SET_DATE", payload: dayjs(r?.response[0]?.invoice_date, "YYYY-MM-DD")})
                 editInvoiceDispatch({type: "SET_INVOICE_SERIES", payload: r?.response[0]?.invoice_series})
@@ -309,6 +312,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                                                 <TableCell align="center">Serie factura</TableCell>
                                                 <TableCell align="center">Numar Factura</TableCell>
                                                 <TableCell align="center">Data Factura</TableCell>
+                                                <TableCell align="center">Status</TableCell>
                                             </TableRow>
                                         </TableHead>
 
@@ -321,6 +325,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                                                 </TableCell>
                                                 <TableCell align="center">{invoiceDetails?.invoiceNumber}</TableCell>
                                                 <TableCell align="center" >{dayjs(invoiceDetails?.date).format("YYYY-MM-DD")}</TableCell>
+                                                <TableCell align="center">{invoiceDetails?.locked== "1" ? <LockIcon />:<LockOpenOutlinedIcon /> }</TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>
@@ -328,27 +333,27 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                             </Grid>
 
                             <Fade in={editSwitch}>
-                                <Grid item xs={4} sx={center}>
-                                    <TextField disabled={!editSwitch} id="invoiceSeries" focused={true} label="Serie Factura" variant="standard"
+                                <Grid item xs={3} sx={center}>
+                                    <TextField disabled={!editSwitch} id="invoiceSeries"  label="Serie Factura" variant="standard"
                                         onChange={(event) => editInvoiceDispatch({type: "SET_INVOICE_SERIES", payload: event.target.value})}
                                     />
                                 </ Grid>
                             </Fade>
 
                             <Fade in={editSwitch}>
-                                <Grid item xs={4} sx={center}>
-                                    <TextField disabled={!editSwitch} id="invoiceNummber" focused={true} label="Numar Factura" variant="standard"
+                                <Grid item xs={3} sx={center}>
+                                    <TextField disabled={!editSwitch} id="invoiceNummber"  label="Numar Factura" variant="standard"
                                         onChange={(event) => editInvoiceDispatch({type: "SET_INVOICE_NUMBER", payload: event.target.value})}
                                     />
                                 </ Grid>
 
                             </Fade>
                             <Fade in={editSwitch}>
-                                <Grid item xs={4} sx={center}>
+                                <Grid item xs={3} sx={center}>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <DateField
+                                            variant={'standard'}
                                             disabled={!editSwitch}
-                                            focused={true}
                                             required
                                             format={"YYYY-MM-DD"}
                                             label="Data Factura"
@@ -359,11 +364,22 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
                                     </LocalizationProvider>
                                 </ Grid>
                             </Fade>
-                            <Grid item xs={12} sx={center} >
-
-                                <Divider sx={{width: "60%"}} />
-
-                            </Grid>
+                            <Fade in={editSwitch}>
+                                <Grid item xs={3} sx={center}>
+                                    <Button
+                                    disabled={invoiceDetails?.locked !== "1"}
+                                    variant={'outlined'}
+                                    onClick={()=>callNextApi("POST", "purchase/lockInvoice", {invoice_id: invoiceId})
+                                    .then(r=>getInvoiceDetails(invoiceId))} >
+                                        Deschide NIR
+                                    </Button>
+                                </ Grid>
+                            </Fade>
+                            <Fade in={editSwitch}>
+                                <Grid item xs={12} sx={center} >
+                                    <Divider sx={{width: "60%"}} />
+                                </Grid>
+                            </Fade>
                             <Fade in={editSwitch}>
                             <Grid item xs={12} sx={{display: 'flex', justifyContent: 'center', pr: 2}}>
                                 <Button variant="contained" disabled={!editSwitch} onClick={handleSubmitInvoiceDetails}>

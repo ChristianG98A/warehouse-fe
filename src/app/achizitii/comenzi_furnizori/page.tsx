@@ -293,21 +293,22 @@ const ProviderOrders = () => {
 
                     <DialogActions sx={{justifyContent: "center"}}>
                         <Button onClick={()=>{
+                            dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})
                             callNextApi("POST", "purchase/addToStock", {
                                 invoice_id: state?.currentInvoice[0],
                                 warehouse_id: 89
                             }).then((r: any) => {
                                 callNextApi("POST", "purchase/lockInvoice", {invoice_id: state?.currentInvoice[0]}).then(r => {
                                     dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "N.I.R. inchis cu succes!", type: "success"}})
-                                    dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})
-                                })
+                                }).finally(()=>getInvoices())
                             },
                                 (e) => dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Eroare server!", type: "error"}}))
 
                             }} autoFocus>
                             Accept
                         </Button>
-                        <Button onClick={() => dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})}>Cancel</Button>
+                        <Button onClick={() => dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})}
+                        >Cancel</Button>
                     </DialogActions>
                 </Dialog>
             </div>
