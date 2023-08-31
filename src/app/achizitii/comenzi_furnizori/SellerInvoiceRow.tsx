@@ -1,5 +1,6 @@
-import {StateContext} from "@/app/state/context"
 import {GridColDef} from "@mui/x-data-grid"
+import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import LockIcon from '@mui/icons-material/Lock';
 import {useContext} from "react"
 
 export default function ProductsToInvoice() {
@@ -16,6 +17,7 @@ export default function ProductsToInvoice() {
         {field: 'supplier_code', headerName: 'Cod Furnizor', flex: 2},
         {field: 'driver', headerName: 'Sofer', flex: 2},
         {field: 'nr_auto', headerName: 'Numar Auto', flex: 2},
+        {field: 'locked', headerName: 'Status', flex: 1, renderCell:(params)=>params.value== 1 ? <LockIcon />: <LockOpenOutlinedIcon />},
         {field: 'invoice_value', headerName: 'Valoare Factura', flex: 2},
         {field: 'reception_date', headerName: 'Data Receptie', flex: 2},
         {field: 'totalNoVat', headerName: 'Total Fara TVA - RON', flex: 2.5},

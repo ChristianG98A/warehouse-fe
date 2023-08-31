@@ -82,7 +82,7 @@ const CloseInvoiceButton = () => {
 
                 onClick={() => {
                     console.log(state?.currentInvoice)
-                    if (state?.currentInvoice[0] != 0) {
+                    if (state?.selectionModel) {
                         dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: true})
                     }
                     else {

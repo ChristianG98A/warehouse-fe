@@ -8,7 +8,7 @@ export const StateContext = createContext<any>([null, null])
 
 export default function ContextProvider({children}:{children:React.ReactNode}) {
     const [state, dispatch] = useReducer(reducer, {
-        currentInvoice: [0],
+        currentInvoice: [],
         deletePrompt: false,
         addToStockPrompt: false,
         orders: [],

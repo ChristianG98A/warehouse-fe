@@ -16,7 +16,6 @@ const CustomToolbar = () => {
             >
                 Adauga Produse
             </Button>
-
         </div>
     );
 }

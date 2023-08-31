@@ -69,6 +69,7 @@ const ProviderOrders = () => {
         return null;
     }
 
+    useEffect(()=>console.log("selection model: ", state.selectionModel),[state.selectionModel])
     useEffect(() => {
         //console.log("this is the context api state:\n", state);
         console.log('initial datafetch')
@@ -147,6 +148,7 @@ const ProviderOrders = () => {
                     pageSizeOptions={[10, 25, 50]}
                     onRowSelectionModelChange={(newRowSelectionModel) => {
                         dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
+                        dispatch({type:"SET_SELECTION_MODEL", payload:newRowSelectionModel})
                     }}
                     rowSelectionModel={state.selectionModel}
                     autoPageSize={false}
@@ -287,7 +289,7 @@ const ProviderOrders = () => {
                     onClose={() => dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})}
                     aria-labelledby="add-to-stock-modal"
                 >
-                    <DialogTitle id="add-to-stock-modal">{"Inchidere N.I.R. nr. " + currentInvoice + "?"}</DialogTitle>
+                    <DialogTitle id="add-to-stock-modal">{"Inchidere N.I.R. nr. " + state?.selectionModel?? "alege comanda" + "?"}</DialogTitle>
 
                     <DialogActions sx={{justifyContent: "center"}}>
                         <Button onClick={()=>{
@@ -295,8 +297,10 @@ const ProviderOrders = () => {
                                 invoice_id: state?.currentInvoice[0],
                                 warehouse_id: 89
                             }).then((r: any) => {
-                                dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "N.I.R. inchis cu succes!", type: "success"}})
-                                dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})
+                                callNextApi("POST", "purchase/lockInvoice", {invoice_id: state?.currentInvoice[0]}).then(r => {
+                                    dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "N.I.R. inchis cu succes!", type: "success"}})
+                                    dispatch({type: "SET_ADDTOSTOCK_PROMPT", payload: false})
+                                })
                             },
                                 (e) => dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Eroare server!", type: "error"}}))
 
