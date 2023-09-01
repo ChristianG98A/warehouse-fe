@@ -19,3 +19,27 @@ export type TransferProductSelection = {
     product_name: string;
     quantity: number;
 }
+
+export type TransferProductInList = {
+    row_id: string;
+    product_id: string;
+    product_name: string;
+    total_quantity: string;
+    picked_quantity: string;
+    not_picked_quantity: number;
+}
+
+export type TransferData = {
+    id: string;
+    old_warehouse: string;
+    new_warehouse: string;
+     old_warehouse_name: string;
+        new_warehouse_name: string;
+        confirmed: null | "1",
+        reception_date: null | "1",
+        status: "new" | string,
+        locked: null | "1",
+        transferProducts: {
+            products: number; //????????????????/
+        }
+}

@@ -53,8 +53,9 @@ const EditButton = () => {
                 startIcon={<EditNoteIcon />}
 
                 onClick={() => {
-                    if (state?.currentInvoice) {
+                    if (state?.currentInvoice.length !==0) {
                         router.push(`/achizitii/comenzi_furnizori/editare_nir/${state.currentInvoice}`)
+
                     }
                     else {
                         dispatch({type: "SET_SNACKBAR", payload: {state: true, message: "Selecteaza o comanda!", type: "error"}})

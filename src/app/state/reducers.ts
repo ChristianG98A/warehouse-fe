@@ -84,6 +84,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_TRANSFERS':
             return {...state, transfers:action.payload}
 
+        case 'SET_TRANSFER_PRODUCT_RESULT':
+            return {...state, transferProductResult:action.payload}
+
         case 'SET_SNACKBAR':
             return {...state, snackBar:action.payload}
 

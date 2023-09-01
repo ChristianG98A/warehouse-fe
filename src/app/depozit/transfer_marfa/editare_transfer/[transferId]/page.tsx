@@ -2,14 +2,18 @@
 
 import {editInvoiceReducer} from "@/app/achizitii/comenzi_furnizori/editare_nir/editInvoiceState";
 import {StateContext} from "@/app/state/context";
-import {Action, State} from "@/model/appstate/AppStateTypes";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Box, Button, colors, Divider, Grid, Snackbar, TextField, Typography} from "@mui/material";
+import {Action, State} from "@/model/appstate/AppStateTypes";
+import {TransferData, TransferProductInList} from "@/model/transfers/TransferTypes";
+import {TabContext, TabList, TabPanel} from "@mui/lab";
+import {Alert, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, colors, Divider, Grid, Paper, Snackbar, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography} from "@mui/material";
 import {DataGrid} from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import {useRouter} from "next/navigation";
 import {useContext, useEffect, useReducer, useState} from "react";
+import BoxCard from "./BoxCard";
+import TransferProductResultColumns from "./TransferProductResultColumns";
 
 
 const disabledButtonStyle = {
@@ -19,12 +23,12 @@ const disabledButtonStyle = {
 }
 
 
-const TransferEdit = ({ params } : { params: { transferId: string } }) => {
+const TransferEdit = ({params}: {params: {transferId: string}}) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
-    const [invoiceDetails, setInvoiceDetails]=useState<{invoiceSeries:string, invoiceNumber:number, date:Date}>()
+    const [transferProductsList, setTransferProductsList] = useState<TransferProductInList[]>();
+    const [invoiceDetails, setInvoiceDetails] = useState<{invoiceSeries: string, invoiceNumber: number, date: Date}>()
     const [productCart, setProductCart] = useState(false);
-    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const debounce = require('lodash.debounce');
@@ -34,6 +38,7 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
         pageSize: 10,
         page: 0
     })
+    const [transferData, setTransferData] = useState<TransferData>();
     const transferId = parseInt(params.transferId)
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -49,6 +54,7 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
         //console.log("New row data: ", data, index)
         dispatch({type: "SET_PRODUCT_BASKET", payload: data})
     }
+    const handleTabChange = (event: React.SyntheticEvent, newValue: string) => setTab(newValue);
 
     const handleSubmitProducts = async () => {
         setLoading(true)
@@ -71,7 +77,7 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
                     setLoading(false)
                     //getInvoiceProducts(invoiceId).then(r => setLoading(false))
                     //setProductCart(false)
-                    dispatch({type:"RESET_TRANSFER_PRODUCT_SELECTION"})
+                    dispatch({type: "RESET_TRANSFER_PRODUCT_SELECTION"})
                     setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
                 }
             )
@@ -84,17 +90,17 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
 
             await callNextApi("POST", "transfers/searchProduct", {
                 searchterm: input,
-                //??????old_warehouse_id: state.currentTransfer.,
+                old_warehouse_id: transferData?.old_warehouse,
             })
                 .catch(e => console.log("Error searching for product: ", e))
                 .then((r: any) => {
-                    console.log(r.response)
+                    console.log(r?.response)
                     let id_key = 1
-                    const result = r.response.map((product: {id: string, name: string, model: string}) => ({crt: id_key++, ...product}))
+                    const result = r?.response.map((product: {id: string, name: string, model: string}) => ({crt: id_key++, ...product}))
                     console.log("resuuult:\n", result);
+
                     dispatch({type: "SET_TRANSFER_PRODUCT_RESULT", payload: result})
-                    setLoading(false)
-                })
+                }).finally(() => setLoading(false))
         }
     }, 1000)
 
@@ -122,16 +128,36 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
             })
     }
 
+    const getTransferProductList = async () => {
+        await callNextApi("POST", "transfers/getTransferProductsList", {transfer_id: transferId})
+            .then(r => {
+                setTransferProductsList(r?.response)
+            })
+    }
+
+    const getTransfer = async () => {
+        await callNextApi("POST", "transfers/getTransfer", {transfer_id: transferId})
+            .then(r => {
+                console.log('the result is:', r)
+                setTransferData(r.response)
+            })
+    }
+
+    useEffect(() => console.log('baam', state?.transferProductResult), [state.transferProductResult])
+
+    //initial data fetch
     useEffect(() => {
         setLoading(true)
-        if (!transferId) {
-            router.push('/receptie_marfa/comenzi_furnizori')
-        } else {
-            setLoading(false);
-            //getInvoiceProducts(invoiceId).then(r => setLoading(false))
-            //getInvoiceDetails(invoiceId)
-        }
+        getTransfer().then(r => {
+            getTransferProductList();
+        })
+            .finally(() => setLoading(false))
+
     }, [])
+
+    //tab switch data fetch
+    useEffect(() => {
+    }, [tab])
 
 
 
@@ -155,83 +181,139 @@ const TransferEdit = ({ params } : { params: { transferId: string } }) => {
                     },
                 ]}
             />
-
-
+            <TabContext value={tab}>
+                <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
+                    <TabList onChange={handleTabChange} aria-label="lab API tabs example">
+                        <Tab label="Produse" value="products" />
+                        <Tab label="Picking" value="picking" />
+                        <Tab label="Packing" value="packing" />
+                    </TabList>
+                </Box>
+                <TabPanel value="products">
                     <Box sx={{
                         bgcolor: 'background.paper',
                         boxShadow: 14,
                         p: 4,
                     }}>
-                    <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
-                        Alege produse
-                    </Typography>
-                    <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flexDirection={"column"} sx={{mt: 5}}>
-                        <Grid item xs={10} sm={10} md={10} lg={10} xl={10} >
-                            <TextField
-                                sx={{width: '30rem'}}
-                                onChange={handleSearch}
-                                label={'Denumire / SKU / ID'}
-                            />
-                        </ Grid>
+                        <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
+                            Alege produse
+                        </Typography>
+                        <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flexDirection={"column"} sx={{mt: 5}}>
+                            <Grid item xs={10} sm={10} md={10} lg={10} xl={10} >
+                                <TextField
+                                    sx={{width: '30rem'}}
+                                    onChange={handleSearch}
+                                    label={'Denumire / SKU / ID'}
+                                />
+                            </ Grid>
 
-                        <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{width: "80%"}}>
-                            <DataGrid
-                                //getRowId={(row) => row.id}
-                                rowSelection={true}
-                                columnHeaderHeight={60}
-                                checkboxSelection
-                                rows={state?.transferProductResult ?? []}
-                                pageSizeOptions={[10, 25, 50]}
-                                initialState={{pagination: {paginationModel: paginationModel}}}
-                                onPaginationModelChange={setPaginationModel}
-                                onRowSelectionModelChange={(newRowSelectionModel) => {
-                                    setSelectionModel(newRowSelectionModel)
-                                }}
-                                columns={[
-                                    {field: 'crt', headerName: 'Crt', flex: 1},
-                                    {field: 'id', headerName: 'ID Produs', flex: 1},
-                                    {field: 'name', headerName: 'Denumire Produs', flex: 4},
-                                    {field: 'model', headerName: 'Model', flex: 4},
-                                    {field: 'available_quantity', headerName: 'Cantitate Disponibila', flex: 4},
-                                    {field: 'warehouse_name', headerName: 'Depozit', flex: 4},
-
-                                ]}
-                                rowSelectionModel={selectionModel}
-                                autoPageSize={false}
-                                loading={loading}
-                                sx={{minHeight: "30vh", maxHeight: "50vh"}}
-                            />
-                        </ Grid>
+                            <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{width: "80%"}}>
+                                <DataGrid
+                                    getRowId={(row) => row.id}
+                                    rowSelection={true}
+                                    columnHeaderHeight={60}
+                                    checkboxSelection
+                                    rows={state?.transferProductResult ?? []}
+                                    pageSizeOptions={[10, 25, 50]}
+                                    initialState={{pagination: {paginationModel: paginationModel}}}
+                                    onPaginationModelChange={setPaginationModel}
+                                    onRowSelectionModelChange={(newRowSelectionModel) => {
+                                        setSelectionModel(newRowSelectionModel)
+                                    }}
+                                    columns={TransferProductResultColumns()}
+                                    rowSelectionModel={selectionModel}
+                                    autoPageSize={false}
+                                    loading={loading}
+                                    sx={{minHeight: "30vh", maxHeight: "50vh"}}
+                                />
+                            </ Grid>
 
 
-                        <Grid item xs={10} sm={10} md={10} lg={10} xl={10} alignItems={"center"} justifyItems={"center"} justifyContent={"center"} >
-                            <Divider sx={{mt: 3, mb: 3}} />
-                            <Button disabled={selectionModel?.length == 0} variant="contained" onClick={() => {
-                                setSnackBar({message: "Produse adaugate in cos!", type: 'success', state: true})
-                                selectionModel?.forEach((itemSelected: any) => {
-                                    const checkIfProductIsInSelection = (id: any) => {
-                                        return state.transferProductSelection.some((selectedProduct: any) => selectedProduct.product_id == id)
-                                    }
-                                    console.log("is product in selection?", checkIfProductIsInSelection);
-                                    try {
-                                        if (!checkIfProductIsInSelection(itemSelected)) {
-                                           // dispatch({
-                                           //     type: "SET_TRANSFER_PRODUCT_SELECTION",
-                                           //     payload: state.productResult.find((productObject: any) => productObject.id == itemSelected)
-                                           // })
+                            <Grid item xs={10} sm={10} md={10} lg={10} xl={10} alignItems={"center"} justifyItems={"center"} justifyContent={"center"} >
+                                <Divider sx={{mt: 3, mb: 3}} />
+                                <Button disabled={selectionModel?.length == 0} variant="contained" onClick={() => {
+                                    setSnackBar({message: "Produse adaugate in cos!", type: 'success', state: true})
+                                    selectionModel?.forEach((itemSelected: any) => {
+                                        const checkIfProductIsInSelection = (id: any) => {
+                                            return state.transferProductSelection.some((selectedProduct: any) => selectedProduct.product_id == id)
                                         }
-                                    } catch (error) {console.log("Error in adding products to invoice!", error)}
-                                })
-                                setSelectionModel([])
-                            }} sx={{width: "10rem"}}>
-                                Adauga
-                            </Button>
-                            <Button variant="contained" sx={{ml: 5}} onClick={() => dispatch({type: "SET_PRODUCT_BASKET_MODAL", payload: false})}>
-                                Inchide
-                            </Button>
+                                        console.log("is product in selection?", checkIfProductIsInSelection(itemSelected));
+                                        try {
+                                            if (!checkIfProductIsInSelection(itemSelected)) {
+                                                console.log('item selected', itemSelected);
+                                                 dispatch({
+                                                     type: "SET_TRANSFER_PRODUCT_SELECTION",
+                                                     payload: state.productResult.find((productObject: any) => productObject.id == itemSelected)
+                                                 })
+                                            }
+                                        } catch (error) {console.log("Error in adding products to invoice!", error)}
+                                    })
+                                    setSelectionModel([])
+                                }} sx={{width: "10rem"}}>
+                                    Adauga
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </TabPanel>
+
+
+                <TabPanel value="picking">
+                    <TableContainer component={Paper}>
+                        <Table sx={{minWidth: 450}} aria-label="invoice data table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align="center">Row ID</TableCell>
+                                    <TableCell align="center">Product ID</TableCell>
+                                    <TableCell align="center">Name</TableCell>
+                                    <TableCell align="center">Total</TableCell>
+                                    <TableCell align="center">Picked</TableCell>
+                                    <TableCell align="center">Not Picked</TableCell>
+                                </TableRow>
+                            </TableHead>
+
+                            <TableBody>
+                                {transferProductsList?.map(product=>(
+                                    <>
+                                        <TableRow key={product.row_id}>
+                                            <TableCell component="th" scope="row" align="center">{product.row_id}</TableCell>
+                                            <TableCell component="th" scope="row" align="center">{product.product_id}</TableCell>
+                                            <TableCell component="th" scope="row" align="center">{product.product_name}</TableCell>
+                                            <TableCell component="th" scope="row" align="center">{product.total_quantity}</TableCell>
+                                            <TableCell component="th" scope="row" align="center">{product.picked_quantity}</TableCell>
+                                            <TableCell component="th" scope="row" align="center">{product.not_picked_quantity}</TableCell>
+                                        </TableRow>
+                                    </>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </TabPanel>
+
+
+                <TabPanel value="packing">
+
+                    <Grid container component={Paper} elevation={5} sx={{justifyContent: "center", minHeight: "40rem"}}>
+                        <Grid item xs={4}>
+                            <Grid container >
+                                <Grid item xs={12}>
+                                    <BoxCard title={'Box 1'} />
+                                    <BoxCard title={'Box 1'} />
+                                </Grid>
+                                <div style={{marginTop: '40rem'}} />
+                                <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}}><Button variant={'outlined'} >Add box</Button></Grid>
+                                <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}} ><Button variant={'outlined'} >Remove box</Button></Grid>
+                            </Grid>
+                        </Grid>
+
+                        <Grid item xs={8}>
+                            <DataGrid columns={[]} rows={[]} />
                         </Grid>
                     </Grid>
-                    </Box>
+                </TabPanel>
+            </TabContext>
+
+
 
 
             <Snackbar

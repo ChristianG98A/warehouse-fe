@@ -9,7 +9,7 @@ export const callNextApi = async (method:"GET"|"POST"|"PATCH"|"UPDATE"|"DELETE",
     //const jwt = getLocalAuthToken()?.jwtToken;
     const url = "/api/" + endpoint;
 
-    //console.log("This is the body that gets in nextApiCaller:\n", body)
+    console.log("This is the body that gets in nextApiCaller:\n", body)
 
     try {
         const response = await fetch(url, {
@@ -22,7 +22,7 @@ export const callNextApi = async (method:"GET"|"POST"|"PATCH"|"UPDATE"|"DELETE",
         }).then(
         r=>{
             console.log("Response in next api:\n", r)
-            console.log("Body: ", r?.body)
+            console.log(r?.body)
             return r;
         }
         );

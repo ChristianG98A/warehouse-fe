@@ -21,6 +21,7 @@ export default function ContextProvider({children}:{children:React.ReactNode}) {
         newTransferModal: false,
         transferProductSelection: [],
         wholesaleOffset:300,
+        transferProductResult: [],
     })
 
 

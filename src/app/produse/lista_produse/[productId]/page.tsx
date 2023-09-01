@@ -32,7 +32,10 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                 <Grid item xs={12}>
                     <Typography textAlign={'center'} variant={"h5"} fontWeight={800} gutterBottom >Nume produs aici!</Typography>
                 </Grid>
-                <Grid item xs={8}>
+
+
+                <Grid item xs={12} sm={8}>
+                    <Grid container>
                     <Grid item xs={12} >
                         <Card>
                             <CardHeader
@@ -72,10 +75,12 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                             </CardContent>
                         </Card>
                     </Grid>
-
+                    </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                    <Grid container>
+
+
+                <Grid item xs={12} sm={4} >
+                    <Grid container flexDirection={'column'} gap={4}>
                         <Grid item xs={12}>
                             <Card>
                                 <CardHeader
