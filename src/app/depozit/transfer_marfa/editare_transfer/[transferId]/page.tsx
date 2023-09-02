@@ -47,7 +47,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
         if (reason === 'clickaway') {
             return;
         }
-        setSnackBar({...snackBar, state: false})
+        dispatch({type:"SET_SNACKBAR", payload:{...state.snackBar, state:false}})
     };
 
     const handleRowUpdate = (data: any) => {
