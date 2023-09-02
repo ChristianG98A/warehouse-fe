@@ -138,7 +138,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
     const getBoxes = async () => {
         await callNextApi("POST", "pickpack/getBoxes", {transfer_id: transferId})
             .then(r => {
-                setBoxes(r.response)
+                setBoxes(r?.response)
             })
     }
 
@@ -158,7 +158,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
     let eanCode= ""
     const resetInput = debounce(()=>eanCode="", 300)
     const handleKeydown = (event:any)=>{
-            if (event.key === 'Enter') {
+            if (event.key === "Enter" && eanCode?.length==13) {
                 event.preventDefault();
                 console.log('submitting ', eanCode)
                 eanCode=""
@@ -181,6 +181,10 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
             getBoxes()
         })
             .finally(() => setLoading(false))
+        return () => {
+            console.log('unmounting!')
+            document.removeEventListener('keydown', handleKeydown);
+        }
 
     }, [])
 
