@@ -185,6 +185,7 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
         if (!invoiceId) {
             router.push('/receptie_marfa/comenzi_furnizori')
         } else {
+            dispatch({type:'RESET_PRODUCT_BASKET'})
             setLoading(false);
             getInvoiceProducts(invoiceId).then(r => setLoading(false))
             getInvoiceDetails(invoiceId)

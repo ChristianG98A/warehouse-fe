@@ -55,22 +55,21 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'RESET_PRODUCT_BASKET':
             return {...state, productBasket:[]}
 
-        case 'SET_TRANSFER_PRODUCT_SELECTION':
-            const transferIndex = findIndexByObjectId(state.productBasket, action.payload.id)
+        case 'SET_TRANSFER_PRODUCT_BASKET':
+            const transferIndex = findIndexByObjectId(state.transferProductBasket, action.payload.id)
 
             if (transferIndex !==-1) {
-                return {...state, productBasket: state.productBasket.map((item:any, i:any)=> i === index ? action.payload : item)}
+                return {...state, transferProductBasket: state.transferProductBasket.map((item:any, i:any)=> i === index ? action.payload : item)}
             }
 
             else {
                 return {
                     ...state,
-                    transferProductSelection: [...state.transferProductSelection, action.payload],
+                    transferProductBasket: [...state.transferProductBasket, action.payload],
                 };
         }
-
-        case 'RESET_TRANSFER_PRODUCT_SELECTION':
-            return {...state, transferProductSelection:[]}
+        case 'RESET_TRANSFER_PRODUCT_BASKET':
+            return {...state, transferProductBasket:[]}
 
         case 'SET_RECEPTIONS':
             return {...state, receptions:action.payload}

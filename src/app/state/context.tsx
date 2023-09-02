@@ -19,8 +19,8 @@ export default function ContextProvider({children}:{children:React.ReactNode}) {
         receptionInventory: [],
         newInvoiceModal: false,
         newTransferModal: false,
-        transferProductSelection: [],
         wholesaleOffset:300,
+        transferProductBasket:[],
         transferProductResult: [],
     })
 

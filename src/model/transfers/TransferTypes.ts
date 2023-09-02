@@ -14,10 +14,13 @@ export type TransferProduct = {
     warehouse_name: string;
 }
 
-export type TransferProductSelection = {
-    product_id: number;
+export type TransferProductInBasket = {
+    row_id: string;
+    product_id: string;
     product_name: string;
-    quantity: number;
+    total_quantity: string;
+    picked_quantity: string;
+    not_picked_quantity: number;
 }
 
 export type TransferProductInList = {

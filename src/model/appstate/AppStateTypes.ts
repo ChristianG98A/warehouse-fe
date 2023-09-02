@@ -1,6 +1,6 @@
 import {GridRowSelectionModel} from "@mui/x-data-grid";
 import {AllOrdersApiResponse, OrderTypes, ProductInBasket, ProductResult} from "@/model/orders/OrderTypes";
-import {Transfer, TransferProduct} from "@/model/transfers/TransferTypes";
+import {Transfer, TransferProduct, TransferProductInBasket} from "@/model/transfers/TransferTypes";
 import {Warehouse, WarehouseTransferOptions} from "@/model/warehouse/WarehouseTypes";
 import {ReceptionInventoryProduct, ReceptionItem} from "@/model/receptions/ReceptionTypes";
 import {Invoice, Supplier} from "@/model/invoices/invoiceTypes";
@@ -31,7 +31,7 @@ export interface State {
     transferProductResult: TransferProduct[];
     currentOrder: number;
     addToStockPrompt:boolean;
-    transferProductSelection:ProductInBasket[];
+    transferProductBasket:TransferProductInBasket[];
     wholesaleOffset:number;
 }
 
@@ -121,11 +121,11 @@ export type ActionTypes =
         payload: boolean;
     } |
     {
-        type: "SET_TRANSFER_PRODUCT_SELECTION";
-        payload: boolean;
+        type: "SET_TRANSFER_PRODUCT_BASKET";
+        payload: any;
     } |
     {
-        type: "RESET_TRANSFER_PRODUCT_SELECTION";
+        type: "RESET_TRANSFER_PRODUCT_BASKET";
     } |
     {
         type: "SET_NEW_TRANSFER_MODAL";
