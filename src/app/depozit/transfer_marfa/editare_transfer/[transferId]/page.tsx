@@ -52,9 +52,9 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
 
     const handleRowUpdate = (data: any) => {
         //console.log("This goes into product basket! :", data)
-        const index = state?.productBasket?.findIndex((item: any) => item.id === data.id);
+        const index = state?.transferProductBasket?.findIndex((item: any) => item.id === data.id);
         //console.log("New row data: ", data, index)
-        dispatch({type: "SET_PRODUCT_BASKET", payload: data})
+        dispatch({type: "SET_TRANSFER_PRODUCT_BASKET", payload: data})
     }
     const handleTabChange = (event: React.SyntheticEvent, newValue: string) => setTab(newValue);
 
@@ -64,9 +64,9 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
             transfer_id: transferId,
             products: state?.transferProductBasket?.map((product: any) => {
                 return ({
-                    "product_id": parseInt(product.id),
-                    "product_name": product.name,
-                    "quantity": product.quantity ?? 0,
+                    product_id: parseInt(product.id),
+                    product_name: product.product_name,
+                    quantity: typeof(product.total_quantity) == 'string' ?parseInt(product.total_quantity): product.total_quantity,
                 })
             }),
         })
@@ -79,8 +79,9 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                     setLoading(false)
                     //getInvoiceProducts(invoiceId).then(r => setLoading(false))
                     //setProductCart(false)
-                    dispatch({type: "RESET_TRANSFER_PRODUCT_BASKET"})
-                    setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true})
+                    dispatch({type: "RESET_TRANSFER_PRODUCT_BASKET"});
+                    getTransferProductList();
+                    setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true});
                 }
             )
     }
@@ -106,36 +107,12 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
         }
     }, 1000)
 
-    const getInvoiceProducts = async (invoiceId: number) => {
-        setLoading(true)
-        dispatch({type: "RESET_PRODUCT_BASKET"})
-        await callNextApi("POST", "purchase/getInvoicePList", {invoice_id: invoiceId})
-            .catch(e => console.log("Error in fetching invoice products: ", e))
-            .then((r: any) => {
-                //console.log('products in invoice: \n', r?.response)
-                r.response.forEach((productResult: any) => {
-
-                    dispatch({
-                        type: "SET_PRODUCT_BASKET", payload: {
-                            id: parseInt(productResult.product_id),
-                            name: productResult.product_name,
-                            acquisition_price: productResult.acquisition_price,
-                            quantity: productResult.quantity,
-                            tax: productResult.tax,
-                            row_id: productResult.row_id,
-                        }
-                    })
-                })
-                setLoading(false)
-            })
-    }
-
     const getTransferProductList = async () => {
         await callNextApi("POST", "transfers/getTransferProductsList", {transfer_id: transferId})
             .then(r => {
                 console.log('transfer products:', r?.response)
+                setTransferProductsList(r?.response)
                 r?.response?.forEach((productResult: TransferProductInList) => {
-
                     dispatch({
                         type: "SET_TRANSFER_PRODUCT_BASKET",
                         payload: {
@@ -253,7 +230,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                             </ Grid>
 
                             <Grid item xs={10} sm={10} md={10} lg={10} xl={10} >
-                                <Button disabled={state.productBasket.length == 0} variant="contained" sx={{mt: 2}} onClick={handleSubmitProducts}>
+                                <Button disabled={state.transferProductBasket.length == 0} variant="contained" sx={{mt: 2}} onClick={handleSubmitProducts}>
                                     Salveaza
                                 </Button>
                             </Grid>

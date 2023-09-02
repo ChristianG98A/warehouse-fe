@@ -59,7 +59,7 @@ export const reducer = (state: State|any, action: Action|any) => {
             const transferIndex = findIndexByObjectId(state.transferProductBasket, action.payload.id)
 
             if (transferIndex !==-1) {
-                return {...state, transferProductBasket: state.transferProductBasket.map((item:any, i:any)=> i === index ? action.payload : item)}
+                return {...state, transferProductBasket: state.transferProductBasket.map((item:any, i:any)=> i === transferIndex ? action.payload : item)}
             }
 
             else {
