@@ -154,8 +154,6 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
             resetInput()
     }
     useEffect(() => {
-        eanTextFieldRef.current.addEventListener('focus', ()=>setIsEanFieldFocused(true))
-        eanTextFieldRef.current.addEventListener('blur', ()=>setIsEanFieldFocused(false))
         document.addEventListener('keydown', handleKeydown);
         setLoading(true)
         if (!invoiceId) {
@@ -164,6 +162,10 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
             setLoading(false);
             getReceptionProducts(invoiceId).then(r => setLoading(false))
         }
+        return () => {
+            console.log('unmounting!')
+            document.removeEventListener('keydown', handleKeydown);
+        };
     }, [])
 
    // useEffect(() => {
