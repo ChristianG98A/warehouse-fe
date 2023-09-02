@@ -15,6 +15,7 @@ import {DataGrid} from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import {useRouter} from "next/navigation";
 import {useContext, useEffect, useMemo, useReducer, useState} from "react";
+import useScanDetection from "use-scan-detection";
 import BoxCard from "./BoxCard";
 import TransferProductResultColumns from "./TransferProductResultColumns";
 
@@ -40,6 +41,8 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
     })
     const [transferData, setTransferData] = useState<TransferData>();
     const [boxes, setBoxes] = useState<PickingBox[]>();
+    const [ean, setEan] = useState("");
+
 
     const transferId = parseInt(params.transferId)
 
@@ -152,12 +155,26 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                 getBoxes();
             })
         }
+    let eanCode= ""
+    const resetInput = debounce(()=>eanCode="", 300)
+    const handleKeydown = (event:any)=>{
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                console.log('submitting ', eanCode)
+                eanCode=""
+            } else {
+                eanCode+= event.key
+                console.log(eanCode)
+            }
+            resetInput()
+        }
 
     useEffect(() => console.log('Transfer products basket', state?.transferProductBasket), [state.transferProductBasket])
-
+    useEffect(() => console.log("ean:", ean), [ean])
     //initial data fetch
     useEffect(() => {
         setLoading(true)
+        document.addEventListener('keydown', handleKeydown);
         dispatch({type:'RESET_TRANSFER_PRODUCT_BASKET'})
         getTransfer().then(r => {
             getTransferProductList()

@@ -16,9 +16,11 @@ import {ChangeEvent, useContext, useEffect, useMemo, useReducer, useRef, useStat
 const OrderReception = ({params}: {params: {invoiceId: string}}) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext);
     const [editable, setEditable] = useState(true);
+    const [isEanFieldFocused, setIsEanFieldFocused] = useState(false);
     const [currentEAN, setCurrentEAN] = useState("");
     const [receptionCartModal, setReceptionCartModal] = useState(false);
     const router = useRouter();
+    const debounce = require('lodash.debounce');
     const [loading, setLoading] = useState(false);
     const [needConfirmation, setNeedConfirmaton] = useState(false);
     const [selectionModel, setSelectionModel] = useState<any>([0])
@@ -105,7 +107,7 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
             .finally(() => {
                 setEditable(true);
                 //setCurrentEAN("")
-                eanTextFieldRef.current.focus();
+                //eanTextFieldRef.current.focus();
                 if(confirmModal){
                         setConfirmModal(false)
                         setConfirmedQuantity("1")
@@ -130,7 +132,31 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
     }
 
 
+    let eanCode = ""
+    const resetInput = debounce(() => eanCode = "", 300)
+
+    const handleKeydown = async (event: any) => {
+            if (event.key === "Enter" && eanCode?.length==13) {
+                event.preventDefault();
+                const payload = {
+                    ean_code: eanCode,
+                    invoice_in_id: invoiceId,
+                    total_count_to_add_in_stock: parseInt(confirmedQuantity),
+                }
+                console.log('the payload', payload)
+                await addProductToInventory(payload)
+                    .finally(() => eanCode = "")
+            }
+            else{
+                eanCode += event.key
+                console.log(eanCode)
+            }
+            resetInput()
+    }
     useEffect(() => {
+        eanTextFieldRef.current.addEventListener('focus', ()=>setIsEanFieldFocused(true))
+        eanTextFieldRef.current.addEventListener('blur', ()=>setIsEanFieldFocused(false))
+        document.addEventListener('keydown', handleKeydown);
         setLoading(true)
         if (!invoiceId) {
             router.push('/depozit/receptie_marfa')
@@ -140,9 +166,13 @@ const OrderReception = ({params}: {params: {invoiceId: string}}) => {
         }
     }, [])
 
+   // useEffect(() => {
+   //     eanTextFieldRef.current.focus()
+   // }, [editable, eanTextFieldRef])
     useEffect(() => {
-        eanTextFieldRef.current.focus()
-    }, [editable, eanTextFieldRef])
+        console.log('so the ean is focused?', isEanFieldFocused)
+    }, [isEanFieldFocused])
+
 
 
 
