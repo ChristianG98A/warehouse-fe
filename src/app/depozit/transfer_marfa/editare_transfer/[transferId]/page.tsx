@@ -6,6 +6,7 @@ import CustomToolbar from "@/components/common/CustomToolbar";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Action, State} from "@/model/appstate/AppStateTypes";
+import {PickingBox} from "@/model/pickpack/PickpackTypes";
 import {TransferData, TransferProductInBasket, TransferProductInList} from "@/model/transfers/TransferTypes";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {Alert, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, colors, Divider, Drawer, Grid, Paper, Snackbar, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography} from "@mui/material";
@@ -29,18 +30,17 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
     const [transferProductsList, setTransferProductsList] = useState<TransferProductInList[]>();
-    const [invoiceDetails, setInvoiceDetails] = useState<{invoiceSeries: string, invoiceNumber: number, date: Date}>()
-    const [productCart, setProductCart] = useState(false);
     const [loading, setLoading] = useState(false);
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const debounce = require('lodash.debounce');
     const [selectionModel, setSelectionModel] = useState<any>([0])
-    const [editInvoiceState, editInvoiceDispatch] = useReducer(editInvoiceReducer, {})
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
     })
     const [transferData, setTransferData] = useState<TransferData>();
+    const [boxes, setBoxes] = useState<PickingBox[]>();
+
     const transferId = parseInt(params.transferId)
 
     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -132,6 +132,14 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
             })
     }
 
+    const getBoxes = async () => {
+        await callNextApi("POST", "pickpack/getBoxes", {transfer_id: transferId})
+            .then(r => {
+                setBoxes(r.response)
+            })
+    }
+
+
     useEffect(() => console.log('Transfer products basket', state?.transferProductBasket), [state.transferProductBasket])
 
     //initial data fetch
@@ -140,6 +148,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
         dispatch({type:'RESET_TRANSFER_PRODUCT_BASKET'})
         getTransfer().then(r => {
             getTransferProductList()
+            getBoxes()
         })
             .finally(() => setLoading(false))
 
@@ -270,14 +279,16 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                 </TabPanel>
 
 
-                <TabPanel value="packing">
 
+
+
+
+                <TabPanel value="packing">
                     <Grid container component={Paper} elevation={5} sx={{justifyContent: "center", minHeight: "40rem"}}>
                         <Grid item xs={4}>
                             <Grid container >
                                 <Grid item xs={12}>
-                                    <BoxCard title={'Box 1'} />
-                                    <BoxCard title={'Box 1'} />
+                                {boxes?.map(box=><BoxCard key={box.id} title={`Box ${box.id}`} />)}
                                 </Grid>
                                 <div style={{marginTop: '40rem'}} />
                                 <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}}><Button variant={'outlined'} >Add box</Button></Grid>
@@ -291,6 +302,9 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                     </Grid>
                 </TabPanel>
             </TabContext>
+
+
+
 
             <Drawer
                 anchor={"top"}
