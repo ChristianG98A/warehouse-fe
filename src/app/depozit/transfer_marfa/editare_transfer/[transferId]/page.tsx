@@ -139,6 +139,19 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
             })
     }
 
+    const addBox = async () => {
+        await callNextApi("POST", "pickpack/addBox", {transfer_id: transferId})
+            .then(r => {
+                getBoxes();
+            })
+    }
+    const deleteBox = async ()=>{
+        await callNextApi("POST", "pickpack/deleteBox", {box_id: parseInt(state.selectedBox)})
+            .then(() => {
+                dispatch({type:"SET_SNACKBAR", payload:{type:'success', state:true, message:`Cutia ${state.selectedBox} stearsa cu succes`}})
+                getBoxes();
+            })
+        }
 
     useEffect(() => console.log('Transfer products basket', state?.transferProductBasket), [state.transferProductBasket])
 
@@ -154,9 +167,9 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
 
     }, [])
 
-    //tab switch data fetch
     useEffect(() => {
-    }, [tab])
+        console.log('cutie selectata', state.selectedBox);
+    }, [state.selectedBox])
 
 
 
@@ -288,11 +301,11 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                         <Grid item xs={4}>
                             <Grid container >
                                 <Grid item xs={12}>
-                                {boxes?.map(box=><BoxCard key={box.id} title={`Box ${box.id}`} />)}
+                                {boxes?.map(box=><BoxCard  onClick={()=>null} key={box.id} id={box.id} title={`Box ${box.id}`} />)}
                                 </Grid>
                                 <div style={{marginTop: '40rem'}} />
-                                <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}}><Button variant={'outlined'} >Add box</Button></Grid>
-                                <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}} ><Button variant={'outlined'} >Remove box</Button></Grid>
+                                <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}}><Button onClick={addBox} variant={'outlined'} >Add box</Button></Grid>
+                                <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}} ><Button onClick={deleteBox} variant={'outlined'} >Remove box</Button></Grid>
                             </Grid>
                         </Grid>
 

@@ -113,6 +113,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_ADDTOSTOCK_PROMPT':
             return {...state, addToStockPrompt:action.payload}
 
+        case 'SET_SELECTED_BOX':
+            return {...state, selectedBox:action.payload}
+
         case 'SET_WHOLESALE_OFFSET':
             return {...state, wholesaleOffset:action.payload}
 
