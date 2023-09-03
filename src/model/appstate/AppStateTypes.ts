@@ -4,6 +4,7 @@ import {Transfer, TransferProduct, TransferProductInBasket} from "@/model/transf
 import {Warehouse, WarehouseTransferOptions} from "@/model/warehouse/WarehouseTypes";
 import {ReceptionInventoryProduct, ReceptionItem} from "@/model/receptions/ReceptionTypes";
 import {Invoice, Supplier} from "@/model/invoices/invoiceTypes";
+import {ProductEditState} from "../products/ProductsTypes";
 
 export interface State {
     status?: string;
@@ -34,6 +35,7 @@ export interface State {
     transferProductBasket:TransferProductInBasket[];
     wholesaleOffset:number;
     selectedBox: string;
+    productEdit:ProductEditState;
 }
 
 export type SnackBarState = {
@@ -158,6 +160,22 @@ export type ActionTypes =
     } |
     {
         type: "SET_SELECTED_BOX";
+        payload: string;
+    } |
+    {
+        type: "SET_PRODUCT_EDIT";
+        payload: any;
+    } |
+    {
+        type: "SET_PRODUCT_EDIT_NAME";
+        payload: string;
+    } |
+    {
+        type: "SET_PRODUCT_EDIT_DESCRIPTION";
+        payload: string;
+    } |
+    {
+        type: "SET_PRODUCT_EDIT_MAN_NAME";
         payload: string;
     } |
     {

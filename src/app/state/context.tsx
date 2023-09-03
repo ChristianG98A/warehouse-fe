@@ -7,7 +7,7 @@ import { State, Action } from "@/model/appstate/AppStateTypes"
 export const StateContext = createContext<any>([null, null])
 
 export default function ContextProvider({children}:{children:React.ReactNode}) {
-    const [state, dispatch] = useReducer(reducer, {
+    const [state, dispatch]:[State, Action] = useReducer(reducer, {
         currentInvoice: [],
         deletePrompt: false,
         addToStockPrompt: false,
@@ -22,6 +22,11 @@ export default function ContextProvider({children}:{children:React.ReactNode}) {
         wholesaleOffset:300,
         transferProductBasket:[],
         transferProductResult: [],
+        productEdit: {
+            product_name:"",
+            man_name:"",
+            description:"",
+            }
     })
 
 

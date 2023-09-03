@@ -1,12 +1,41 @@
 'use client'
 
+import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
-import {Masonry} from "@mui/lab";
+import {callNextApi} from "@/helpers/apiMethods";
+import {Action, State} from "@/model/appstate/AppStateTypes";
 import {Box, Card, CardContent, CardHeader, FormControl, Grid, Paper, TextareaAutosize, TextField, Typography} from "@mui/material";
+import {useContext, useEffect, useReducer, useState} from "react";
 import StyledTextarea from "./StyledTextArea";
 
+
+
 const ProductPage = ({params}: {params: {productId: string}}) => {
+    const [productData, setProductData] = useState<any>();
+    const [state, dispatch]:[State, Action] = useContext(StateContext);
+
     const productId = parseInt(params.productId);
+
+    const getProductDetails = async () => {
+        await callNextApi("POST", "products/getProduct", {product_id: productId})
+            .catch((e:Error) => console.log("Error in fetching product data: ", e))
+            .then((r: any) => {
+                //setProductData(r?.response)
+                dispatch({
+                    type: "SET_PRODUCT_EDIT", payload: {
+                        product_name: r?.response.product[0].product_name,
+                        man_name: r?.response.product[0].man_name,
+                        description: r?.response.product[0].description,
+                    }
+                })
+            })
+    }
+
+
+    useEffect(()=>console.log("product data", state?.productEdit),[state?.productEdit]);
+    useEffect(()=>{
+            getProductDetails();
+        }, [])
 
     return (
         <>
@@ -46,6 +75,8 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                                 <FormControl sx={{width: '100%', p: 1}}>
                                     <TextField
                                         label="Nume"
+                                        value={state.productEdit?.product_name}
+                                        onChange={(e)=>dispatch({type:'SET_PRODUCT_EDIT_NAME', payload:e.target.value})}
                                     />
                                 </FormControl>
                                 <FormControl sx={{width: '100%', p: 1}}>
@@ -56,6 +87,8 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                                 <FormControl sx={{width: '100%', p: 1}}>
                                     <TextField
                                         label="Producator"
+                                        value={state.productEdit?.man_name}
+                                        onChange={(e)=>dispatch({type:'SET_PRODUCT_EDIT_MAN_NAME', payload:e.target.value})}
                                     />
                                 </FormControl>
                                 <FormControl sx={{width: '100%', p: 1}}>
@@ -65,11 +98,9 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                                 </FormControl>
                                 <FormControl sx={{width: '100%', height: '20rem', p: 1}}>
                                     <StyledTextarea
-                                        minRows={20}
-                                        aria-label="maximum height"
-                                        placeholder="Maximum 4 rows"
-                                        defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                                     ut labore et dolore magna aliqua."
+                                        minRows={30}
+                                        value={state.productEdit?.description}
+                                        onChange={(e)=>dispatch({type:'SET_PRODUCT_EDIT_DESCRIPTION', payload:e.target.value})}
                                     />
                                 </FormControl>
                             </CardContent>

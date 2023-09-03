@@ -119,6 +119,18 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_WHOLESALE_OFFSET':
             return {...state, wholesaleOffset:action.payload}
 
+        case 'SET_PRODUCT_EDIT':
+            return {...state, productEdit: action.payload}
+
+        case "SET_PRODUCT_EDIT_NAME":
+            return {...state, productEdit: {...state.productEdit, product_name:action.payload}}
+
+        case 'SET_PRODUCT_EDIT_MAN_NAME':
+            return {...state, productEdit: {...state.productEdit, man_name:action.payload}}
+
+        case 'SET_PRODUCT_EDIT_DESCRIPTION':
+            return {...state, productEdit: {...state.productEdit, description:action.payload}}
+
         default:
             return state
     }

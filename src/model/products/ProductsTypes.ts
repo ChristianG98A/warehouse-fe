@@ -24,3 +24,17 @@ export type ProductQueryAction =
         type: "SET_PRODUCT_BASKET_MODAL";
         payload: boolean;
     }
+
+export type ProductEanCode = {
+    product_id: string;
+    ean: string;
+}
+
+export type ProductEditState = {
+    product_name: string;
+    man_name: string;
+    description: string;
+    status: 'inactive' | string;
+    product_ean_codes: ProductEanCode[];
+}
+
