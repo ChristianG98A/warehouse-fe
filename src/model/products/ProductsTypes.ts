@@ -28,6 +28,7 @@ export type ProductQueryAction =
 export type ProductEanCode = {
     product_id: string;
     ean: string;
+    row_id: string;
 }
 
 export type ProductEditState = {

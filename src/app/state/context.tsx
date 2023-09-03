@@ -26,7 +26,7 @@ export default function ContextProvider({children}:{children:React.ReactNode}) {
             product_name:"",
             man_name:"",
             description:"",
-            product_eans:[],
+            product_ean_codes:[],
             }
     })
 

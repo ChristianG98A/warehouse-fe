@@ -27,8 +27,8 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
 
     };
 
-    const deleteEan = async (productId:string, ean:string) => {
-        await callNextApi("POST", "products/deleteEan", {})
+    const deleteEan = async (rowId:number) => {
+        await callNextApi("POST", "products/deleteEan", {row_id: rowId})
             .then((r: any) => {
                 dispatch({type:"SET_SNACKBAR", payload:{type:'success', message:'EAN sters cu succes', state:true}})
                 getProductDetails();
@@ -55,14 +55,16 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
             .catch((e: Error) => console.log("Error in fetching product data: ", e))
             .then((r: any) => {
                 //setProductData(r?.response)
-                dispatch({
-                    type: "SET_PRODUCT_EDIT", payload: {
-                        product_name: r?.response.product[0].product_name,
-                        man_name: r?.response.product[0].man_name,
-                        description: r?.response.product[0].description,
-                        product_ean_codes:r?.response?.product_ean_codes,
-                    }
-                })
+                try {
+                    dispatch({
+                        type: "SET_PRODUCT_EDIT", payload: {
+                            product_name: r?.response.product[0].product_name,
+                            man_name: r?.response.product[0].man_name,
+                            description: r?.response.product[0].description,
+                            product_ean_codes: r?.response?.product_ean_codes,
+                        }
+                    })
+                } catch (e) {console.log(e)}
             })
     }
 
@@ -160,11 +162,12 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                                 <Divider sx={{width: '40%'}} />
                                 <CardContent>
                                     <List>
-                                        {state?.productEdit?.product_ean_codes?.map((eanObject:ProductEanCode, i)=>(
+
+                                        {state?.productEdit?.product_ean_codes?.length > 0 ? state?.productEdit?.product_ean_codes?.map((eanObject:ProductEanCode, i)=>(
                                         <ListItem
                                             key={i}
                                             secondaryAction={
-                                                <IconButton edge="end" aria-label="delete" onClick={()=>deleteEan(eanObject.product_id, eanObject.ean)}>
+                                                <IconButton edge="end" aria-label="delete" onClick={()=>deleteEan(parseInt(eanObject.row_id))}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             }
@@ -174,7 +177,7 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                                                 primary={eanObject.ean}
                                             />
                                         </ListItem>
-                                        ))}
+                                        )):null}
                                     </List>
                                     <ListItem
                                             secondaryAction={
