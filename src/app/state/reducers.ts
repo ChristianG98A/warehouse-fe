@@ -131,6 +131,9 @@ export const reducer = (state: State|any, action: Action|any) => {
         case 'SET_PRODUCT_EDIT_DESCRIPTION':
             return {...state, productEdit: {...state.productEdit, description:action.payload}}
 
+        case 'SET_PRODUCT_EDIT_EANS':
+            return {...state, productEdit: {...state.productEdit, product_ean_codes:action.payload}}
+
         default:
             return state
     }

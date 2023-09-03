@@ -167,6 +167,10 @@ export type ActionTypes =
         payload: any;
     } |
     {
+        type: "SET_PRODUCT_EANS";
+        payload: string[];
+    } |
+    {
         type: "SET_PRODUCT_EDIT_NAME";
         payload: string;
     } |

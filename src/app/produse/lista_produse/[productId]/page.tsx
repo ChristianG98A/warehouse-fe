@@ -4,21 +4,55 @@ import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Action, State} from "@/model/appstate/AppStateTypes";
-import {Box, Card, CardContent, CardHeader, FormControl, Grid, Paper, TextareaAutosize, TextField, Typography} from "@mui/material";
-import {useContext, useEffect, useReducer, useState} from "react";
+import {Alert, Card, CardContent, CardHeader, Divider, FormControl, Grid, IconButton, List, ListItem, ListItemText, Paper, Snackbar, TextField, Typography} from "@mui/material";
+import {useContext, useEffect, useState} from "react";
 import StyledTextarea from "./StyledTextArea";
-
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddSharpIcon from '@mui/icons-material/AddSharp';
+import {ProductEanCode} from "@/model/products/ProductsTypes";
 
 
 const ProductPage = ({params}: {params: {productId: string}}) => {
-    const [productData, setProductData] = useState<any>();
-    const [state, dispatch]:[State, Action] = useContext(StateContext);
+    //const [productData, setProductData] = useState<any>();
+    const [state, dispatch]: [State, Action] = useContext(StateContext);
+    const [newEanObject, setNewEanObject] = useState({ean:"", valid:true});
 
     const productId = parseInt(params.productId);
 
+    const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        dispatch({type:"SET_SNACKBAR", payload:{...state.snackBar, state:false}})
+
+    };
+
+    const deleteEan = async (productId:string, ean:string) => {
+        await callNextApi("POST", "products/deleteEan", {})
+            .then((r: any) => {
+                dispatch({type:"SET_SNACKBAR", payload:{type:'success', message:'EAN sters cu succes', state:true}})
+                getProductDetails();
+            })
+    }
+
+    const addEan = async () => {
+        if(newEanObject.valid){
+            console.log('the post:', {product_id:productId, ean:parseInt(newEanObject.ean)})
+            await callNextApi("POST", "products/addEan", {product_id:productId, ean:parseInt(newEanObject.ean)})
+                .then((r: any) => {
+                    dispatch({type: "SET_SNACKBAR", payload: {type: 'success', message: 'EAN adaugat cu succes', state: true}})
+                    getProductDetails();
+                })
+                .finally(()=>setNewEanObject({ean:"", valid:false}))
+            }
+            else{
+                dispatch({type:'SET_SNACKBAR', payload:{state:true, message:"EAN invalid!", type:'error'}})
+                }
+    }
+
     const getProductDetails = async () => {
         await callNextApi("POST", "products/getProduct", {product_id: productId})
-            .catch((e:Error) => console.log("Error in fetching product data: ", e))
+            .catch((e: Error) => console.log("Error in fetching product data: ", e))
             .then((r: any) => {
                 //setProductData(r?.response)
                 dispatch({
@@ -26,16 +60,21 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                         product_name: r?.response.product[0].product_name,
                         man_name: r?.response.product[0].man_name,
                         description: r?.response.product[0].description,
+                        product_ean_codes:r?.response?.product_ean_codes,
                     }
                 })
             })
     }
 
-
-    useEffect(()=>console.log("product data", state?.productEdit),[state?.productEdit]);
-    useEffect(()=>{
-            getProductDetails();
-        }, [])
+    useEffect(() => {
+        setNewEanObject({
+            ...newEanObject, valid: newEanObject?.ean?.length == 13 ? true : false
+        })
+    }, [newEanObject?.ean]);
+    useEffect(() => console.log("product data", state?.productEdit), [state?.productEdit]);
+    useEffect(() => {
+        getProductDetails();
+    }, [])
 
     return (
         <>
@@ -59,53 +98,53 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
 
             <Grid container component={Paper} p={3} elevation={3}>
                 <Grid item xs={12}>
-                    <Typography textAlign={'center'} variant={"h5"} fontWeight={800} gutterBottom >Nume produs aici!</Typography>
+                    <Typography textAlign={'center'} variant={"h5"} fontWeight={800} gutterBottom >{state?.productEdit?.product_name}</Typography>
                 </Grid>
 
 
                 <Grid item xs={12} sm={8}>
                     <Grid container>
-                    <Grid item xs={12} >
-                        <Card>
-                            <CardHeader
-                                title={"Informatii generale"}
-                                titleTypographyProps={{variant: 'h6'}}
-                            />
-                            <CardContent >
-                                <FormControl sx={{width: '100%', p: 1}}>
-                                    <TextField
-                                        label="Nume"
-                                        value={state.productEdit?.product_name}
-                                        onChange={(e)=>dispatch({type:'SET_PRODUCT_EDIT_NAME', payload:e.target.value})}
-                                    />
-                                </FormControl>
-                                <FormControl sx={{width: '100%', p: 1}}>
-                                    <TextField
-                                        label="Model"
-                                    />
-                                </FormControl>
-                                <FormControl sx={{width: '100%', p: 1}}>
-                                    <TextField
-                                        label="Producator"
-                                        value={state.productEdit?.man_name}
-                                        onChange={(e)=>dispatch({type:'SET_PRODUCT_EDIT_MAN_NAME', payload:e.target.value})}
-                                    />
-                                </FormControl>
-                                <FormControl sx={{width: '100%', p: 1}}>
-                                    <TextField
-                                        label="Categorie"
-                                    />
-                                </FormControl>
-                                <FormControl sx={{width: '100%', height: '20rem', p: 1}}>
-                                    <StyledTextarea
-                                        minRows={30}
-                                        value={state.productEdit?.description}
-                                        onChange={(e)=>dispatch({type:'SET_PRODUCT_EDIT_DESCRIPTION', payload:e.target.value})}
-                                    />
-                                </FormControl>
-                            </CardContent>
-                        </Card>
-                    </Grid>
+                        <Grid item xs={12} >
+                            <Card>
+                                <CardHeader
+                                    title={"Informatii generale"}
+                                    titleTypographyProps={{variant: 'h6'}}
+                                />
+                                <CardContent >
+                                    <FormControl sx={{width: '100%', p: 1}}>
+                                        <TextField
+                                            label="Nume"
+                                            value={state.productEdit?.product_name}
+                                            onChange={(e) => dispatch({type: 'SET_PRODUCT_EDIT_NAME', payload: e.target.value})}
+                                        />
+                                    </FormControl>
+                                    <FormControl sx={{width: '100%', p: 1}}>
+                                        <TextField
+                                            label="Model"
+                                        />
+                                    </FormControl>
+                                    <FormControl sx={{width: '100%', p: 1}}>
+                                        <TextField
+                                            label="Producator"
+                                            value={state.productEdit?.man_name}
+                                            onChange={(e) => dispatch({type: 'SET_PRODUCT_EDIT_MAN_NAME', payload: e.target.value})}
+                                        />
+                                    </FormControl>
+                                    <FormControl sx={{width: '100%', p: 1}}>
+                                        <TextField
+                                            label="Categorie"
+                                        />
+                                    </FormControl>
+                                    <FormControl sx={{width: '100%', height: '20rem', p: 1}}>
+                                        <StyledTextarea
+                                            minRows={30}
+                                            value={state.productEdit?.description}
+                                            onChange={(e) => dispatch({type: 'SET_PRODUCT_EDIT_DESCRIPTION', payload: e.target.value})}
+                                        />
+                                    </FormControl>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     </Grid>
                 </Grid>
 
@@ -115,33 +154,42 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                         <Grid item xs={12}>
                             <Card>
                                 <CardHeader
-                                    title={"Optiuni"}
+                                    title={"EAN"}
                                     titleTypographyProps={{variant: 'h6'}}
                                 />
+                                <Divider sx={{width: '40%'}} />
                                 <CardContent>
-                                    blabla
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Card>
-                                <CardHeader
-                                    title={"Optiuni"}
-                                    titleTypographyProps={{variant: 'h6'}}
-                                />
-                                <CardContent>
-                                    blabla
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Card>
-                                <CardHeader
-                                    title={"Optiuni"}
-                                    titleTypographyProps={{variant: 'h6'}}
-                                />
-                                <CardContent>
-                                    blabla
+                                    <List>
+                                        {state?.productEdit?.product_ean_codes?.map((eanObject:ProductEanCode, i)=>(
+                                        <ListItem
+                                            key={i}
+                                            secondaryAction={
+                                                <IconButton edge="end" aria-label="delete" onClick={()=>deleteEan(eanObject.product_id, eanObject.ean)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            }
+
+                                        >
+                                            <ListItemText
+                                                primary={eanObject.ean}
+                                            />
+                                        </ListItem>
+                                        ))}
+                                    </List>
+                                    <ListItem
+                                            secondaryAction={
+                                                <IconButton edge="end" aria-label="addEan" onClick={()=>addEan()}>
+                                                    <AddSharpIcon />
+                                                </IconButton>
+                                            }
+                                    >
+                                        <TextField
+                                            label={'Adauga EAN'}
+                                            value = {newEanObject.ean}
+                                            onChange = {e=>setNewEanObject({...newEanObject, ean:e.target.value})}
+                                            error={!newEanObject.valid && newEanObject.ean.length != 0}
+                                        />
+                                    </ListItem>
                                 </CardContent>
                             </Card>
                         </Grid>
@@ -149,6 +197,15 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                 </Grid>
 
             </Grid>
+
+            <Snackbar
+                anchorOrigin={{"horizontal": "center", "vertical": "bottom"}}
+                open={state.snackBar?.state}
+                autoHideDuration={3000}
+                onClose={handleSnackClose}
+            >
+                <Alert onClose={handleSnackClose} severity={state?.snackBar?.type}>{state?.snackBar?.message}</Alert>
+            </Snackbar>
         </>
     )
 }
