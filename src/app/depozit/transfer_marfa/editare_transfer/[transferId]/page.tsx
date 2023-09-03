@@ -1,22 +1,18 @@
 "use client"
 
-import {editInvoiceReducer} from "@/app/achizitii/comenzi_furnizori/editare_nir/editInvoiceState";
 import {StateContext} from "@/app/state/context";
 import CustomToolbar from "@/components/common/CustomToolbar";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Action, State} from "@/model/appstate/AppStateTypes";
-import {PickingBox} from "@/model/pickpack/PickpackTypes";
-import {TransferData, TransferProductInBasket, TransferProductInList} from "@/model/transfers/TransferTypes";
+import {ProductInGetTransfer, TransferData, TransferProductInBasket, TransferProductInPickpack} from "@/model/transfers/TransferTypes";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
-import {Alert, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, colors, Divider, Drawer, Grid, Paper, Snackbar, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, colors, Divider, Drawer, Grid, Snackbar, Tab, TextField, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
 import {DataGrid} from "@mui/x-data-grid";
-import dayjs from "dayjs";
-import {useRouter} from "next/navigation";
-import {useContext, useEffect, useMemo, useReducer, useState} from "react";
-import useScanDetection from "use-scan-detection";
-import BoxCard from "./BoxCard";
+import {useContext, useEffect, useMemo, useState} from "react";
+import PackingTab from "./PackingTab";
+import PickingTab from "./PickingTab";
 import TransferProductResultColumns from "./TransferProductResultColumns";
 
 
@@ -30,7 +26,6 @@ const disabledButtonStyle = {
 const TransferEdit = ({params}: {params: {transferId: string}}) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
-    const [transferProductsList, setTransferProductsList] = useState<TransferProductInList[]>();
     const [loading, setLoading] = useState(false);
     const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const debounce = require('lodash.debounce');
@@ -40,7 +35,6 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
         page: 0
     })
     const [transferData, setTransferData] = useState<TransferData>();
-    const [boxes, setBoxes] = useState<PickingBox[]>();
     const [ean, setEan] = useState("");
 
 
@@ -69,7 +63,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                 return ({
                     product_id: parseInt(product.id),
                     product_name: product.product_name,
-                    quantity: typeof(product.total_quantity) == 'string' ?parseInt(product.total_quantity): product.total_quantity,
+                    quantity: product.quantity,
                 })
             }),
         })
@@ -80,10 +74,8 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
             .then(
                 () => {
                     setLoading(false)
-                    //getInvoiceProducts(invoiceId).then(r => setLoading(false))
-                    //setProductCart(false)
                     dispatch({type: "RESET_TRANSFER_PRODUCT_BASKET"});
-                    getTransferProductList();
+                    getTransfer();
                     setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true});
                 }
             )
@@ -110,51 +102,25 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
         }
     }, 1000)
 
-    const getTransferProductList = async () => {
-        await callNextApi("POST", "transfers/getTransferProductsList", {transfer_id: transferId})
-            .then(r => {
-                console.log('transfer products:', r?.response)
-                setTransferProductsList(r?.response)
-                r?.response?.forEach((productResult: TransferProductInList) => {
-                    dispatch({
-                        type: "SET_TRANSFER_PRODUCT_BASKET",
-                        payload: {
-                            id: parseInt(productResult.product_id),
-                            ...productResult
-                        }
-                    })
-                })
-            })
-    }
 
     const getTransfer = async () => {
         await callNextApi("POST", "transfers/getTransfer", {transfer_id: transferId})
             .then(r => {
                 console.log('the result is:', r)
                 setTransferData(r.response)
+                r?.response?.transferProducts?.forEach((productResult: ProductInGetTransfer) => {
+                    dispatch({
+                        type: "SET_TRANSFER_PRODUCT_BASKET",
+                        payload: {
+                            ...productResult,
+                            quantity: parseInt(productResult?.quantity)
+                        }
+                    })
+                })
             })
     }
 
-    const getBoxes = async () => {
-        await callNextApi("POST", "pickpack/getBoxes", {transfer_id: transferId})
-            .then(r => {
-                setBoxes(r?.response)
-            })
-    }
 
-    const addBox = async () => {
-        await callNextApi("POST", "pickpack/addBox", {transfer_id: transferId})
-            .then(r => {
-                getBoxes();
-            })
-    }
-    const deleteBox = async ()=>{
-        await callNextApi("POST", "pickpack/deleteBox", {box_id: parseInt(state.selectedBox)})
-            .then(() => {
-                dispatch({type:"SET_SNACKBAR", payload:{type:'success', state:true, message:`Cutia ${state.selectedBox} stearsa cu succes`}})
-                getBoxes();
-            })
-        }
     let eanCode= ""
     const resetInput = debounce(()=>eanCode="", 300)
     const handleKeydown = (event:any)=>{
@@ -171,26 +137,19 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
 
     useEffect(() => console.log('Transfer products basket', state?.transferProductBasket), [state.transferProductBasket])
     useEffect(() => console.log("ean:", ean), [ean])
+
     //initial data fetch
     useEffect(() => {
         setLoading(true)
         document.addEventListener('keydown', handleKeydown);
         dispatch({type:'RESET_TRANSFER_PRODUCT_BASKET'})
-        getTransfer().then(r => {
-            getTransferProductList()
-            getBoxes()
-        })
+        getTransfer()
             .finally(() => setLoading(false))
         return () => {
             console.log('unmounting!')
             document.removeEventListener('keydown', handleKeydown);
         }
-
     }, [])
-
-    useEffect(() => {
-        console.log('cutie selectata', state.selectedBox);
-    }, [state.selectedBox])
 
 
 
@@ -246,7 +205,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                                     columns={useMemo(() => ([
                                         {field: 'product_id', headerName: 'ID Produs', flex: 2},
                                         {field: 'product_name', headerName: 'Denumire Produs', flex: 4},
-                                        {field: 'total_quantity', headerName: 'Cantitate', flex: 2, editable: true, type: "number"},
+                                        {field: 'quantity', headerName: 'Cantitate', flex: 2, editable: true, type: "number"},
 
                                     ]), [])}
 
@@ -283,33 +242,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
 
 
                 <TabPanel value="picking">
-                    <TableContainer component={Paper}>
-                        <Table sx={{minWidth: 450}} aria-label="invoice data table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell align="center">Row ID</TableCell>
-                                    <TableCell align="center">Product ID</TableCell>
-                                    <TableCell align="center">Name</TableCell>
-                                    <TableCell align="center">Total</TableCell>
-                                    <TableCell align="center">Picked</TableCell>
-                                    <TableCell align="center">Not Picked</TableCell>
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {transferProductsList?.map(product=>(
-                                        <TableRow key={product.row_id}>
-                                            <TableCell component="th" scope="row" align="center">{product.row_id}</TableCell>
-                                            <TableCell component="th" scope="row" align="center">{product.product_id}</TableCell>
-                                            <TableCell component="th" scope="row" align="center">{product.product_name}</TableCell>
-                                            <TableCell component="th" scope="row" align="center">{product.total_quantity}</TableCell>
-                                            <TableCell component="th" scope="row" align="center">{product.picked_quantity}</TableCell>
-                                            <TableCell component="th" scope="row" align="center">{product.not_picked_quantity}</TableCell>
-                                        </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                    <PickingTab transferId={transferId}/>
                 </TabPanel>
 
 
@@ -318,22 +251,7 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
 
 
                 <TabPanel value="packing">
-                    <Grid container component={Paper} elevation={5} sx={{justifyContent: "center", minHeight: "40rem"}}>
-                        <Grid item xs={4}>
-                            <Grid container >
-                                <Grid item xs={12}>
-                                {boxes?.map(box=><BoxCard  onClick={()=>null} key={box.id} id={box.id} title={`Box ${box.id}`} />)}
-                                </Grid>
-                                <div style={{marginTop: '40rem'}} />
-                                <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}}><Button onClick={addBox} variant={'outlined'} >Add box</Button></Grid>
-                                <Grid item xs={6} alignItems={center} sx={{mt: 2, mb: 2}} ><Button onClick={deleteBox} variant={'outlined'} >Remove box</Button></Grid>
-                            </Grid>
-                        </Grid>
-
-                        <Grid item xs={8}>
-                            <DataGrid columns={[]} rows={[]} />
-                        </Grid>
-                    </Grid>
+                    <PackingTab transferId={transferId} />
                 </TabPanel>
             </TabContext>
 
@@ -403,14 +321,14 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                                             dispatch({
                                                 type: "SET_TRANSFER_PRODUCT_BASKET",
                                                 payload: {
-                                                        id: parseInt(productToBeAdded?.id),
+                                                        id: productToBeAdded?.id,
                                                         product_id:productToBeAdded?.id,
                                                         product_name:productToBeAdded?.name,
-                                                        total_quantity:"0",
+                                                        quantity:0,
                                                     }
                                             })
                                         }
-                                    setSnackBar({message: "Produse adaugate in cos!", type: 'success', state: true})
+                                    dispatch({type:"SET_SNACKBAR", payload:{message: "Produse adaugate in cos!", type: 'success', state: true}})
                                     } catch (error) {console.log("Error in adding products to invoice!", error)}
                                 })
                                 setSelectionModel([])
@@ -441,4 +359,5 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
 }
 
 const center = {display: 'flex', justifyContent: 'center'}
+
 export default TransferEdit;

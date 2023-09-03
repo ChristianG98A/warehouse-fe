@@ -23,13 +23,22 @@ export type TransferProductInBasket = {
     not_picked_quantity: number;
 }
 
-export type TransferProductInList = {
+export type TransferProductInPickpack= {
     row_id: string;
     product_id: string;
     product_name: string;
     total_quantity: string;
-    picked_quantity: string;
-    not_picked_quantity: number;
+    processed_quantity: string;
+    not_processed_quantity: number;
+}
+
+export type ProductInGetTransfer= {
+    id: string;
+    transfer_id: string;
+    product_id: string;
+    product_name: string;
+    quantity: string;
+    acquisition_price: string;
 }
 
 export type TransferData = {
