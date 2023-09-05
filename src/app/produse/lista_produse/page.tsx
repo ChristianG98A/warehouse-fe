@@ -9,7 +9,8 @@ import {Action, State} from "@/model/appstate/AppStateTypes";
 import {ProductQueryAction, ProductQueryState} from "@/model/products/ProductsTypes";
 import {Button, Divider, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
-import {DataGrid} from "@mui/x-data-grid";
+import {DataGrid, GridRowSelectionModel} from "@mui/x-data-grid";
+import {useRouter} from "next/navigation";
 import {useContext, useEffect, useReducer, useState} from "react";
 import ProductColumns from "./ProductColumns";
 
@@ -26,6 +27,7 @@ const ProductList = () => {
     const [queryState, queryDispatch] = useReducer(queryReducer, {})
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
@@ -38,6 +40,10 @@ const ProductList = () => {
             .then((r: any) => {
                 setProducts(r.response?? []);
             })
+    }
+
+    const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
+        dispatch({type: "SET_SELECTION_MODEL", payload: newRowSelectionModel})
     }
 
     useEffect(()=>console.log(state.wholesaleOffset), [state.wholesaleOffset]);
@@ -132,10 +138,7 @@ const ProductList = () => {
                     pageSizeOptions={[10, 25, 50]}
                     initialState={{pagination: {paginationModel: paginationModel}}}
                     onPaginationModelChange={setPaginationModel}
-                    onRowSelectionModelChange={(newRowSelectionModel) => {
-                        //dispatch({type: "SET_CURRENT_INVOICE", payload: newRowSelectionModel})
-                        dispatch({type:"SET_SELECTION_MODEL", payload:newRowSelectionModel})
-                    }}
+                    onRowSelectionModelChange={handleRowSelectionModelChange}
                     rowSelectionModel={state.selectionModel}
                     autoPageSize={false}
                     loading={loading}
@@ -143,6 +146,7 @@ const ProductList = () => {
                         top: params.isFirstVisible ? 0 : 5,
                         bottom: params.isLastVisible ? 0 : 5
                     })}
+                    onRowClick={row=>router.push(`lista_produse/${row.id?.toString()}`)}
                     slots={{
                         pagination: WholesaleDatagridFooter
                     }}

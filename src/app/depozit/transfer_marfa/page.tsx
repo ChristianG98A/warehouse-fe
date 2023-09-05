@@ -18,6 +18,7 @@ import {useForm} from "react-hook-form";
 import ReceptionsColumns from "../receptie_marfa/ReceptionsColumns";
 import TransferToolbar from "./TransferToolbar";
 import {Warehouse} from "@/model/warehouse/WarehouseTypes";
+import {addTransfer, getTransfers} from "./service";
 
 const rowsPlaceholder: GridRowsProp = [
     {id: 1, crt: 1, Furnizor: "sc cacamaca", Serie_Factura: 12312313, invoiceNumber: 123132, date: "12.07.2023", product: "eau du saq", EAN: 523526, TVA: "19", discount: "0%", buy_price: 909.9, nrceva: 1324, deposit: "barbu v", sofer: "cutare"},
@@ -30,72 +31,16 @@ const rows: GridRowsProp | Purchase[] = [
 
 const rowsPerPageOptions = [10, 20, 100];
 const StockTransfer = () => {
-    const [state, dispatch]:[State, Action] = useContext(StateContext)
-    const [selectedOldWarehouse, setSelectedOldWarehouse] = useState<Warehouse|any>("");
-    const [selectedNewWarehouse, setSelectedNewWarehouse] = useState<Warehouse|any>("");
+    const [state, dispatch]: [State, Action] = useContext(StateContext)
+    const [selectedOldWarehouse, setSelectedOldWarehouse] = useState<Warehouse | any>("");
+    const [selectedNewWarehouse, setSelectedNewWarehouse] = useState<Warehouse | any>("");
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [loading, setLoading] = useState(false);
-    const {register, handleSubmit} = useForm();
 
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0
     })
-    const router = useRouter();
-
-
-
-    const addTransfer = handleSubmit(
-        async (data) => {
-            setLoading(true)
-            console.log("form data:", data)
-
-           const payload = {
-               old_warehouse: selectedOldWarehouse.id,
-               new_warehouse: selectedNewWarehouse.id,
-               old_warehouse_name: selectedOldWarehouse.name,
-               new_warehouse_name: selectedNewWarehouse.name,
-           }
-
-            console.log("Payload:", payload)
-
-            callNextApi("POST", "/transfers/createTransfer", payload).then(
-               (r: any) => {
-                   getTransfers();
-                   setLoading(false);
-                   dispatch({type:'SET_NEW_TRANSFER_MODAL', payload:false})
-               },
-               e => console.log(e)
-           );
-        }
-    );
-
-
-
-    // Initial Data Fetch
-
-    const getTransfers = async () => {
-        setLoading(true)
-        await callNextApi("POST", "transfers/transfersList", {limit: 300, offset: 0})
-            .catch(e => console.log("Error caught in calling proxy api!\n", e))
-            .then((r: any) => {
-                console.log(r)
-                dispatch({type: "SET_TRANSFERS", payload: r?.response})
-                setLoading(false)
-            });
-        return null;
-    }
-
-    useEffect(() => {
-        //console.log("this is the context api state:\n", state);
-        console.log('initial datafetch')
-        getTransfers();
-        dispatch({type:"SET_CURRENT_TRANSFER", payload: undefined})
-        setLoading(true);
-    }, [paginationModel])
-
-    useEffect(()=>console.log(state.currentTransfer),[state.currentTransfer])
-
 
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -108,8 +53,25 @@ const StockTransfer = () => {
         if (reason === 'clickaway') {
             return;
         }
-        dispatch({type:"SET_SNACKBAR", payload:{...state.snackBar, state:false}})
+        dispatch({type: "SET_SNACKBAR", payload: {...state.snackBar, state: false}})
     };
+
+
+
+    // Initial Data Fetch
+    useEffect(() => {
+        setLoading(true);
+        dispatch({type: "SET_CURRENT_TRANSFER", payload: undefined})
+        getTransfers().then(
+            r => {
+                dispatch({type: "SET_TRANSFERS", payload: r?.response})
+                setLoading(false)
+            }
+        );
+        setLoading(true);
+    }, [paginationModel])
+
+    useEffect(() => console.log(state.currentTransfer), [state.currentTransfer])
 
     return (
         <>
@@ -143,7 +105,7 @@ const StockTransfer = () => {
                     onPaginationModelChange={setPaginationModel}
                     pageSizeOptions={[10, 25, 50]}
                     onRowSelectionModelChange={(newRowSelectionModel) => {
-                        dispatch({type: "SET_CURRENT_TRANSFER", payload: state?.transfers?.find(transfer=>transfer.id==newRowSelectionModel[0])})
+                        dispatch({type: "SET_CURRENT_TRANSFER", payload: state?.transfers?.find(transfer => transfer.id == newRowSelectionModel[0])})
                     }}
                     rowSelectionModel={state.selectionModel}
                     autoPageSize={false}
@@ -154,7 +116,7 @@ const StockTransfer = () => {
                         bottom: params.isLastVisible ? 0 : 5
                     })}
                     sx={{
-                        minHeight:"55vh",
+                        minHeight: "55vh",
                         '& .MuiDataGrid-row': {
                             backgroundColor: grey[200],
                         },
@@ -163,71 +125,85 @@ const StockTransfer = () => {
             </Grid>
 
 
-                <Modal
-                    autoFocus={true}
-                    component={"form"}
-                    onSubmit={addTransfer}
-                    open={state?.newTransferModal ?? false}
-                    aria-labelledby="New Transfer Modal"
-                    aria-describedby="new-transfer-modal"
-                    sx={{
-                        position: "absolute",
-                        width: {
-                               xs: "100vw",
-                               sm: "100vw",
-                               md: "90vw",
-                               lg: "50vw",
-                               xl: "50vw",
-                            },
-                        height: "max-content",
-                        left: "50%",
-                        top: "50%",
-                        transform: 'translate(-50%, -50%)'
+            <Modal
+                autoFocus={true}
+                component={"form"}
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    setLoading(true)
+                    addTransfer(
+                        selectedOldWarehouse.id,
+                        selectedNewWarehouse.id,
+                        selectedOldWarehouse.name,
+                        selectedNewWarehouse.name,
+                    ).then(r => {
+                        getTransfers();
+                        setLoading(false);
+                        dispatch({type: 'SET_NEW_TRANSFER_MODAL', payload: false})
+                    })
+                }
+                }
+                open={state?.newTransferModal ?? false}
+                aria-labelledby="New Transfer Modal"
+                aria-describedby="new-transfer-modal"
+                sx={{
+                    position: "absolute",
+                    width: {
+                        xs: "100vw",
+                        sm: "100vw",
+                        md: "90vw",
+                        lg: "50vw",
+                        xl: "50vw",
+                    },
+                    height: "max-content",
+                    left: "50%",
+                    top: "50%",
+                    transform: 'translate(-50%, -50%)'
 
-                    }}
-                >
-                    <Box sx={{
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                    }}>
-                        <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
-                            Transfer Nou
-                        </Typography>
-                        <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flex={3}>
+                }}
+            >
+                <Box sx={{
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                }}>
+                    <Typography textAlign={"center"} id="new_invoice_modal" variant="h6" component="h2">
+                        Transfer Nou
+                    </Typography>
+                    <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flex={3}>
 
-                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} >
-                                <FormControl variant='standard' sx={{width: "100%"}}>
-                                    <InputLabel id="oldWarehouse" >Depozit Vechi</InputLabel>
-                                    <Select required labelId='old_warehouse_selector' id="old_warehouse_selector" value={selectedOldWarehouse}>
-                                        {state.warehouseTransferSelection?.warehousesAllowingServicingStock.map((warehouse:Warehouse | any) =>
-                                            (<MenuItem onClick={() => setSelectedOldWarehouse(warehouse)} key={warehouse.id} value={warehouse} >{warehouse.name}</MenuItem>))}
-                                    </Select>
-                                </FormControl>
-                            </ Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6} >
+                            <FormControl variant='standard' sx={{width: "100%"}}>
+                                <InputLabel id="oldWarehouse" >Depozit Vechi</InputLabel>
+                                <Select required labelId='old_warehouse_selector' id="old_warehouse_selector" value={selectedOldWarehouse}>
+                                    {state.warehouseTransferSelection?.warehousesAllowingServicingStock.map((warehouse: Warehouse | any) =>
+                                        (<MenuItem onClick={() => setSelectedOldWarehouse(warehouse)} key={warehouse.id} value={warehouse} >{warehouse.name}</MenuItem>))}
+                                </Select>
+                            </FormControl>
+                        </ Grid>
 
-                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} >
-                                <FormControl variant='standard' sx={{width: "100%"}}>
-                                    <InputLabel id="newWarehouse" >Depozit Nou</InputLabel>
-                                    <Select required labelId='new_warehouse_selector' id="new_warehouse_name" value={selectedNewWarehouse}>
-                                        {state.warehouseTransferSelection?.warehouseAllowingSellingStock.map((warehouse:Warehouse|any) =>
-                                            (<MenuItem onClick={() => setSelectedNewWarehouse(warehouse)} key={warehouse.id} value={warehouse}>{warehouse.name}</MenuItem>))}
-                                    </Select>
-                                </FormControl>
-                            </ Grid>
-                        </Grid>
-                        <Divider sx={{mt: 10}} />
-                        <Box sx={{display: "flex", justifyContent: "center", gap: "5rem", pt: 2}} >
-                            <Button variant="contained" type={"submit"}>
-                                Save
-                            </Button>
-                            <Button variant="contained" type={"submit"} onClick={handleClose}  >
-                                Cancel
-                            </Button>
-                        </Box>
-
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6} >
+                            <FormControl variant='standard' sx={{width: "100%"}}>
+                                <InputLabel id="newWarehouse" >Depozit Nou</InputLabel>
+                                <Select required labelId='new_warehouse_selector' id="new_warehouse_name" value={selectedNewWarehouse}>
+                                    {state.warehouseTransferSelection?.warehouseAllowingSellingStock.map((warehouse: Warehouse | any) =>
+                                        (<MenuItem onClick={() => setSelectedNewWarehouse(warehouse)} key={warehouse.id} value={warehouse}>{warehouse.name}</MenuItem>))}
+                                </Select>
+                            </FormControl>
+                        </ Grid>
+                    </Grid>
+                    <Divider sx={{mt: 10}} />
+                    <Box sx={{display: "flex", justifyContent: "center", gap: "5rem", pt: 2}} >
+                        <Button variant="contained" type={"submit"}>
+                            Save
+                        </Button>
+                        <Button variant="contained" type={"submit"} onClick={handleClose}  >
+                            Cancel
+                        </Button>
                     </Box>
-                </Modal>
+
+                </Box>
+            </Modal>
 
 
 

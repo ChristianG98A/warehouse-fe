@@ -4,18 +4,21 @@ import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Action, State} from "@/model/appstate/AppStateTypes";
-import {Alert, Card, CardContent, CardHeader, Divider, FormControl, Grid, IconButton, List, ListItem, ListItemText, Paper, Snackbar, TextField, Typography} from "@mui/material";
+import {Alert, Button, Card, CardContent, CardHeader, Divider, FormControl, Grid, IconButton, List, ListItem, ListItemText, Paper, Snackbar, TextField, Typography} from "@mui/material";
 import {useContext, useEffect, useState} from "react";
 import StyledTextarea from "./StyledTextArea";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddSharpIcon from '@mui/icons-material/AddSharp';
 import {ProductEanCode} from "@/model/products/ProductsTypes";
+import {useRouter} from "next/navigation";
 
 
+const rowsPerPageOptions = [10, 20, 100];
 const ProductPage = ({params}: {params: {productId: string}}) => {
     //const [productData, setProductData] = useState<any>();
     const [state, dispatch]: [State, Action] = useContext(StateContext);
     const [newEanObject, setNewEanObject] = useState({ean:"", valid:true});
+    const router = useRouter();
 
     const productId = parseInt(params.productId);
 
@@ -37,7 +40,7 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
 
     const addEan = async () => {
         if(newEanObject.valid){
-            console.log('the post:', {product_id:productId, ean:parseInt(newEanObject.ean)})
+            //console.log('the post:', {product_id:productId, ean:parseInt(newEanObject.ean)})
             await callNextApi("POST", "products/addEan", {product_id:productId, ean:parseInt(newEanObject.ean)})
                 .then((r: any) => {
                     dispatch({type: "SET_SNACKBAR", payload: {type: 'success', message: 'EAN adaugat cu succes', state: true}})
@@ -73,7 +76,7 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
             ...newEanObject, valid: newEanObject?.ean?.length == 13 ? true : false
         })
     }, [newEanObject?.ean]);
-    useEffect(() => console.log("product data", state?.productEdit), [state?.productEdit]);
+    //useEffect(() => console.log("product data", state?.productEdit), [state?.productEdit]);
     useEffect(() => {
         getProductDetails();
     }, [])
@@ -91,7 +94,7 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                         path: "/produse/lista_produse",
                     },
                     {
-                        name: "Lista Produse",
+                        name: `Editare ${state?.productEdit?.product_name}`,
                         path: `/produse/lista_produse/${productId}`,
                     },
                 ]}
@@ -156,6 +159,17 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                         <Grid item xs={12}>
                             <Card>
                                 <CardHeader
+                                    title={"Inventar"}
+                                    titleTypographyProps={{variant: 'h6'}}
+                                    action={<Button onClick={()=>router.push(`${params.productId}/stock_unitar`)} >Vezi stock unitar</Button>}
+                                />
+                                <Divider sx={{width: '40%'}} />
+                            </Card>
+
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Card>
+                                <CardHeader
                                     title={"EAN"}
                                     titleTypographyProps={{variant: 'h6'}}
                                 />
@@ -195,6 +209,7 @@ const ProductPage = ({params}: {params: {productId: string}}) => {
                                     </ListItem>
                                 </CardContent>
                             </Card>
+
                         </Grid>
                     </Grid>
                 </Grid>

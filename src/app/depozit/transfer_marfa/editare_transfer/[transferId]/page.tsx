@@ -13,6 +13,7 @@ import {DataGrid} from "@mui/x-data-grid";
 import {useContext, useEffect, useMemo, useState} from "react";
 import PackingTab from "./PackingTab";
 import PickingTab from "./PickingTab";
+import {handleSubmitProducts} from "./service";
 import TransferProductResultColumns from "./TransferProductResultColumns";
 
 
@@ -54,32 +55,6 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
         dispatch({type: "SET_TRANSFER_PRODUCT_BASKET", payload: data})
     }
     const handleTabChange = (event: React.SyntheticEvent, newValue: string) => setTab(newValue);
-
-    const handleSubmitProducts = async () => {
-        setLoading(true)
-        await callNextApi("POST", "transfers/addProduct", {
-            transfer_id: transferId,
-            products: state?.transferProductBasket?.map((product: any) => {
-                return ({
-                    product_id: parseInt(product.id),
-                    product_name: product.product_name,
-                    quantity: product.quantity,
-                })
-            }),
-        })
-            .catch(e => {
-                console.log("Error in submitting products: \n", e)
-                setSnackBar({message: "Eroare!", type: "error", state: true})
-            })
-            .then(
-                () => {
-                    setLoading(false)
-                    dispatch({type: "RESET_TRANSFER_PRODUCT_BASKET"});
-                    getTransfer();
-                    setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true});
-                }
-            )
-    }
 
     const handleSearch = debounce(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
@@ -220,7 +195,19 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                             </ Grid>
 
                             <Grid item xs={10} sm={10} md={10} lg={10} xl={10} >
-                                <Button disabled={state.transferProductBasket.length == 0} variant="contained" sx={{mt: 2}} onClick={handleSubmitProducts}>
+                                <Button disabled={state.transferProductBasket.length == 0} variant="contained" sx={{mt: 2}} onClick={()=>{
+                                    setLoading(true)
+                                    handleSubmitProducts(transferId, state?.transferProductBasket)
+                                        .catch(e => {
+                                            setSnackBar({message: "Eroare!", type: "error", state: true})
+                                        })
+                                        .then(r => {
+                                            setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true});
+                                            dispatch({type: "RESET_TRANSFER_PRODUCT_BASKET"});
+                                            getTransfer();
+                                        })
+                                        .finally(() => setLoading(false))
+                                }}>
                                     Salveaza
                                 </Button>
                             </Grid>

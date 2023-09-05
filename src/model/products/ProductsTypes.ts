@@ -39,3 +39,15 @@ export type ProductEditState = {
     product_ean_codes: ProductEanCode[];
 }
 
+export type ProductStockLine = {
+    id: string;
+    ean: string;
+    supplier_name: string;
+    warehouse_name: any | null, //???
+    acquisition_price: string;
+    status: string | "allocated";
+    acquired_date: string | Date;
+    invoice_in: string;
+    order_id: string;
+    transfer_id: string;
+}
