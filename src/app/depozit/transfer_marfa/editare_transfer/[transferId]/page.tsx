@@ -108,32 +108,22 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
             .then(r => {
                 console.log('the result is:', r)
                 setTransferData(r.response)
-                r?.response?.transferProducts?.forEach((productResult: ProductInGetTransfer) => {
-                    dispatch({
-                        type: "SET_TRANSFER_PRODUCT_BASKET",
-                        payload: {
-                            ...productResult,
-                            quantity: parseInt(productResult?.quantity)
-                        }
+                if (r?.response.transferProducts?.length > 0) {
+
+                    r?.response?.transferProducts?.forEach((productResult: ProductInGetTransfer) => {
+                        dispatch({
+                            type: "SET_TRANSFER_PRODUCT_BASKET",
+                            payload: {
+                                ...productResult,
+                                id: productResult?.product_id,
+                                quantity: parseInt(productResult?.quantity)
+                            }
+                        })
                     })
-                })
+                }
             })
     }
 
-
-    let eanCode= ""
-    const resetInput = debounce(()=>eanCode="", 300)
-    const handleKeydown = (event:any)=>{
-            if (event.key === "Enter" && eanCode?.length==13) {
-                event.preventDefault();
-                console.log('submitting ', eanCode)
-                eanCode=""
-            } else {
-                eanCode+= event.key
-                console.log(eanCode)
-            }
-            resetInput()
-        }
 
     useEffect(() => console.log('Transfer products basket', state?.transferProductBasket), [state.transferProductBasket])
     useEffect(() => console.log("ean:", ean), [ean])
@@ -141,13 +131,11 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
     //initial data fetch
     useEffect(() => {
         setLoading(true)
-        document.addEventListener('keydown', handleKeydown);
         dispatch({type:'RESET_TRANSFER_PRODUCT_BASKET'})
         getTransfer()
             .finally(() => setLoading(false))
         return () => {
             console.log('unmounting!')
-            document.removeEventListener('keydown', handleKeydown);
         }
     }, [])
 
@@ -244,11 +232,6 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                 <TabPanel value="picking">
                     <PickingTab transferId={transferId}/>
                 </TabPanel>
-
-
-
-
-
 
                 <TabPanel value="packing">
                     <PackingTab transferId={transferId} />
