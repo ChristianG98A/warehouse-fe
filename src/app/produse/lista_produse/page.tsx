@@ -70,11 +70,12 @@ const ProductList = () => {
             <Grid container component={Paper} p={3} elevation={3}>
 
                 <Grid item xs={12} >
-                    <Typography textAlign={'center'} variant={"h5"} fontWeight={800}  gutterBottom >Cauta produse</Typography>
+                    <Typography textAlign={'center'} variant={"h5"} fontWeight={800}  gutterBottom >Lista produse</Typography>
                 </Grid>
                 <Grid item xs={12} p={4}>
                     <Divider  />
                 </Grid>
+                {/*
                 <Grid item xs={12} sm={12} md={3} sx={{...center}}>
                     <FormControl  sx={{width:'90%'}}>
                         <InputLabel id="cathegory-label">Categorie</InputLabel>
@@ -126,7 +127,7 @@ const ProductList = () => {
                 <Grid item xs={12} mt={3} sx={{...center}} gap={2} >
                     <Button variant="contained" >Cauta</Button>
                     <Button variant="contained" >Reset</Button>
-                </Grid>
+                </Grid>*/}
             </Grid>
 
                 <DataGrid

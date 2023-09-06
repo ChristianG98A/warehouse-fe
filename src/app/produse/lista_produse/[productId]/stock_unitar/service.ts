@@ -7,5 +7,14 @@ export const getStockLines = async (product_id: number) => {
     return data;
 }
 
+export const setEan = async (row_id: number, ean:number) => {
+    const data = await callNextApi("POST", "products/updateStockRowEanValue", {
+        row_id:row_id,
+        ean: ean,
+    })
+        .then(r => r);
+    return data;
+}
+
 
 export default null;

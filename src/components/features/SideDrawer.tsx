@@ -72,8 +72,7 @@ export default function SideDrawer(props: Props) {
                 <SidebarListDropdown item="Wholesale" index={2}
                     menuItems={[
                         {name: 'Comenzi', link: '/wholesale/comenzi'},
-                        {name: 'Export produse', link: '/wholesale/export_produse'},
-                        {name: 'Clienti', link: "/wholesale/clienti"}]}
+                        ]}
                     icon={<BusinessIcon />}
                 />
 

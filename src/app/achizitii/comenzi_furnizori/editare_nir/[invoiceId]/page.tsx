@@ -52,11 +52,12 @@ const InvoiceEdit = ({ params } : { params: { invoiceId: string } }) => {
         setSnackBar({...snackBar, state: false})
     };
 
-    const handleRowUpdate = (data: any) => {
+    const handleRowUpdate = (newRow:any, oldRow:any) => {
         //console.log("This goes into product basket! :", data)
-        const index = state?.productBasket?.findIndex((item: any) => item.id === data.id);
+        const index = state?.productBasket?.findIndex((item: any) => item.id === newRow.id);
         //console.log("New row data: ", data, index)
-        dispatch({type: "SET_PRODUCT_BASKET", payload: data})
+        dispatch({type: "SET_PRODUCT_BASKET", payload: newRow})
+        return newRow;
     }
     const handleSubmitInvoiceDetails = async () => {
 

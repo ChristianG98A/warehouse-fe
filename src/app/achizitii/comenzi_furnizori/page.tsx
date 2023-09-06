@@ -5,7 +5,7 @@ import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {StateContext} from "@/app/state/context";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
-import {Alert, Box, Button, Dialog, DialogActions, DialogTitle, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Paper, Select, SelectChangeEvent, Snackbar, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, Dialog, DialogActions, DialogTitle, Divider, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Modal, Paper, Select, SelectChangeEvent, Snackbar, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography} from "@mui/material";
 import {DataGrid, GridRowsProp, GridToolbar} from "@mui/x-data-grid";
 import {useContext, useEffect, useState} from "react";
 import SellerInvoiceRow from "./SellerInvoiceRow";
@@ -200,6 +200,9 @@ const ProviderOrders = () => {
                             Creeaza N.I.R.
                         </Typography>
                         <Grid alignItems={"center"} justifyItems={"center"} justifyContent={"center"} container spacing={3} flex={3}>
+                            <Grid item xs={12} sm={12}>
+                            {loading? <LinearProgress/> : null}
+                            </Grid>
                             <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                                 <TextField
                                     {...register("invoiceNumber")}

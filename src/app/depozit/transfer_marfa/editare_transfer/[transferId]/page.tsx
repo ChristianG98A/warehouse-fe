@@ -5,7 +5,7 @@ import CustomToolbar from "@/components/common/CustomToolbar";
 import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Action, State} from "@/model/appstate/AppStateTypes";
-import {ProductInGetTransfer, TransferData, TransferProductInBasket, TransferProductInPickpack} from "@/model/transfers/TransferTypes";
+import {ProductInGetTransfer, TransferData, TransferProduct, TransferProductInBasket, TransferProductInPickpack} from "@/model/transfers/TransferTypes";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {Alert, Box, Button, colors, Divider, Drawer, Grid, Snackbar, Tab, TextField, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
@@ -48,11 +48,12 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
         dispatch({type:"SET_SNACKBAR", payload:{...state.snackBar, state:false}})
     };
 
-    const handleRowUpdate = (data: any) => {
+    const handleRowUpdate = (newRow:TransferProductInBasket, oldRow:TransferProductInBasket) => {
         //console.log("This goes into product basket! :", data)
-        const index = state?.transferProductBasket?.findIndex((item: any) => item.id === data.id);
+        //const index = state?.transferProductBasket?.findIndex((item: any) => item.id === data.id);
         //console.log("New row data: ", data, index)
-        dispatch({type: "SET_TRANSFER_PRODUCT_BASKET", payload: data})
+        dispatch({type: "SET_TRANSFER_PRODUCT_BASKET", payload: newRow})
+        return newRow;
     }
     const handleTabChange = (event: React.SyntheticEvent, newValue: string) => setTab(newValue);
 

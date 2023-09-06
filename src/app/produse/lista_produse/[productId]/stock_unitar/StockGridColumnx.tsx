@@ -5,7 +5,7 @@ export default function StockGridColumns() {
 
     const columns: GridColDef[] = [
         {field: 'id', headerName: 'Id', flex: 1, maxWidth: 80},
-        {field: 'ean', headerName: 'EAN', flex: 2, maxWidth: 400},
+        {field: 'ean', headerName: 'EAN', flex: 2, maxWidth: 400, editable:true},
         {field: 'supplier_name', headerName: 'Furnizor', flex: 2, maxWidth: 400},
         {field: 'warehouse_name', headerName: 'Depozit', flex: 2, maxWidth: 400},
         {field: 'acquisition_price', headerName: 'Pret Achizitie', flex: 2, maxWidth: 400},

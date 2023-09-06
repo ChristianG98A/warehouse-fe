@@ -18,6 +18,7 @@ const PackingTab = (props:{transferId:number})=>{
     const [boxes, setBoxes] = useState<PickingBox[]>();
     const [loading, setLoading] = useState(false);
     const [packingList, setPackingList] = useState<TransferProductInPickpack[]>([]);
+    const [ean, setEan] = useState("")
 
     const getBoxes = async () => {
         await callNextApi("POST", "pickpack/getBoxes", {transfer_id: props.transferId})
@@ -55,24 +56,31 @@ const PackingTab = (props:{transferId:number})=>{
             })
     }, [])
 
-    const scanProduct = useCallback(async (ean:string) => {
+
+    const scanProduct = async (ean:string) => {
         console.log({
             transfer_id: props.transferId,
             ean_code: ean,
-            box_id: state?.selectedBox,
+            box_id: state.selectedBox,
         })
-        await callNextApi("POST", "pickpack/scanProductPacking", {
-            transfer_id: props.transferId,
-            ean_code: ean,
-            box_id: state?.selectedBox,
-        })
-            .then(r => {
-                console.log('vezi response:', r.responses)
-                try {if (r.responses[0].error) {dispatch({type: 'SET_SNACKBAR', payload: {message: r.responses[0].ean_status, state: true, type:'error'}})} }
-                catch (e) {}
-                getPackingList()
+        if (state?.selectedBox) {
+            await callNextApi("POST", "pickpack/scanProductPacking", {
+                transfer_id: props.transferId,
+                ean_code: ean,
+                box_id: state.selectedBox,
             })
-    }, [])
+                .then(r => {
+                    console.log('vezi response:', r.responses)
+                    try {if (r.responses[0].error) {dispatch({type: 'SET_SNACKBAR', payload: {message: r.responses[0].ean_status, state: true, type: 'error'}})} }
+                    catch (e) {}
+                    getPackingList()
+                })
+        }
+        else{
+                dispatch({type:"SET_SNACKBAR", payload:{state:true, message:"Selecteaza o cutie!", type: 'error'}})
+            }
+            setEan("")
+    }
 
     let eanCode= ""
     const resetInput = debounce(()=>eanCode="", 300)
@@ -80,7 +88,8 @@ const PackingTab = (props:{transferId:number})=>{
             if (event.key === "Enter" && eanCode?.length==13) {
                 event.preventDefault();
                 console.log('submitting ', eanCode)
-                scanProduct(eanCode);
+                //scanProduct(eanCode);
+                setEan(eanCode)
                 eanCode=""
             } else {
                 eanCode+= event.key
@@ -102,6 +111,14 @@ const PackingTab = (props:{transferId:number})=>{
     }, [])
 
     useEffect(()=>console.log('PackingList:', packingList), [packingList]);
+    useEffect(()=>console.log('Boxes:', boxes), [boxes]);
+    useEffect(()=>console.log('selected box:', state.selectedBox), [state.selectedBox]);
+    useEffect(() => {
+        if (ean.length == 13) {
+            console.log({ean: ean, box: state.selectedBox})
+            scanProduct(ean);
+        }
+    }, [ean]);
 
     return (
         <Grid container component={Paper} elevation={5} sx={{justifyContent: "center", minHeight: "40rem"}}>
