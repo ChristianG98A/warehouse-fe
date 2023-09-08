@@ -1,4 +1,3 @@
-export default null;
 
 export type Product= {
     id: string;
@@ -51,3 +50,4 @@ export type ProductStockLine = {
     order_id: string;
     transfer_id: string;
 }
+export default null;

@@ -1,27 +1,21 @@
 "use client"
 
-import * as React from 'react';
+import BusinessIcon from '@mui/icons-material/Business';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import MenuIcon from '@mui/icons-material/Menu';
+import ScienceIcon from '@mui/icons-material/Science';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import {Avatar, Fade, ListSubheader, Menu, MenuItem, Tooltip} from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import BusinessIcon from '@mui/icons-material/Business';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import List from '@mui/material/List';
-import ScienceIcon from '@mui/icons-material/Science';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import {Avatar, Fade, ListSubheader, Menu, MenuItem, Tooltip} from '@mui/material';
+import * as React from 'react';
 import SidebarListDropdown from '../common/SidebarListDropdown';
 
 const drawerWidth = 260;

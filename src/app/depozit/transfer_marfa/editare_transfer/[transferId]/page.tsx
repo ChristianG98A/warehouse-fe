@@ -2,10 +2,9 @@
 
 import {StateContext} from "@/app/state/context";
 import CustomToolbar from "@/components/common/CustomToolbar";
-import {PageBreadcrumbs} from "@/components/features/PageBreadcrumbs";
 import {callNextApi} from "@/helpers/apiMethods";
 import {Action, State} from "@/model/appstate/AppStateTypes";
-import {ProductInGetTransfer, TransferData, TransferProduct, TransferProductInBasket, TransferProductInPickpack} from "@/model/transfers/TransferTypes";
+import {ProductInGetTransfer, TransferData, TransferProductInBasket} from "@/model/transfers/TransferTypes";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {Alert, Box, Button, colors, Divider, Drawer, Grid, Snackbar, Tab, TextField, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
@@ -28,7 +27,6 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
     const [state, dispatch]: [State, Action] = useContext(StateContext)
     const [tab, setTab] = useState<string>('products')
     const [loading, setLoading] = useState(false);
-    const [snackBar, setSnackBar] = useState<any>({state: false, message: "Succes!", type: "success"});
     const debounce = require('lodash.debounce');
     const [selectionModel, setSelectionModel] = useState<any>([0])
     const [paginationModel, setPaginationModel] = useState({
@@ -121,22 +119,6 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
     return (
         <>
             <Typography variant={"h5"} fontWeight={800} sx={{mb: 2}} textAlign='center' gutterBottom >{"Transfer " + transferId}</ Typography>
-            <PageBreadcrumbs
-                items={[
-                    {
-                        name: "Depozit",
-                        path: "#",
-                    },
-                    {
-                        name: "Transfer Marfa",
-                        path: "/depozit/transfer_marfa",
-                    },
-                    {
-                        name: `Editare Transfer ${transferId}`,
-                        path: `/depozit/transfer_marfa/editare_transfer/${transferId}`,
-                    },
-                ]}
-            />
             <TabContext value={tab}>
                 <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
                     <TabList onChange={handleTabChange} aria-label="lab API tabs example">
@@ -200,10 +182,11 @@ const TransferEdit = ({params}: {params: {transferId: string}}) => {
                                     setLoading(true)
                                     handleSubmitProducts(transferId, state?.transferProductBasket)
                                         .catch(e => {
-                                            setSnackBar({message: "Eroare!", type: "error", state: true})
+                                            dispatch({type:'SET_SNACKBAR', payload:{message: "Eroare!", type: "error", state: true}})
                                         })
                                         .then(r => {
-                                            setSnackBar({type: "success", message: "Produse alocate cu succes!", state: true});
+
+                                            dispatch({type:'SET_SNACKBAR', payload:{type: "success", message: "Produse alocate cu succes!", state: true}})
                                             dispatch({type: "RESET_TRANSFER_PRODUCT_BASKET"});
                                             getTransfer();
                                         })

@@ -1,4 +1,3 @@
-export default null;
 
 export type PickingBox = {
     id:string;
@@ -6,3 +5,4 @@ export type PickingBox = {
     prods_in_box: any; // vezi aci
     weight: string|number;
 }
+export default null;
