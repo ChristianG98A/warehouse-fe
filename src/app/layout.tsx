@@ -12,7 +12,7 @@ import SideDrawer from '@/components/features/SideDrawer';
 
 const inter = Inter({ subsets: ['latin'] })
 
-const frameStyle:CSSObject={
+const frameStyle:any={
         marginTop:"3.5rem",
         width:"100vw",
         padding:"3rem",
