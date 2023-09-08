@@ -229,7 +229,7 @@ const ProviderOrders = () => {
                                 <FormControl variant='standard' sx={{width: "100%"}}>
                                     <InputLabel id="currencySelector" >Moneda</InputLabel>
                                     <Select {...register("currency")} labelId='currencySelectorr' id="currency_selector" value={selectedCurrency}
-                                        onChange={(event: SelectChangeEvent) => setSelectedCurreny(event.target.value)} >
+                                        onChange={(event: any) => setSelectedCurreny(event.target.value)} >
                                         <MenuItem key={"RON"} value={"RON"}>{"RON"}</MenuItem>
                                         <MenuItem key={"EUR"} value={"EUR"}>{"EUR"}</MenuItem>
                                         <MenuItem key={"USD"} value={"USD"}>{"USD"}</MenuItem>
