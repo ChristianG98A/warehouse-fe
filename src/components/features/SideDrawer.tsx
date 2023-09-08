@@ -53,9 +53,6 @@ export default function SideDrawer(props: Props) {
             <Toolbar />
             <Divider />
             <List>
-                <Fade in={open}>
-                    <ListSubheader children={"MAGAZIN"} />
-                </Fade>
                 <SidebarListDropdown item="Achizitii" index={1}
                     menuItems={[
                         {name: 'Comenzi Furnizori', link: "/achizitii/comenzi_furnizori"}]

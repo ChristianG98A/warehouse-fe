@@ -16,7 +16,7 @@ import StockGridColumns from "./StockGridColumnx";
 
 
 const rowsPerPageOptions = [10, 20, 100];
-const StockPerUnit = (params: {productId: number}) => {
+const StockPerUnit = () => {
     const [pageSize, setPageSize] = useState<number>(rowsPerPageOptions[0]);
     const [state, dispatch]: [State, Action] = useContext(StateContext);
     const [loading, setLoading] = useState(false);
